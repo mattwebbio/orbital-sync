@@ -1,9 +1,9 @@
-name: ci
+name: Release
 
 on:
   push:
-    branches:
-      - 'master'
+    tags:
+      - '*'
 
 jobs:
   docker:
@@ -37,3 +37,16 @@ jobs:
         with:
           username: mattwebbio
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+  npm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+      - run: yarn
+      - run: tsc
+      - run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
+      - run: yarn publish --registry https://npm.pkg.github.com
+      - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+      - run: yarn publish --registry https://registry.npmjs.org
