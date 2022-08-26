@@ -4,16 +4,20 @@ function getRequiredEnv(variable: string): string {
   const value = process.env[variable];
 
   if (value === undefined)
-    throw new MissingEnvironmentVariableError(`The environment variable ${variable} is required but not defined.`);
+    throw new MissingEnvironmentVariableError(
+      `The environment variable ${variable} is required but not defined.`
+    );
 
   return value;
 }
 
 function getSecondaryHosts(): Host[] {
-  const hosts: Host[] = [{
-    baseUrl: getRequiredEnv('SECONDARY_HOST_1_BASE_URL'),
-    password: getRequiredEnv('SECONDARY_HOST_1_PASSWORD')
-  }];
+  const hosts: Host[] = [
+    {
+      baseUrl: getRequiredEnv('SECONDARY_HOST_1_BASE_URL'),
+      password: getRequiredEnv('SECONDARY_HOST_1_PASSWORD')
+    }
+  ];
 
   let count = 2;
   while (
@@ -36,7 +40,7 @@ export const Config: {
   secondaries: Host[];
   sync: {
     whitelist: boolean;
-    regex_whitelist: boolean;
+    regexWhitelist: boolean;
     blacklist: boolean;
     regexlist: boolean;
     adlist: boolean;
@@ -50,7 +54,7 @@ export const Config: {
   };
   verbose: boolean;
   intervalMinutes: number;
-  honeybadger_api_key: string | undefined;
+  honeybadgerApiKey: string | undefined;
 } = {
   primary: {
     baseUrl: getRequiredEnv('PRIMARY_HOST_BASE_URL'),
@@ -59,7 +63,7 @@ export const Config: {
   secondaries: getSecondaryHosts(),
   sync: {
     whitelist: process.env['SYNC_WHITELIST'] !== 'false',
-    regex_whitelist: process.env['SYNC_REGEX_WHITELIST'] !== 'false',
+    regexWhitelist: process.env['SYNC_REGEX_WHITELIST'] !== 'false',
     blacklist: process.env['SYNC_BLACKLIST'] !== 'false',
     regexlist: process.env['SYNC_REGEXLIST'] !== 'false',
     adlist: process.env['SYNC_ADLIST'] !== 'false',
@@ -72,9 +76,12 @@ export const Config: {
     flushtables: process.env['SYNC_FLUSHTABLES'] !== 'false'
   },
   verbose: process.env['VERBOSE'] === 'true',
-  intervalMinutes: (process.env['INTERVAL_MINUTES'] ? parseInt(process.env['INTERVAL_MINUTES']) : null) || 30,
-  honeybadger_api_key: process.env['HONEYBADGER_API_KEY']
-}
+  intervalMinutes:
+    (process.env['INTERVAL_MINUTES']
+      ? parseInt(process.env['INTERVAL_MINUTES'])
+      : null) || 30,
+  honeybadgerApiKey: process.env['HONEYBADGER_API_KEY']
+};
 
 export interface Host {
   baseUrl: string;

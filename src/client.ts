@@ -1,6 +1,12 @@
 import chalk from 'chalk';
 import fetchCookie from 'fetch-cookie';
-import nodeFetch, { Blob, FormData, RequestInfo, RequestInit, Response } from 'node-fetch';
+import nodeFetch, {
+  Blob,
+  FormData,
+  RequestInfo,
+  RequestInit,
+  Response
+} from 'node-fetch';
 import { parse } from 'node-html-parser';
 import { log } from './log.js';
 import { Config } from './config.js';
@@ -17,16 +23,19 @@ export class Client {
     log(chalk.yellow(`➡️ Signing in to ${host.baseUrl}...`));
     const fetch = fetchCookie(nodeFetch);
 
-    await fetch(`${host.baseUrl}/admin/index.php?login`, { "method": "GET" });
+    await fetch(`${host.baseUrl}/admin/index.php?login`, { method: 'GET' });
     const response = await fetch(`${host.baseUrl}/admin/index.php?login`, {
-      "headers": {
-        "content-type": "application/x-www-form-urlencoded"
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded'
       },
-      "body": `pw=${encodeURIComponent(host.password)}&persistentlogin=off`,
-      "method": "POST"
+      body: `pw=${encodeURIComponent(host.password)}&persistentlogin=off`,
+      method: 'POST'
     });
     if (response.status !== 200)
-      throw new LoginError(host, { status: response.status, responseBody: await response.text() });
+      throw new LoginError(host, {
+        status: response.status,
+        responseBody: await response.text()
+      });
 
     const token = this.parseResponseForToken(host, await response.text());
 
@@ -49,12 +58,21 @@ export class Client {
     log(chalk.yellow(`➡️ Downloading backup from ${this.host.baseUrl}...`));
     const form = this.generateForm();
 
-    const response = await this.fetch(`${this.host.baseUrl}/admin/scripts/pi-hole/php/teleporter.php`, {
-      "body": form,
-      "method": "POST"
-    });
-    if (response.status !== 200 || response.headers.get('content-type') !== 'application/gzip')
-      throw new BackupDownloadError(this.host, { status: response.status, responseBody: await response.text() })
+    const response = await this.fetch(
+      `${this.host.baseUrl}/admin/scripts/pi-hole/php/teleporter.php`,
+      {
+        body: form,
+        method: 'POST'
+      }
+    );
+    if (
+      response.status !== 200 ||
+      response.headers.get('content-type') !== 'application/gzip'
+    )
+      throw new BackupDownloadError(this.host, {
+        status: response.status,
+        responseBody: await response.text()
+      });
 
     const data = await response.arrayBuffer();
 
@@ -69,13 +87,19 @@ export class Client {
     form.append('action', 'in');
     form.append('zip_file', backup, 'backup.tar.gz');
 
-    const response = await this.fetch(`${this.host.baseUrl}/admin/scripts/pi-hole/php/teleporter.php`, {
-      "body": form,
-      "method": "POST"
-    });
+    const response = await this.fetch(
+      `${this.host.baseUrl}/admin/scripts/pi-hole/php/teleporter.php`,
+      {
+        body: form,
+        method: 'POST'
+      }
+    );
     const text = await response.text();
     if (response.status !== 200 || !text.endsWith('OK'))
-      throw new BackupUploadError(this.host, { status: response.status, responseBody: text });
+      throw new BackupUploadError(this.host, {
+        status: response.status,
+        responseBody: text
+      });
 
     log(chalk.green(`✔️ Backup uploaded to ${this.host.baseUrl}!`));
     if (Config.verbose) log(`Result:\n${chalk.blue(text)}`);
@@ -86,7 +110,7 @@ export class Client {
     form.append('token', this.token);
 
     form.append('whitelist', Config.sync.whitelist);
-    form.append('regex_whitelist', Config.sync.regex_whitelist);
+    form.append('regex_whitelist', Config.sync.regexWhitelist);
     form.append('blacklist', Config.sync.blacklist);
     form.append('regexlist', Config.sync.regexlist);
     form.append('adlist', Config.sync.adlist);
@@ -103,7 +127,10 @@ export class Client {
 }
 
 class BaseError extends Error {
-  constructor(host: Host, { status, responseBody }: { status?: number, responseBody?: string }) {
+  constructor(
+    host: Host,
+    { status, responseBody }: { status?: number; responseBody?: string }
+  ) {
     let msg = `Host: ${host.baseUrl}`;
     if (status) msg += `\n\nStatus Code:\n${status}`;
     if (responseBody) msg += `\n\nResponse Body:\n${responseBody}`;
