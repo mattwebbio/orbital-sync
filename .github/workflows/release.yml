@@ -31,7 +31,9 @@ jobs:
           push: true
           tags: |
             ghcr.io/mattwebbio/pihole-sync:latest
+            ghcr.io/mattwebbio/pihole-sync:${{ github.ref_name }}
             mattwebbio/pihole-sync:latest
+            mattwebbio/pihole-sync:${{ github.ref_name }}
       - name: Update DockerHub description
         uses: peter-evans/dockerhub-description@v3
         with:
