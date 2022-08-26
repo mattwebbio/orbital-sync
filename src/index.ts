@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import Honeybadger from '@honeybadger-io/js';
 import chalk from 'chalk';
 import sleep from 'sleep-promise';
