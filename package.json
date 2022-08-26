@@ -2,8 +2,18 @@
   "name": "pihole-sync",
   "version": "0.0.1",
   "type": "module",
-  "main": "index.js",
+  "main": "dist/index.js",
   "license": "MIT",
+  "scripts": {
+    "postversion": "git push && git push --tags"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattwebbio/pihole-sync.git"
+  },
+  "bin": {
+    "pihole-sync": "./bin/index.js"
+  },
   "devDependencies": {
     "@tsconfig/node18-strictest-esm": "^1.0.1",
     "@types/luxon": "^3.0.0",
