@@ -39,11 +39,10 @@ pihole-sync
 ```
 
 ## Requirements
-The only currently supported way to run this project is with Docker. In theory, you could clone the repo and run it with
-Node.
-
 The admin web interfaces of all Pi-holes must be accessible by the container/server running this service. In other words,
 they have to be on the same network.
+
+It is recommended you run this service with Docker.
 
 ## Environment Variables
 | Variable                      | Required | Default | Examples                                                        | Description                                                                                                                                                                                                  |
