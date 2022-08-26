@@ -1,0 +1,22 @@
+{
+  "name": "pihole-sync",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@tsconfig/node18-strictest-esm": "^1.0.1",
+    "@types/luxon": "^3.0.0",
+    "@types/node": "^18.7.13",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "@honeybadger-io/js": "^4.1.1",
+    "chalk": "^5.0.1",
+    "fetch-cookie": "^2.1.0",
+    "luxon": "^3.0.1",
+    "node-fetch": "^3.2.10",
+    "node-html-parser": "^5.4.2-0",
+    "sleep-promise": "^9.1.0"
+  }
+}
