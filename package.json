@@ -16,6 +16,11 @@
     "@tsconfig/node18-strictest-esm": "^1.0.1",
     "@types/luxon": "^3.0.0",
     "@types/node": "^18.7.13",
+    "@typescript-eslint/eslint-plugin": "^5.35.1",
+    "@typescript-eslint/parser": "^5.35.1",
+    "eslint": "^8.22.0",
+    "eslint-config-prettier": "^8.5.0",
+    "prettier": "^2.7.1",
     "typescript": "^4.7.4"
   },
   "dependencies": {
