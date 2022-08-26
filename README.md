@@ -12,6 +12,7 @@ however, will restart your secondary Pi-hole's DNS server any time a sync is per
 backup.
 
 ## Getting Started
+### Docker
 The following is an example Docker Compose file for running this project. See the 
 [environment variables](#environment-variables) section for more configuration options.
 
@@ -29,6 +30,12 @@ services:
       SECONDARY_HOST_2_BASE_URL: 'http://192.168.1.3'
       SECONDARY_HOST_2_PASSWORD: 'your_password3'
       INTERVAL_MINUTES: 30
+```
+
+### Node
+```shell
+npm install -g pihole-sync
+pihole-sync
 ```
 
 ## Requirements
