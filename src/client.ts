@@ -102,25 +102,25 @@ export class Client {
       });
 
     log(chalk.green(`✔️ Backup uploaded to ${this.host.baseUrl}!`));
-    if (Config.verbose) log(`Result:\n${chalk.blue(text)}`);
+    if (Config.verboseMode) log(`Result:\n${chalk.blue(text)}`);
   }
 
   private generateForm(): typeof FormData.prototype {
     const form = new FormData();
     form.append('token', this.token);
 
-    form.append('whitelist', Config.sync.whitelist);
-    form.append('regex_whitelist', Config.sync.regexWhitelist);
-    form.append('blacklist', Config.sync.blacklist);
-    form.append('regexlist', Config.sync.regexlist);
-    form.append('adlist', Config.sync.adlist);
-    form.append('client', Config.sync.client);
-    form.append('group', Config.sync.group);
-    form.append('auditlog', Config.sync.auditlog);
-    form.append('staticdhcpleases', Config.sync.staticdhcpleases);
-    form.append('localdnsrecords', Config.sync.localdnsrecords);
-    form.append('localcnamerecords', Config.sync.localcnamerecords);
-    form.append('flushtables', Config.sync.flushtables);
+    form.append('whitelist', Config.syncOptions.whitelist);
+    form.append('regex_whitelist', Config.syncOptions.regexWhitelist);
+    form.append('blacklist', Config.syncOptions.blacklist);
+    form.append('regexlist', Config.syncOptions.regexlist);
+    form.append('adlist', Config.syncOptions.adlist);
+    form.append('client', Config.syncOptions.client);
+    form.append('group', Config.syncOptions.group);
+    form.append('auditlog', Config.syncOptions.auditlog);
+    form.append('staticdhcpleases', Config.syncOptions.staticdhcpleases);
+    form.append('localdnsrecords', Config.syncOptions.localdnsrecords);
+    form.append('localcnamerecords', Config.syncOptions.localcnamerecords);
+    form.append('flushtables', Config.syncOptions.flushtables);
 
     return form;
   }

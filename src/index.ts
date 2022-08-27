@@ -14,9 +14,9 @@ if (Config.honeybadgerApiKey) {
 }
 
 while (true) {
-  const primary = await Client.create(Config.primary);
+  const primary = await Client.create(Config.primaryHost);
   const secondaries = await Promise.all(
-    Config.secondaries.map((secondary) => Client.create(secondary))
+    Config.secondaryHosts.map((host) => Client.create(host))
   );
 
   const backup = await primary.downloadBackup();

@@ -36,9 +36,9 @@ function getSecondaryHosts(): Host[] {
 }
 
 export const Config: {
-  primary: Host;
-  secondaries: Host[];
-  sync: {
+  primaryHost: Host;
+  secondaryHosts: Host[];
+  syncOptions: {
     whitelist: boolean;
     regexWhitelist: boolean;
     blacklist: boolean;
@@ -52,16 +52,16 @@ export const Config: {
     localcnamerecords: boolean;
     flushtables: boolean;
   };
-  verbose: boolean;
+  verboseMode: boolean;
   intervalMinutes: number;
   honeybadgerApiKey: string | undefined;
 } = {
-  primary: {
+  primaryHost: {
     baseUrl: getRequiredEnv('PRIMARY_HOST_BASE_URL'),
     password: getRequiredEnv('PRIMARY_HOST_PASSWORD')
   },
-  secondaries: getSecondaryHosts(),
-  sync: {
+  secondaryHosts: getSecondaryHosts(),
+  syncOptions: {
     whitelist: process.env['SYNC_WHITELIST'] !== 'false',
     regexWhitelist: process.env['SYNC_REGEX_WHITELIST'] !== 'false',
     blacklist: process.env['SYNC_BLACKLIST'] !== 'false',
@@ -75,7 +75,7 @@ export const Config: {
     localcnamerecords: process.env['SYNC_LOCALCNAMERECORDS'] !== 'false',
     flushtables: process.env['SYNC_FLUSHTABLES'] !== 'false'
   },
-  verbose: process.env['VERBOSE'] === 'true',
+  verboseMode: process.env['VERBOSE'] === 'true',
   intervalMinutes:
     (process.env['INTERVAL_MINUTES']
       ? parseInt(process.env['INTERVAL_MINUTES'])
