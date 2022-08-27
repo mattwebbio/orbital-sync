@@ -3,6 +3,7 @@ export class Config {
   private static _secondaryHosts?: Host[];
   private static _syncOptions?: SyncOptions;
   private static _verboseMode?: boolean;
+  private static _runOnce?: boolean;
   private static _intervalMinutes?: number;
 
   static get primaryHost(): Host {
@@ -63,6 +64,12 @@ export class Config {
     this._verboseMode ??= process.env['VERBOSE'] === 'true';
 
     return this._verboseMode;
+  }
+
+  static get runOnce(): boolean {
+    this._runOnce ??= process.env['RUN_ONCE'] === 'true';
+
+    return this._runOnce;
   }
 
   static get intervalMinutes(): number {

@@ -6,6 +6,8 @@
   "license": "MIT",
   "scripts": {
     "install:hooks": "git config core.hooksPath '.hooks'",
+    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest",
+    "preversion": "yarn test",
     "postversion": "git push && git push --tags"
   },
   "repository": {
@@ -15,20 +17,23 @@
   "bin": "./dist/index.js",
   "devDependencies": {
     "@tsconfig/node18-strictest-esm": "^1.0.1",
+    "@types/jest": "^28.1.8",
     "@types/luxon": "^3.0.0",
     "@types/node": "^18.7.13",
     "@typescript-eslint/eslint-plugin": "^5.35.1",
     "@typescript-eslint/parser": "^5.35.1",
     "eslint": "^8.22.0",
     "eslint-config-prettier": "^8.5.0",
+    "jest": "^29.0.1",
+    "nock": "^13.2.9",
     "prettier": "^2.7.1",
-    "typescript": "^4.7.4"
+    "ts-jest": "^28.0.8",
+    "typescript": "^4.8.2"
   },
   "dependencies": {
     "@honeybadger-io/js": "^4.1.1",
-    "chalk": "^5.0.1",
+    "chalk": "^4.1.2",
     "fetch-cookie": "^2.1.0",
-    "luxon": "^3.0.1",
     "node-fetch": "^3.2.10",
     "node-html-parser": "^5.4.2-0",
     "sleep-promise": "^9.1.0"

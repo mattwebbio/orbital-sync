@@ -1,7 +1,7 @@
 {
   "extends": "@tsconfig/node18-strictest-esm/tsconfig.json",
   "include": ["src"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "src/**/*.test.ts"],
   "compilerOptions": {
     "outDir": "dist"
   }

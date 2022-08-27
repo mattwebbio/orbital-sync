@@ -44,3 +44,12 @@ jobs:
       - run: yarn
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+      - run: yarn
+      - run: yarn test
