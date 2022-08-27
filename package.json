@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
+    "install:hooks": "git config core.hooksPath '.hooks'",
     "postversion": "git push && git push --tags"
   },
   "repository": {
