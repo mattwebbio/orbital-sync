@@ -1,79 +1,120 @@
-class MissingEnvironmentVariableError extends Error {}
+export class Config {
+  private static _primaryHost?: Host;
+  private static _secondaryHosts?: Host[];
+  private static _syncOptions?: SyncOptions;
+  private static _verboseMode?: boolean;
+  private static _runOnce?: boolean;
+  private static _intervalMinutes?: number;
 
-function getRequiredEnv(variable: string): string {
-  const value = process.env[variable];
+  static get primaryHost(): Host {
+    this._primaryHost ??= {
+      baseUrl: this.getRequiredEnv('PRIMARY_HOST_BASE_URL'),
+      password: this.getRequiredEnv('PRIMARY_HOST_PASSWORD')
+    };
 
-  if (value === undefined)
-    throw new MissingEnvironmentVariableError(`The environment variable ${variable} is required but not defined.`);
-
-  return value;
-}
-
-function getSecondaryHosts(): Host[] {
-  const hosts: Host[] = [{
-    baseUrl: getRequiredEnv('SECONDARY_HOST_1_BASE_URL'),
-    password: getRequiredEnv('SECONDARY_HOST_1_PASSWORD')
-  }];
-
-  let count = 2;
-  while (
-    process.env[`SECONDARY_HOST_${count}_BASE_URL`] !== undefined &&
-    process.env[`SECONDARY_HOST_${count}_PASSWORD`] !== undefined
-  ) {
-    hosts.push({
-      baseUrl: process.env[`SECONDARY_HOST_${count}_BASE_URL`]!,
-      password: process.env[`SECONDARY_HOST_${count}_PASSWORD`]!
-    });
-
-    count++;
+    return this._primaryHost;
   }
 
-  return hosts;
+  static get secondaryHosts(): Host[] {
+    if (!this._secondaryHosts) {
+      this._secondaryHosts = [
+        {
+          baseUrl: this.getRequiredEnv('SECONDARY_HOST_1_BASE_URL'),
+          password: this.getRequiredEnv('SECONDARY_HOST_1_PASSWORD')
+        }
+      ];
+
+      let count = 2;
+      while (
+        process.env[`SECONDARY_HOST_${count}_BASE_URL`] !== undefined &&
+        process.env[`SECONDARY_HOST_${count}_PASSWORD`] !== undefined
+      ) {
+        this._secondaryHosts.push({
+          baseUrl: process.env[`SECONDARY_HOST_${count}_BASE_URL`]!,
+          password: process.env[`SECONDARY_HOST_${count}_PASSWORD`]!
+        });
+
+        count++;
+      }
+    }
+
+    return this._secondaryHosts;
+  }
+
+  static get syncOptions(): SyncOptions {
+    this._syncOptions ??= {
+      whitelist: process.env['SYNC_WHITELIST'] !== 'false',
+      regexWhitelist: process.env['SYNC_REGEX_WHITELIST'] !== 'false',
+      blacklist: process.env['SYNC_BLACKLIST'] !== 'false',
+      regexlist: process.env['SYNC_REGEXLIST'] !== 'false',
+      adlist: process.env['SYNC_ADLIST'] !== 'false',
+      client: process.env['SYNC_CLIENT'] !== 'false',
+      group: process.env['SYNC_GROUP'] !== 'false',
+      auditlog: process.env['SYNC_AUDITLOG'] === 'true',
+      staticdhcpleases: process.env['SYNC_STATICDHCPLEASES'] === 'true',
+      localdnsrecords: process.env['SYNC_LOCALDNSRECORDS'] !== 'false',
+      localcnamerecords: process.env['SYNC_LOCALCNAMERECORDS'] !== 'false',
+      flushtables: process.env['SYNC_FLUSHTABLES'] !== 'false'
+    };
+
+    return this._syncOptions;
+  }
+
+  static get verboseMode(): boolean {
+    this._verboseMode ??= process.env['VERBOSE'] === 'true';
+
+    return this._verboseMode;
+  }
+
+  static get runOnce(): boolean {
+    this._runOnce ??= process.env['RUN_ONCE'] === 'true';
+
+    return this._runOnce;
+  }
+
+  static get intervalMinutes(): number {
+    if (this._intervalMinutes) return this._intervalMinutes;
+
+    if (process.env['INTERVAL_MINUTES']) {
+      const parsed = parseInt(process.env['INTERVAL_MINUTES']);
+      if (parsed && parsed > 0) this._intervalMinutes = parsed;
+    }
+
+    this._intervalMinutes ??= 30;
+    return this._intervalMinutes;
+  }
+
+  static get honeybadgerApiKey(): string | undefined {
+    return process.env['HONEYBADGER_API_KEY'];
+  }
+
+  private static getRequiredEnv(variable: string): string {
+    const value = process.env[variable];
+
+    if (value === undefined)
+      throw new MissingEnvironmentVariableError(
+        `The environment variable ${variable} is required but not defined.`
+      );
+
+    return value;
+  }
 }
 
-export const Config: {
-  primary: Host;
-  secondaries: Host[];
-  sync: {
-    whitelist: boolean;
-    regex_whitelist: boolean;
-    blacklist: boolean;
-    regexlist: boolean;
-    adlist: boolean;
-    client: boolean;
-    group: boolean;
-    auditlog: boolean;
-    staticdhcpleases: boolean;
-    localdnsrecords: boolean;
-    localcnamerecords: boolean;
-    flushtables: boolean;
-  };
-  verbose: boolean;
-  intervalMinutes: number;
-  honeybadger_api_key: string | undefined;
-} = {
-  primary: {
-    baseUrl: getRequiredEnv('PRIMARY_HOST_BASE_URL'),
-    password: getRequiredEnv('PRIMARY_HOST_PASSWORD')
-  },
-  secondaries: getSecondaryHosts(),
-  sync: {
-    whitelist: process.env['SYNC_WHITELIST'] !== 'false',
-    regex_whitelist: process.env['SYNC_REGEX_WHITELIST'] !== 'false',
-    blacklist: process.env['SYNC_BLACKLIST'] !== 'false',
-    regexlist: process.env['SYNC_REGEXLIST'] !== 'false',
-    adlist: process.env['SYNC_ADLIST'] !== 'false',
-    client: process.env['SYNC_CLIENT'] !== 'false',
-    group: process.env['SYNC_GROUP'] !== 'false',
-    auditlog: process.env['SYNC_AUDITLOG'] === 'true',
-    staticdhcpleases: process.env['SYNC_STATICDHCPLEASES'] === 'true',
-    localdnsrecords: process.env['SYNC_LOCALDNSRECORDS'] !== 'false',
-    localcnamerecords: process.env['SYNC_LOCALCNAMERECORDS'] !== 'false',
-    flushtables: process.env['SYNC_FLUSHTABLES'] !== 'false'
-  },
-  verbose: process.env['VERBOSE'] === 'true',
-  intervalMinutes: (process.env['INTERVAL_MINUTES'] ? parseInt(process.env['INTERVAL_MINUTES']) : null) || 30,
-  honeybadger_api_key: process.env['HONEYBADGER_API_KEY']
+export class MissingEnvironmentVariableError extends Error {}
+
+export interface SyncOptions {
+  whitelist: boolean;
+  regexWhitelist: boolean;
+  blacklist: boolean;
+  regexlist: boolean;
+  adlist: boolean;
+  client: boolean;
+  group: boolean;
+  auditlog: boolean;
+  staticdhcpleases: boolean;
+  localdnsrecords: boolean;
+  localcnamerecords: boolean;
+  flushtables: boolean;
 }
 
 export interface Host {

@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+  schedule:
+    - cron: '0 0 * * 0'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+      - run: yarn
+      - uses: reviewdog/action-setup@v1
+      - run: yarn eslint .
+  prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+      - run: yarn
+      - run: yarn prettier --ignore-unknown --check .
+  codeql:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: typescript
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+      - run: yarn
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+      - run: yarn
+      - run: yarn test
