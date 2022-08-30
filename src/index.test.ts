@@ -1,3 +1,4 @@
+import Honeybadger from '@honeybadger-io/js';
 import { describe, expect, jest, test } from '@jest/globals';
 import nock from 'nock';
 import { Blob } from 'node-fetch';
@@ -64,5 +65,19 @@ describe('entrypoint', () => {
     expect(secondaryHostClient1.uploadBackup).toHaveBeenCalledWith(backupData);
     expect(secondaryHostClient2.uploadBackup).toHaveBeenCalledTimes(1);
     expect(secondaryHostClient2.uploadBackup).toHaveBeenCalledWith(backupData);
+  });
+
+  describe('Honeybadger', () => {
+    test('to be configured', async () => {
+      const honeybadgerApiKey = jest
+        .spyOn(Config, 'honeybadgerApiKey', 'get')
+        .mockReturnValue('blablabla');
+      const honeybadgerConfigure = jest.spyOn(Honeybadger, 'configure');
+
+      await expect(import('./index')).rejects.toBeDefined();
+
+      expect(honeybadgerApiKey).toHaveBeenCalled();
+      expect(honeybadgerConfigure).toHaveBeenCalledWith({ apiKey: 'blablabla' });
+    });
   });
 });
