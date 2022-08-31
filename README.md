@@ -36,7 +36,7 @@ The following is an example Docker Compose file for running this project. See th
 [environment variables](#environment-variables) section for more configuration options.
 
 ```yaml
-version: 3
+version: '3'
 services:
   orbital-sync:
     image: mattwebbio/orbital-sync
