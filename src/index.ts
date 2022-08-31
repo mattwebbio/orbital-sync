@@ -22,6 +22,8 @@ do {
   const backup = await primary.downloadBackup();
   await Promise.all(secondaries.map((secondary) => secondary.uploadBackup(backup)));
 
-  log(chalk.dim(`Waiting ${Config.intervalMinutes} minutes...`));
-  if (!Config.runOnce) await sleep(Config.intervalMinutes * 60 * 1000);
+  if (!Config.runOnce) {
+    log(chalk.dim(`Waiting ${Config.intervalMinutes} minutes...`));
+    await sleep(Config.intervalMinutes * 60 * 1000);
+  }
 } while (!Config.runOnce);
