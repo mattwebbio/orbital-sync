@@ -13,13 +13,22 @@ that backup to any number of "secondary" Pi-holes also via their admin interface
 synchronization of anything currently supported by Pi-hole's "teleporter". See
 [Environment Variables](#environment-variables) for the defaults.
 
-I love [gravity-sync](https://github.com/vmstan/gravity-sync), but I personally found it to be difficult to set up in
-some contexts. Gravity Sync's approach is much more efficient, because it checks if there are any changes on the
-primary before importing them on the secondary and restarting any services. I'm under the impression that this project,
-however, will restart your secondary Pi-hole's DNS server any time a sync is performed because it is "restoring" a
-backup.
+### Alternatives
+
+I love [Gravity Sync](https://github.com/vmstan/gravity-sync) and have used it for some time, but I personally find it
+to be difficult to set up in some contexts (Docker, Unraid, etc.). Orbital Sync's approach is designed to rely less on
+the servers running Pi-hole by instead acting on their admin interface just like you would.
+
+### Why would I want multiple Pi-holes?
+
+Ever had the server running your Pi-hole go down? Or have you ever needed to perform maintenance on that server? This can
+obviously be extremely disruptive to anyone using your network. By running multiple Pi-hole instances (replicas) and
+giving your network clients secondary/tertiary/etc DNS servers, any outage involving one of your Pi-hole instances
+doesn't bring down your whole network.
 
 ## Getting Started
+
+Set up your secondary Pi-hole instance(s) just like you did your primary. Once that's done, choose one of the following:
 
 ### Docker
 
@@ -42,7 +51,14 @@ services:
       INTERVAL_MINUTES: 30
 ```
 
+The Orbital Sync Docker image is published to both DockerHub and the GitHub Package Repository:<br />
+[mattwebbio/orbital-sync](https://hub.docker.com/r/mattwebbio/orbital-sync)<br />
+[ghcr.io/mattwebbio/orbital-sync](https://github.com/mattwebbio/orbital-sync/pkgs/container/orbital-sync)
+
 ### Node
+
+As with Docker, running with Node requires you export any required environment variables before running Orbital Sync. See the
+[environment variables](#environment-variables) section for more information.
 
 ```shell
 npm install -g orbital-sync
