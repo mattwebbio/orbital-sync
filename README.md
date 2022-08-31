@@ -1,6 +1,13 @@
-# Pi-hole Sync
+<img src="https://user-images.githubusercontent.com/420820/187585158-331400c3-18f3-4673-857e-44efd73c6104.svg" width="200" alt="Logo" />
 
-This project synchronizes multiple Pi-hole instances for high availability (HA) using the built-in "teleporter". In
+# Orbital Sync
+
+[![Tests](https://img.shields.io/github/workflow/status/mattwebbio/orbital-sync/CI/master?label=tests&style=for-the-badge)](https://github.com/mattwebbio/orbital-sync/actions/workflows/ci.yml?query=branch%3Amaster)
+[![Coverage](https://img.shields.io/codecov/c/github/mattwebbio/orbital-sync/master?style=for-the-badge)](https://app.codecov.io/gh/mattwebbio/orbital-sync/)
+[![Release](https://img.shields.io/github/workflow/status/mattwebbio/orbital-sync/Release?label=release&style=for-the-badge)](https://github.com/mattwebbio/orbital-sync/actions/workflows/release.yml)
+[![Version](https://img.shields.io/github/v/tag/mattwebbio/orbital-sync?label=version&style=for-the-badge)](https://github.com/mattwebbio/orbital-sync/tags)
+
+Orbital Sync synchronizes multiple Pi-hole instances for high availability (HA) using the built-in "teleporter". In
 other words, it performs a "backup" in the Pi-hole admin interface of your primary Pi-hole instance, and then "restores"
 that backup to any number of "secondary" Pi-holes also via their admin interface. As a result, it supports the
 synchronization of anything currently supported by Pi-hole's "teleporter". See
@@ -22,8 +29,8 @@ The following is an example Docker Compose file for running this project. See th
 ```yaml
 version: 3
 services:
-  pihole-sync:
-    image: mattwebbio/pihole-sync
+  orbital-sync:
+    image: mattwebbio/orbital-sync
     restart: unless-stopped
     environment:
       PRIMARY_HOST_BASE_URL: 'https://pihole1.example.com'
@@ -38,8 +45,8 @@ services:
 ### Node
 
 ```shell
-npm install -g pihole-sync
-pihole-sync
+npm install -g orbital-sync
+orbital-sync
 ```
 
 ## Requirements
@@ -57,6 +64,7 @@ It is recommended you run this service with Docker.
 | `PRIMARY_HOST_PASSWORD`       | Yes      | N/A     | `mypassword`                                                    | The password used to log in to the admin interface.                                                                                                                                                          |
 | `SECONDARY_HOST_(#)_BASE_URL` | Yes      | N/A     | `http://192.168.1.3` or `https://pihole2.example.com`           | The base URL of your secondary Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash. Replace `(#)` with a number, starting at `1`, to add multiple secondary Pi-holes. |
 | `SECONDARY_HOST_(#)_PASSWORD` | Yes      | N/A     | `mypassword2`                                                   | The password used to log in to the admin interface.                                                                                                                                                          |
+| `INTERVAL_MINUTES`            | No       | 30      | Any non-zero positive integer, for example `5`, `30`, or `1440` | How long to wait between synchronizations. Defaults to five minutes. Remember that the DNS server on your secondary servers restarts everytime a sync is performed.                                          |
 | `SYNC_WHITELIST`              | No       | `true`  | `true`/`false`                                                  | Copies the whitelist                                                                                                                                                                                         |
 | `SYNC_REGEX_WHITELIST`        | No       | `true`  | `true`/`false`                                                  | Copies the regex whitelist                                                                                                                                                                                   |
 | `SYNC_BLACKLIST`              | No       | `true`  | `true`/`false`                                                  | Copies the blacklist                                                                                                                                                                                         |
@@ -69,11 +77,17 @@ It is recommended you run this service with Docker.
 | `SYNC_LOCALDNSRECORDS`        | No       | `true`  | `true`/`false`                                                  | Copies local DNS records                                                                                                                                                                                     |
 | `SYNC_LOCALCNAMERECORDS`      | No       | `true`  | `true`/`false`                                                  | Copies local CNAME records                                                                                                                                                                                   |
 | `SYNC_FLUSHTABLES`            | No       | `true`  | `true`/`false`                                                  | Clears existing data on the secondary (copy target) Pi-hole                                                                                                                                                  |
+| `RUN_ONCE`                    | No       | `false` | `true`/`false`                                                  | By default, `orbital-sync` runs indefinitely until stopped. Setting `RUN_ONCE` to `true` forces it to exit immediately after the first sync.                                                                 |
 | `VERBOSE`                     | No       | `false` | `true`/`false`                                                  | Whether to output extra log output. Used for debugging.                                                                                                                                                      |
-| `RUN_ONCE`                    | No       | `false` | `true`/`false`                                                  | By default, `pihole-sync` runs indefinitely until stopped. Setting `RUN_ONCE` to `true` forces it to exit immediately after the first sync.                                                                  |
-| `INTERVAL_MINUTES`            | No       | 30      | Any non-zero positive integer, for example `5`, `30`, or `1440` | How long to wait between synchronizations. Defaults to five minutes. Remember that the DNS server on your secondary servers restarts everytime a sync is performed.                                          |
 | `HONEYBADGER_API_KEY`         | No       | N/A     | `hbp_xxxxxxxxxxxxxxxxxx`                                        | Get notifications to honeybadger.io when the process crashes for any reason by creating a new project and putting your API key here.                                                                         |
 
 Secondary hosts must be sequential (`SECONDARY_HOST_1_BASE_URL`, `SECONDARY_HOST_2_BASE_URL`,
 `SECONDARY_HOST_3_BASE_URL`, and so on) and start at number `1`. Any gaps (for example, `3` to `5` skipping `4`) will
 result in hosts after the gap being skipped in the sync process.
+
+## Disclaimer
+
+This project is not associated with the [official Pi-hole project](https://github.com/pi-hole) and is a community
+maintained piece of software. See the [license](LICENSE).
+
+Pi-hole is a [registered trademark](https://pi-hole.net/trademark-rules-and-brand-guidelines/) of Pi-hole LLC.
