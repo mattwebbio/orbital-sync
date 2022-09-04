@@ -54,8 +54,8 @@ jobs:
       - run: yarn
       - run: yarn test
       - uses: codecov/codecov-action@v3
-  integration:
+  e2e:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: docker-compose -f docker-compose.test.yml up --build --abort-on-container-exit
+      - run: npm run test:e2e
