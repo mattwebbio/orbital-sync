@@ -16,7 +16,7 @@ synchronization of anything currently supported by Pi-hole's "teleporter". See
 ### Alternatives
 
 I love [Gravity Sync](https://github.com/vmstan/gravity-sync) and have used it for some time, but I personally find it
-to be difficult to set up in some contexts (Docker, Unraid, etc.). Orbital Sync's approach is designed to rely less on
+to be difficult to set up in some contexts (Docker, Unraid, Synology, etc.). Orbital Sync's approach is designed to rely less on
 the servers running Pi-hole by instead acting on their admin interface just like you would.
 
 ### Why would I want multiple Pi-holes?
