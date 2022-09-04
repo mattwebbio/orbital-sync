@@ -1,0 +1,29 @@
+name: Feature Request
+description: Request a feature
+labels: ['feature']
+assignees:
+  - mattwebbio
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to create an issue!
+  - type: textarea
+    id: feature-request
+    attributes:
+      label: What feature would you like added?
+      description: What's missing? Why do you need it?
+      placeholder: I would like to be able to...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version of Orbital Sync are you running?
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log output
+      description: Please copy and paste any relevant log output from Orbital Sync. This will be automatically formatted, so no need for backticks.
+      render: shell
