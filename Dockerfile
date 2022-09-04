@@ -1,4 +1,4 @@
-FROM node:18 as builder
+FROM node:18-alpine as builder
 ENV NODE_ENV=development
 
 WORKDIR /usr/src/app
@@ -6,7 +6,7 @@ COPY . .
 RUN yarn install && \
     npx tsc
 
-FROM node:18
+FROM node:18-alpine
 ENV NODE_ENV=production
 
 WORKDIR /usr/src/app
