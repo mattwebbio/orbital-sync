@@ -32,6 +32,9 @@ Set up your secondary Pi-hole instance(s) just like you did your primary. Once t
 
 ### Docker
 
+[![Docker Pulls](https://img.shields.io/docker/pulls/mattwebbio/orbital-sync?logo=docker&style=for-the-badge)](https://hub.docker.com/r/mattwebbio/orbital-sync)
+[![Docker Image Size](https://img.shields.io/docker/image-size/mattwebbio/orbital-sync/latest?logo=docker&style=for-the-badge)](https://hub.docker.com/r/mattwebbio/orbital-sync)
+
 The following is an example Docker Compose file for running this project. See the
 [environment variables](#environment-variables) section for more configuration options.
 
@@ -56,6 +59,8 @@ The Orbital Sync Docker image is published to both DockerHub and the GitHub Pack
 [ghcr.io/mattwebbio/orbital-sync](https://github.com/mattwebbio/orbital-sync/pkgs/container/orbital-sync)
 
 ### Node
+
+[![NPM Downloads](https://img.shields.io/npm/dt/orbital-sync?logo=npm&style=for-the-badge)](https://www.npmjs.com/package/orbital-sync)
 
 As with Docker, running with Node requires you export any required environment variables before running Orbital Sync. See the
 [environment variables](#environment-variables) section for more information.
@@ -102,6 +107,8 @@ Secondary hosts must be sequential (`SECONDARY_HOST_1_BASE_URL`, `SECONDARY_HOST
 result in hosts after the gap being skipped in the sync process.
 
 ## Disclaimer
+
+[![GitHub](https://img.shields.io/github/license/mattwebbio/orbital-sync?style=for-the-badge)](LICENSE)
 
 This project is not associated with the [official Pi-hole project](https://github.com/pi-hole) and is a community
 maintained piece of software. See the [license](LICENSE).
