@@ -5,7 +5,7 @@
 [![Tests](https://img.shields.io/github/workflow/status/mattwebbio/orbital-sync/CI/master?label=tests&style=for-the-badge)](https://github.com/mattwebbio/orbital-sync/actions/workflows/ci.yml?query=branch%3Amaster)
 [![Coverage](https://img.shields.io/codecov/c/github/mattwebbio/orbital-sync/master?style=for-the-badge)](https://app.codecov.io/gh/mattwebbio/orbital-sync/)
 [![Release](https://img.shields.io/github/workflow/status/mattwebbio/orbital-sync/Release?label=release&style=for-the-badge)](https://github.com/mattwebbio/orbital-sync/actions/workflows/release.yml)
-[![Version](https://img.shields.io/github/v/tag/mattwebbio/orbital-sync?label=version&style=for-the-badge)](https://github.com/mattwebbio/orbital-sync/tags)
+[![Version](https://img.shields.io/github/v/tag/mattwebbio/orbital-sync?label=version&style=for-the-badge)](CHANGELOG.md)
 
 Orbital Sync synchronizes multiple Pi-hole instances for high availability (HA) using the built-in "teleporter". In
 other words, it performs a "backup" in the Pi-hole admin interface of your primary Pi-hole instance, and then "restores"
