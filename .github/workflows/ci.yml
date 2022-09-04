@@ -52,10 +52,10 @@ jobs:
         with:
           node-version: '18.x'
       - run: yarn
-      - run: yarn test
+      - run: yarn test:unit
       - uses: codecov/codecov-action@v3
   e2e:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: npm run test:e2e
+      - run: yarn test:e2e
