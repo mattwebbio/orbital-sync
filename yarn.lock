@@ -319,12 +319,13 @@
   dependencies:
     stacktrace-parser "^0.1.10"
 
-"@honeybadger-io/js@^4.1.1":
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@honeybadger-io/js/-/js-4.1.1.tgz#bcd1e4d1e4787a94aa171fbf3de85c807dddecac"
-  integrity sha512-wAA7XUyjaEWWu92V//NanuMNqCbcXDoozOrCOqOaajGSQPj+qN1TabbEcCYCdUk8H+1/vkakXbBAJvf9ccgOOw==
+"@honeybadger-io/js@^4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@honeybadger-io/js/-/js-4.1.3.tgz#6d550cb035f4d6b6de19a2a81eccf1c1095393e0"
+  integrity sha512-wTKcRm8FPrz8y0DGOfn94cbNUKNk/d7H5l3nqcpfCjHgdp91cprXpY0Qk+4WAZ4o/v3MfOFGKqaqRHuwT7IWEg==
   dependencies:
     "@honeybadger-io/core" "^4.1.1"
+    "@types/aws-lambda" "^8.10.89"
 
 "@humanwhocodes/config-array@^0.10.4":
   version "0.10.4"
@@ -662,6 +663,11 @@
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@tsconfig/node18-strictest-esm/-/node18-strictest-esm-1.0.1.tgz#07179c12c3cf1b9764f7b580b3a2df3784cf47be"
   integrity sha512-cHzmAqw7CMbyqROWeBgVhard3F2V6zxOSJnQ4E6SJWruXD5ypuP9/QKekwBdfXQ4oUTaizIICKIwb+v3v33t0w==
+
+"@types/aws-lambda@^8.10.89":
+  version "8.10.102"
+  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.102.tgz#d2402224ec30cdddfb669005c25b6ee01fd6f5be"
+  integrity sha512-BT05v46n9KtSHa9SgGuOvm49eSruJ9utD8iNXpdpuUVYk8wOcqmm1LEzpNRkrXxD0CULc38sdLpk6q3Wa2WOwg==
 
 "@types/babel__core@^7.1.14":
   version "7.1.19"
