@@ -11,6 +11,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: 'arm64,arm'
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       - name: Login to DockerHub
@@ -24,16 +28,32 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate tags
+        id: docker_tags
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            mattwebbio/orbital-sync
+            ghcr.io/mattwebbio/orbital-sync
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
           context: .
           push: true
-          tags: |
-            ghcr.io/mattwebbio/orbital-sync:latest
-            ghcr.io/mattwebbio/orbital-sync:${{ github.ref_name }}
-            mattwebbio/orbital-sync:latest
-            mattwebbio/orbital-sync:${{ github.ref_name }}
+          tags: ${{ steps.docker_tags.outputs.tags }}
+          labels: ${{ steps.docker_tags.outputs.labels }}
+          platforms: |
+            linux/amd64
+            linux/arm64
+            linux/arm
       - name: Update DockerHub description
         uses: peter-evans/dockerhub-description@v3
         with:
