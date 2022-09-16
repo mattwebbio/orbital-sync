@@ -79,7 +79,9 @@ It is recommended you run this service with Docker.
 
 ## Environment Variables
 
-| Variable                      | Required | Default | Examples                                                        | Description                                                                                                                                                                                                  |
+### Sync Configuration
+
+| Environment Variable          | Required | Default | Examples                                                        | Description                                                                                                                                                                                                  |
 | ----------------------------- | -------- | ------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `PRIMARY_HOST_BASE_URL`       | Yes      | N/A     | `http://192.168.1.2` or `https://pihole.example.com`            | The base URL of your Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash.                                                                                             |
 | `PRIMARY_HOST_PASSWORD`       | Yes      | N/A     | `mypassword`                                                    | The password used to log in to the admin interface.                                                                                                                                                          |
@@ -99,12 +101,20 @@ It is recommended you run this service with Docker.
 | `SYNC_LOCALCNAMERECORDS`      | No       | `true`  | `true`/`false`                                                  | Copies local CNAME records                                                                                                                                                                                   |
 | `SYNC_FLUSHTABLES`            | No       | `true`  | `true`/`false`                                                  | Clears existing data on the secondary (copy target) Pi-hole                                                                                                                                                  |
 | `RUN_ONCE`                    | No       | `false` | `true`/`false`                                                  | By default, `orbital-sync` runs indefinitely until stopped. Setting `RUN_ONCE` to `true` forces it to exit immediately after the first sync.                                                                 |
-| `VERBOSE`                     | No       | `false` | `true`/`false`                                                  | Whether to output extra log output. Used for debugging.                                                                                                                                                      |
-| `HONEYBADGER_API_KEY`         | No       | N/A     | `hbp_xxxxxxxxxxxxxxxxxx`                                        | Get notifications to honeybadger.io when the process crashes for any reason by creating a new project and putting your API key here.                                                                         |
 
 Secondary hosts must be sequential (`SECONDARY_HOST_1_BASE_URL`, `SECONDARY_HOST_2_BASE_URL`,
 `SECONDARY_HOST_3_BASE_URL`, and so on) and start at number `1`. Any gaps (for example, `3` to `5` skipping `4`) will
 result in hosts after the gap being skipped in the sync process.
+
+### Notifications
+
+| Environment Variable  | Required | Default | Examples                 | Description                                                                                                                          |
+| --------------------- | -------- | ------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `NOTIFY_ON_SUCCESS`   | No       | `false` | `true`/`false`           | Send a notification if a sync completes successfully.                                                                                |
+| `NOTIFY_ON_FAILURE`   | No       | `true`  | `true`/`false`           | Send notifications if a sync fails for any reason.                                                                                   |
+| `HONEYBADGER_API_KEY` | No       | N/A     | `hbp_xxxxxxxxxxxxxxxxxx` | Get notifications to honeybadger.io when the process crashes for any reason by creating a new project and putting your API key here. |
+| `VERBOSE`             | No       | `false` | `true`/`false`           | Increases the verbosity of log output. Useful for debugging.                                                                         |
+| `TZ`                  | No       | N/A     | `America/Los_Angeles`    | The timezone for the timestamps displayed in log output.                                                                             |
 
 ## Disclaimer
 

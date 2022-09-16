@@ -1,9 +1,9 @@
+import { Notify } from './notify.js';
+
 export class Config {
   private static _primaryHost?: Host;
   private static _secondaryHosts?: Host[];
   private static _syncOptions?: SyncOptions;
-  private static _verboseMode?: boolean;
-  private static _runOnce?: boolean;
   private static _intervalMinutes?: number;
 
   static get primaryHost(): Host {
@@ -61,15 +61,19 @@ export class Config {
   }
 
   static get verboseMode(): boolean {
-    this._verboseMode ??= process.env['VERBOSE'] === 'true';
+    return process.env['VERBOSE'] === 'true';
+  }
 
-    return this._verboseMode;
+  static get notifyOnSuccess(): boolean {
+    return process.env['NOTIFY_ON_SUCCESS'] === 'true';
+  }
+
+  static get notifyOnFailure(): boolean {
+    return process.env['NOTIFY_ON_FAILURE'] !== 'false';
   }
 
   static get runOnce(): boolean {
-    this._runOnce ??= process.env['RUN_ONCE'] === 'true';
-
-    return this._runOnce;
+    return process.env['RUN_ONCE'] === 'true';
   }
 
   static get intervalMinutes(): number {
@@ -92,15 +96,14 @@ export class Config {
     const value = process.env[variable];
 
     if (value === undefined)
-      throw new MissingEnvironmentVariableError(
-        `The environment variable ${variable} is required but not defined.`
-      );
+      Notify.ofFailure({
+        message: `The environment variable ${variable} is required but not defined.`,
+        exit: true
+      });
 
     return value;
   }
 }
-
-export class MissingEnvironmentVariableError extends Error {}
 
 export interface SyncOptions {
   whitelist: boolean;
