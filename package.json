@@ -20,7 +20,7 @@
   "bin": "./dist/index.js",
   "devDependencies": {
     "@tsconfig/node18-strictest-esm": "^1.0.1",
-    "@types/jest": "^29.0.1",
+    "@types/jest": "^29.0.3",
     "@types/luxon": "^3.0.1",
     "@types/node": "^18.7.16",
     "@typescript-eslint/eslint-plugin": "^5.36.2",
