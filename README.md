@@ -11,7 +11,7 @@ Orbital Sync synchronizes multiple Pi-hole instances for high availability (HA) 
 other words, it performs a "backup" in the Pi-hole admin interface of your primary Pi-hole instance, and then "restores"
 that backup to any number of "secondary" Pi-holes also via their admin interface. As a result, it supports the
 synchronization of anything currently supported by Pi-hole's "teleporter". See
-[Environment Variables](#environment-variables) for the defaults.
+"[Configuration](#configuration)" for the defaults.
 
 ### Alternatives
 
@@ -36,7 +36,7 @@ Set up your secondary Pi-hole instance(s) just like you did your primary. Once t
 [![Docker Image Size](https://img.shields.io/docker/image-size/mattwebbio/orbital-sync/latest?logo=docker&style=for-the-badge)](https://hub.docker.com/r/mattwebbio/orbital-sync)
 
 The following is an example Docker Compose file for running this project. See the
-[environment variables](#environment-variables) section for more configuration options.
+[configuration](#configuration) section for more environment variables.
 
 ```yaml
 version: '3'
@@ -63,7 +63,7 @@ The Orbital Sync Docker image is published to both DockerHub and the GitHub Pack
 [![NPM Downloads](https://img.shields.io/npm/dt/orbital-sync?logo=npm&style=for-the-badge)](https://www.npmjs.com/package/orbital-sync)
 
 As with Docker, running with Node requires you export any required environment variables before running Orbital Sync. See the
-[environment variables](#environment-variables) section for more information.
+[configuration](#configuration) section for more information.
 
 ```shell
 npm install -g orbital-sync
@@ -77,7 +77,7 @@ they have to be on the same network.
 
 It is recommended you run this service with Docker.
 
-## Environment Variables
+## Configuration
 
 ### Sync Configuration
 
