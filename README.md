@@ -42,8 +42,7 @@ The following is an example Docker Compose file for running this project. See th
 version: '3'
 services:
   orbital-sync:
-    image: mattwebbio/orbital-sync
-    restart: unless-stopped
+    image: mattwebbio/orbital-sync:1
     environment:
       PRIMARY_HOST_BASE_URL: 'https://pihole1.example.com'
       PRIMARY_HOST_PASSWORD: 'your_password1'
