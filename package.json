@@ -23,6 +23,7 @@
     "@types/jest": "^29.0.1",
     "@types/luxon": "^3.0.1",
     "@types/node": "^18.7.16",
+    "@types/nodemailer": "^6.4.6",
     "@typescript-eslint/eslint-plugin": "^5.36.2",
     "@typescript-eslint/parser": "^5.36.2",
     "auto-changelog": "^2.4.0",
@@ -40,6 +41,7 @@
     "fetch-cookie": "^2.1.0",
     "node-fetch": "^3.2.10",
     "node-html-parser": "^6.0.0",
+    "nodemailer": "^6.7.8",
     "sleep-promise": "^9.1.0"
   }
 }

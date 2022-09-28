@@ -50,6 +50,24 @@ describe('Config', () => {
     });
   };
 
+  const testToThrowOrReturn = (getter: keyof typeof Config, env: string) => {
+    test('should throw', () => {
+      void Config[getter];
+
+      expect(notifyError).toHaveBeenCalledTimes(1);
+      expect(notifyError).toHaveBeenCalledWith({
+        message: `The environment variable ${env} is required but not defined.`,
+        exit: true
+      });
+    });
+
+    test('should accept override', () => {
+      process.env[env] = 'mock_value';
+
+      expect(Config[getter]).toStrictEqual('mock_value');
+    });
+  };
+
   describe('primaryHost', () => {
     test('should error and exit if "PRIMARY_HOST_BASE_URL" is undefined', () => {
       process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword';
@@ -242,6 +260,38 @@ describe('Config', () => {
 
   describe('notifyOnFailure', () => {
     testToHaveDefaultAndOverride('notifyOnFailure', true, 'NOTIFY_ON_FAILURE');
+  });
+
+  describe('notifyViaSmtp', () => {
+    testToHaveDefaultAndOverride('notifyViaSmtp', false, 'NOTIFY_VIA_SMTP');
+  });
+
+  describe('smtpHost', () => {
+    testToThrowOrReturn('smtpHost', 'SMTP_HOST');
+  });
+
+  describe('smtpPort', () => {
+    testToHaveDefaultAndOverride('smtpPort', '587', 'SMTP_PORT');
+  });
+
+  describe('smtpTls', () => {
+    testToHaveDefaultAndOverride('smtpTls', false, 'SMTP_TLS');
+  });
+
+  describe('smtpUser', () => {
+    testToHaveDefaultAndOverride('smtpUser', undefined, 'SMTP_USER');
+  });
+
+  describe('smtpPassword', () => {
+    testToHaveDefaultAndOverride('smtpPassword', undefined, 'SMTP_PASSWORD');
+  });
+
+  describe('smtpFrom', () => {
+    testToHaveDefaultAndOverride('smtpFrom', undefined, 'SMTP_FROM');
+  });
+
+  describe('smtpTo', () => {
+    testToThrowOrReturn('smtpTo', 'SMTP_TO');
   });
 
   describe('runOnce', () => {
