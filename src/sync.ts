@@ -17,7 +17,7 @@ export class Sync {
           Config.secondaryHosts.map((host) =>
             Client.create(host)
               .then((client) => client.uploadBackup(backup))
-              .catch((error) => Notify.queueError(error))
+              .catch((error) => Notify.ofThrow(error, true))
           )
         )
       ).filter(Boolean).length;

@@ -41,6 +41,10 @@ export class Config {
     return this._secondaryHosts;
   }
 
+  static get allHostBaseUrls(): string[] {
+    return [this.primaryHost, ...this.secondaryHosts].map((host) => host.baseUrl);
+  }
+
   static get syncOptions(): SyncOptions {
     this._syncOptions ??= {
       whitelist: process.env['SYNC_WHITELIST'] !== 'false',

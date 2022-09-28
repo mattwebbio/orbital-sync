@@ -1,4 +1,5 @@
 import Honeybadger from '@honeybadger-io/js';
+import { FetchError } from 'node-fetch';
 import { Config } from './config.js';
 import { Log } from './log.js';
 
@@ -9,6 +10,17 @@ export class Notify {
   static ofThrow(error: unknown, queue = false): void {
     if (error instanceof ErrorNotification) {
       queue ? Notify.queueError(error) : Notify.ofFailure(error);
+    } else if (error instanceof FetchError && error.code === 'ECONNREFUSED') {
+      const messageSubstring = error.message.split('ECONNREFUSED')[0]!;
+      const url = Config.allHostBaseUrls.find((url) => messageSubstring.includes(url));
+
+      Notify.ofThrow(
+        new ErrorNotification({
+          message: `The host "${url}" refused to connect. Is it down?`,
+          verbose: error.message
+        }),
+        queue
+      );
     } else {
       if (error instanceof Error || typeof error === 'string')
         this.honeybadger?.notify(error);

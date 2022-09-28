@@ -18,13 +18,8 @@ describe('Config', () => {
     ({ Config } = await import('./config'));
   };
 
-  beforeEach(async () => {
-    await resetImport();
-  });
-
-  afterEach(() => {
-    resetEnv();
-  });
+  beforeEach(() => resetImport());
+  afterEach(() => resetEnv());
 
   const testToHaveDefaultAndOverride = (
     getter: keyof typeof Config,
@@ -163,6 +158,23 @@ describe('Config', () => {
           baseUrl: 'http://10.0.0.5',
           password: 'mypassword3'
         }
+      ]);
+    });
+  });
+
+  describe('allHostBaseUrls', () => {
+    test('should return all host base URLs', () => {
+      process.env['PRIMARY_HOST_BASE_URL'] = 'http://10.0.0.2';
+      process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword1';
+      process.env['SECONDARY_HOST_1_BASE_URL'] = 'http://10.0.0.3';
+      process.env['SECONDARY_HOST_1_PASSWORD'] = 'mypassword2';
+      process.env['SECONDARY_HOST_2_BASE_URL'] = 'http://10.0.0.4';
+      process.env['SECONDARY_HOST_2_PASSWORD'] = 'mypassword3';
+
+      expect(Config.allHostBaseUrls).toStrictEqual([
+        'http://10.0.0.2',
+        'http://10.0.0.3',
+        'http://10.0.0.4'
       ]);
     });
   });

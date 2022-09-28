@@ -1,5 +1,6 @@
 import Honeybadger from '@honeybadger-io/js';
 import { jest } from '@jest/globals';
+import { FetchError } from 'node-fetch';
 import { Config } from './config';
 import { Log } from './log';
 import { ErrorNotification, Notify } from './notify';
@@ -92,6 +93,31 @@ describe('Notify', () => {
       );
     });
 
+    test('should Notify on throw of connection refused FetchError', () => {
+      const notifyOfFailure = jest.spyOn(Notify, 'ofFailure');
+      const allHostBaseUrls = jest
+        .spyOn(Config, 'allHostBaseUrls', 'get')
+        .mockReturnValue(['http://10.0.0.2', 'http://10.0.0.3']);
+
+      Notify.ofThrow(
+        new FetchError(
+          'request to http://10.0.0.3/admin/index.php?login failed, reason: connect ECONNREFUSED 10.0.0.2:443',
+          'system',
+          { code: 'ECONNREFUSED' }
+        )
+      );
+
+      expect(allHostBaseUrls).toHaveBeenCalledTimes(1);
+      expect(notifyOfFailure).toHaveBeenCalledTimes(1);
+      expect(notifyOfFailure).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'The host "http://10.0.0.3" refused to connect. Is it down?',
+          verbose:
+            'request to http://10.0.0.3/admin/index.php?login failed, reason: connect ECONNREFUSED 10.0.0.2:443'
+        })
+      );
+    });
+
     test('should send unexpected error to Honeybadger if configured', () => {
       const honeybadgerApiKey = jest
         .spyOn(Config, 'honeybadgerApiKey', 'get')
@@ -102,7 +128,9 @@ describe('Notify', () => {
       const honeybadgerConfigure = jest.spyOn(Honeybadger, 'configure').mockReturnValue({
         notify: honeybadgerNotify
       } as unknown as ReturnType<typeof Honeybadger.configure>);
-      const mockError = new Error('Example thrown error');
+      const mockError = new FetchError('Connection error', 'system', {
+        code: 'ECONNRESET'
+      });
 
       Notify.ofThrow(mockError);
       Notify.ofThrow('Example thrown string');
