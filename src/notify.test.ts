@@ -15,10 +15,10 @@ describe('Notify', () => {
   });
 
   describe('ofFailure', () => {
-    test('should log error', () => {
+    test('should log error', async () => {
       const logError = jest.spyOn(Log, 'error');
 
-      Notify.ofFailure({
+      await Notify.ofFailure({
         message: 'Example failure message',
         verbose: 'Example verbose context'
       });
@@ -28,11 +28,11 @@ describe('Notify', () => {
       expect(processExit).not.toHaveBeenCalled();
     });
 
-    test('should log verbose context', () => {
+    test('should log verbose context', async () => {
       const logError = jest.spyOn(Log, 'error');
       jest.spyOn(Config, 'verboseMode', 'get').mockReturnValue(true);
 
-      Notify.ofFailure({
+      await Notify.ofFailure({
         message: 'Example failure message',
         verbose: 'Example verbose context'
       });
@@ -42,13 +42,13 @@ describe('Notify', () => {
       expect(logError).toHaveBeenCalledWith('Example verbose context');
     });
 
-    test('should notify and exit', () => {
+    test('should notify and exit', async () => {
       const notifyOfFailure = jest.spyOn(Notify, 'ofFailure');
 
-      Notify.ofFailure({
+      (await Notify.ofFailure({
         message: 'Example catastrophic failure',
         exit: true
-      }) as unknown;
+      })) as unknown;
 
       expect(notifyOfFailure).toHaveBeenCalledTimes(1);
       expect(notifyOfFailure).toHaveBeenCalledWith({
@@ -61,10 +61,10 @@ describe('Notify', () => {
   });
 
   describe('ofThrow', () => {
-    test('should prepend Notify of unexpected error', () => {
+    test('should prepend Notify of unexpected error', async () => {
       const notifyOfFailure = jest.spyOn(Notify, 'ofFailure');
 
-      Notify.ofThrow(new Error('Example thrown error'));
+      await Notify.ofThrow(new Error('Example thrown error'));
 
       expect(notifyOfFailure).toHaveBeenCalledTimes(1);
       expect(notifyOfFailure).toHaveBeenCalledWith({
@@ -72,10 +72,10 @@ describe('Notify', () => {
       });
     });
 
-    test('should Notify on throw', () => {
+    test('should Notify on throw', async () => {
       const notifyOfFailure = jest.spyOn(Notify, 'ofFailure');
 
-      Notify.ofThrow(
+      await Notify.ofThrow(
         new ErrorNotification({
           message: 'Example thrown error',
           exit: true,
@@ -93,13 +93,13 @@ describe('Notify', () => {
       );
     });
 
-    test('should Notify on throw of connection refused FetchError', () => {
+    test('should Notify on throw of connection refused FetchError', async () => {
       const notifyOfFailure = jest.spyOn(Notify, 'ofFailure');
       const allHostBaseUrls = jest
         .spyOn(Config, 'allHostBaseUrls', 'get')
         .mockReturnValue(['http://10.0.0.2', 'http://10.0.0.3']);
 
-      Notify.ofThrow(
+      await Notify.ofThrow(
         new FetchError(
           'request to http://10.0.0.3/admin/index.php?login failed, reason: connect ECONNREFUSED 10.0.0.2:443',
           'system',
@@ -118,7 +118,7 @@ describe('Notify', () => {
       );
     });
 
-    test('should send unexpected error to Honeybadger if configured', () => {
+    test('should send unexpected error to Honeybadger if configured', async () => {
       const honeybadgerApiKey = jest
         .spyOn(Config, 'honeybadgerApiKey', 'get')
         .mockReturnValue('foobar');
@@ -132,8 +132,8 @@ describe('Notify', () => {
         code: 'ECONNRESET'
       });
 
-      Notify.ofThrow(mockError);
-      Notify.ofThrow('Example thrown string');
+      await Notify.ofThrow(mockError);
+      await Notify.ofThrow('Example thrown string');
 
       expect(honeybadgerNotify).toHaveBeenCalledTimes(2);
       expect(honeybadgerNotify).toHaveBeenCalledWith(mockError);
