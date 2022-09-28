@@ -111,9 +111,22 @@ result in hosts after the gap being skipped in the sync process.
 | --------------------- | -------- | ------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
 | `NOTIFY_ON_SUCCESS`   | No       | `false` | `true`/`false`           | Send a notification if a sync completes successfully.                                                                                |
 | `NOTIFY_ON_FAILURE`   | No       | `true`  | `true`/`false`           | Send notifications if a sync fails for any reason.                                                                                   |
+| `NOTIFY_VIA_SMTP`     | No       | `false` | `true`/`false`           | Send notifications via email.                                                                                                        |
 | `HONEYBADGER_API_KEY` | No       | N/A     | `hbp_xxxxxxxxxxxxxxxxxx` | Get notifications to honeybadger.io when the process crashes for any reason by creating a new project and putting your API key here. |
 | `VERBOSE`             | No       | `false` | `true`/`false`           | Increases the verbosity of log output. Useful for debugging.                                                                         |
 | `TZ`                  | No       | N/A     | `America/Los_Angeles`    | The timezone for the timestamps displayed in log output.                                                                             |
+
+#### SMTP
+
+| Environment Variable | Required | Default | Examples                  | Description                                                                  |
+| -------------------- | -------- | ------- | ------------------------- | ---------------------------------------------------------------------------- |
+| `SMTP_HOST`          | Yes      | N/A     | `smtp.example.com`        | The SMTP server host.                                                        |
+| `SMTP_PORT`          | No       | `587`   | `25`/`587`/`465`          | The SMTP server port.                                                        |
+| `SMTP_TLS`           | No       | `false` | `true`/`false`            | Should usually be set to `true` if using port `465`. Otherwise, leave as is. |
+| `SMTP_USER`          | No       | N/A     | `orbitalsync@example.com` | The SMTP account username.                                                   |
+| `SMTP_PASSWORD`      | No       | N/A     | `yourpasswordhere`        | The SMTP account password.                                                   |
+| `SMTP_FROM`          | No       | N/A     | `orbitalsync@example.com` | The email address to send notifications from.                                |
+| `SMTP_TO`            | Yes      | N/A     | `you@example.com`         | The email address to send notifications to. Can be a comma-seperated list.   |
 
 ## Disclaimer
 

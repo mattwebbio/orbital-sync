@@ -76,6 +76,38 @@ export class Config {
     return process.env['NOTIFY_ON_FAILURE'] !== 'false';
   }
 
+  static get notifyViaSmtp(): boolean {
+    return process.env['NOTIFY_VIA_SMTP'] === 'true';
+  }
+
+  static get smtpHost(): string {
+    return this.getRequiredEnv('SMTP_HOST');
+  }
+
+  static get smtpPort(): string {
+    return process.env['SMTP_PORT'] ?? '587';
+  }
+
+  static get smtpTls(): boolean {
+    return process.env['SMTP_TLS'] === 'true';
+  }
+
+  static get smtpUser(): string | undefined {
+    return process.env['SMTP_USER'];
+  }
+
+  static get smtpPassword(): string | undefined {
+    return process.env['SMTP_PASSWORD'];
+  }
+
+  static get smtpFrom(): string | undefined {
+    return process.env['SMTP_FROM'];
+  }
+
+  static get smtpTo(): string {
+    return this.getRequiredEnv('SMTP_TO');
+  }
+
   static get runOnce(): boolean {
     return process.env['RUN_ONCE'] === 'true';
   }
