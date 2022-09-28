@@ -37,6 +37,7 @@ describe('entrypoint', () => {
 
   beforeEach(() => {
     nock.disableNetConnect();
+    jest.restoreAllMocks();
     jest.useFakeTimers();
   });
 

@@ -1,20 +1,23 @@
 import Honeybadger from '@honeybadger-io/js';
 import { FetchError } from 'node-fetch';
+import nodemailer from 'nodemailer';
 import { Config } from './config.js';
 import { Log } from './log.js';
 
 export class Notify {
   private static errorQueue: NotificationInterface[] = [];
   private static _honeybadger?: Honeybadger;
+  private static _smtpClient?: nodemailer.Transporter;
 
-  static ofThrow(error: unknown, queue = false): void {
+  static async ofThrow(error: unknown, queue = false): Promise<void> {
     if (error instanceof ErrorNotification) {
-      queue ? Notify.queueError(error) : Notify.ofFailure(error);
+      if (!queue || (error as NotificationInterface).exit) await Notify.ofFailure(error);
+      else Notify.queueError(error);
     } else if (error instanceof FetchError && error.code === 'ECONNREFUSED') {
       const messageSubstring = error.message.split('ECONNREFUSED')[0]!;
       const url = Config.allHostBaseUrls.find((url) => messageSubstring.includes(url));
 
-      Notify.ofThrow(
+      await Notify.ofThrow(
         new ErrorNotification({
           message: `The host "${url}" refused to connect. Is it down?`,
           verbose: error.message
@@ -24,36 +27,41 @@ export class Notify {
     } else {
       if (error instanceof Error || typeof error === 'string')
         this.honeybadger?.notify(error);
-      Notify.ofFailure({
+      await Notify.ofFailure({
         message: `An unexpected error was thrown:\n- ${error?.toString() ?? error}`
       });
     }
   }
 
-  static ofSuccess({
+  static async ofSuccess({
     message,
     verbose,
-    sendNotification,
-    exit
-  }: NotificationInterface): void {
-    Log.info(`Success: ${message}`);
+    sendNotification
+  }: NotificationInterface): Promise<void> {
+    if (this.errorQueue.length > 0) {
+      await this.ofFailure({
+        message: `Sync succeeded, but there were some unexpected errors. ${message}`
+      });
+
+      return;
+    }
+
+    Log.info(`✔️ Success: ${message}`);
     if (Config.verboseMode && verbose) Log.info(verbose);
 
     if (sendNotification ?? Config.notifyOnSuccess) {
-      // TODO: Add notification handlers
+      await this.dispatch('✔️ Success', message);
     }
-
-    if (exit) process.exit(1);
   }
 
   static ofFailure({ exit }: NotificationInterface & { exit: true }): never;
-  static ofFailure({ exit }: NotificationInterface): void;
-  static ofFailure({
+  static ofFailure({ exit }: NotificationInterface): Promise<void>;
+  static async ofFailure({
     message,
     verbose,
     sendNotification,
     exit
-  }: NotificationInterface): void {
+  }: NotificationInterface): Promise<void> {
     Log.error(`⚠ Failure: ${message}`);
     if (Config.verboseMode && verbose) Log.error(verbose);
 
@@ -61,15 +69,22 @@ export class Notify {
     this.errorQueue = [];
 
     if (sendNotification ?? Config.notifyOnFailure) {
-      errors;
-      // TODO: Add notification handlers
+      let formatted = message;
+      if (errors.length > 0) {
+        formatted = formatted.concat(
+          '\n\nThe following errors occurred during sync:\n- ',
+          errors.join('\n- ')
+        );
+      }
+
+      await this.dispatch(`⚠ Failed`, formatted);
     }
 
     if (exit) process.exit(1);
   }
 
   static queueError(error: NotificationInterface): void {
-    Log.error(error.message);
+    Log.error(`⚠ Error: ${error.message}`);
     if (Config.verboseMode && error.verbose) Log.error(error.verbose);
 
     this.errorQueue.push(error);
@@ -83,6 +98,59 @@ export class Notify {
     });
 
     return this._honeybadger;
+  }
+
+  private static async dispatch(subject: string, contents: string): Promise<void> {
+    await Promise.allSettled([this.dispatchSmtp(subject, contents)]);
+  }
+
+  private static async dispatchSmtp(subject: string, contents: string): Promise<void> {
+    try {
+      if (Config.notifyViaSmtp && this.smtpClient) {
+        if (Config.verboseMode) Log.info('➡️ Dispatching notification email...');
+
+        await this.smtpClient.sendMail({
+          from: Config.smtpFrom ? `"Orbital Sync" <${Config.smtpFrom}>` : undefined,
+          to: Config.smtpTo,
+          subject: `Orbital Sync: ${subject}`,
+          text: `Orbital Sync\n${subject}\n\n${contents}`,
+          html: `<p><h2>Orbital Sync</h2>${subject}</p><p>${contents.replaceAll(
+            '\n',
+            '<br />'
+          )}</p>`
+        });
+
+        if (Config.verboseMode) Log.info('✔️ Notification email dispatched.');
+      }
+    } catch (e) {
+      const error: NotificationInterface = {
+        message: 'SMTP is misconfigured. Please check your configuration.'
+      };
+      if (e instanceof Error) error.verbose = e.message;
+      else error.verbose = JSON.stringify(e);
+
+      this.queueError(error);
+    }
+  }
+
+  private static get smtpClient(): nodemailer.Transporter | undefined {
+    if (!this._smtpClient) {
+      if (Config.verboseMode) Log.info('➡️ Creating SMTP client...');
+
+      this._smtpClient = nodemailer.createTransport({
+        host: Config.smtpHost,
+        port: Number.parseInt(Config.smtpPort),
+        secure: Config.smtpTls,
+        auth: {
+          user: Config.smtpUser,
+          pass: Config.smtpPassword
+        }
+      });
+
+      if (Config.verboseMode) Log.info('✔️ SMTP client created successfully.');
+    }
+
+    return this._smtpClient;
   }
 }
 

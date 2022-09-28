@@ -23,21 +23,21 @@ export class Sync {
       ).filter(Boolean).length;
 
       if (secondaryHostCount === successfulRestoreCount) {
-        Notify.ofSuccess({
+        await Notify.ofSuccess({
           message: `${successfulRestoreCount}/${secondaryHostCount} hosts synced.`
         });
       } else if (successfulRestoreCount > 0) {
-        Notify.ofFailure({
+        await Notify.ofFailure({
           sendNotification: Config.notifyOnSuccess || Config.notifyOnFailure,
           message: `${successfulRestoreCount}/${secondaryHostCount} hosts synced.`
         });
       } else {
-        Notify.ofFailure({
+        await Notify.ofFailure({
           message: `${successfulRestoreCount}/${secondaryHostCount} hosts synced.`
         });
       }
     } catch (e: unknown) {
-      Notify.ofThrow(e);
+      await Notify.ofThrow(e);
     }
 
     if (!Config.runOnce) {

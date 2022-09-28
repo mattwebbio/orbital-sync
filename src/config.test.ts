@@ -3,17 +3,10 @@ import { jest } from '@jest/globals';
 describe('Config', () => {
   const INITIAL_ENV = Object.assign({}, process.env);
   let Config: typeof import('./config').Config;
-  let Notify: typeof import('./notify').Notify;
-  let notifyError: ReturnType<typeof jest.spyOn>;
 
   const resetEnv = () => (process.env = Object.assign({}, INITIAL_ENV));
   const resetImport = async () => {
     jest.resetModules();
-
-    ({ Notify } = await import('./notify'));
-    notifyError = jest
-      .spyOn(Notify, 'ofFailure')
-      .mockImplementation(jest.fn<typeof Notify.ofFailure>());
 
     ({ Config } = await import('./config'));
   };
@@ -50,31 +43,46 @@ describe('Config', () => {
     });
   };
 
+  const testToThrowOrReturn = (getter: keyof typeof Config, env: string) => {
+    test('should throw', () => {
+      expect(() => Config[getter]).toThrow(
+        expect.objectContaining({
+          message: `The environment variable ${env} is required but not defined.`,
+          exit: true
+        })
+      );
+    });
+
+    test('should accept override', () => {
+      process.env[env] = 'mock_value';
+
+      expect(Config[getter]).toStrictEqual('mock_value');
+    });
+  };
+
   describe('primaryHost', () => {
     test('should error and exit if "PRIMARY_HOST_BASE_URL" is undefined', () => {
       process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword';
 
-      Config.primaryHost;
-
-      expect(notifyError).toHaveBeenCalledTimes(1);
-      expect(notifyError).toHaveBeenCalledWith({
-        message:
-          'The environment variable PRIMARY_HOST_BASE_URL is required but not defined.',
-        exit: true
-      });
+      expect(() => Config.primaryHost).toThrow(
+        expect.objectContaining({
+          message:
+            'The environment variable PRIMARY_HOST_BASE_URL is required but not defined.',
+          exit: true
+        })
+      );
     });
 
     test('should error and exit if "PRIMARY_HOST_PASSWORD" is undefined', () => {
       process.env['PRIMARY_HOST_BASE_URL'] = 'http://10.0.0.2';
 
-      Config.primaryHost;
-
-      expect(notifyError).toHaveBeenCalledTimes(1);
-      expect(notifyError).toHaveBeenCalledWith({
-        message:
-          'The environment variable PRIMARY_HOST_PASSWORD is required but not defined.',
-        exit: true
-      });
+      expect(() => Config.primaryHost).toThrow(
+        expect.objectContaining({
+          message:
+            'The environment variable PRIMARY_HOST_PASSWORD is required but not defined.',
+          exit: true
+        })
+      );
     });
 
     test('should return primary host and memoize value', () => {
@@ -96,27 +104,25 @@ describe('Config', () => {
     test('should error and exit if "SECONDARY_HOST_1_BASE_URL" is undefined', () => {
       process.env['SECONDARY_HOST_1_PASSWORD'] = 'mypassword';
 
-      Config.secondaryHosts;
-
-      expect(notifyError).toHaveBeenCalledTimes(1);
-      expect(notifyError).toHaveBeenCalledWith({
-        message:
-          'The environment variable SECONDARY_HOST_1_BASE_URL is required but not defined.',
-        exit: true
-      });
+      expect(() => Config.secondaryHosts).toThrow(
+        expect.objectContaining({
+          message:
+            'The environment variable SECONDARY_HOST_1_BASE_URL is required but not defined.',
+          exit: true
+        })
+      );
     });
 
     test('should error and exit if "SECONDARY_HOST_1_PASSWORD" is undefined', () => {
       process.env['SECONDARY_HOST_1_BASE_URL'] = 'http://10.0.0.3';
 
-      Config.secondaryHosts;
-
-      expect(notifyError).toHaveBeenCalledTimes(1);
-      expect(notifyError).toHaveBeenCalledWith({
-        message:
-          'The environment variable SECONDARY_HOST_1_PASSWORD is required but not defined.',
-        exit: true
-      });
+      expect(() => Config.secondaryHosts).toThrow(
+        expect.objectContaining({
+          message:
+            'The environment variable SECONDARY_HOST_1_PASSWORD is required but not defined.',
+          exit: true
+        })
+      );
     });
 
     test('should return single secondary host and memoize value', () => {
@@ -242,6 +248,38 @@ describe('Config', () => {
 
   describe('notifyOnFailure', () => {
     testToHaveDefaultAndOverride('notifyOnFailure', true, 'NOTIFY_ON_FAILURE');
+  });
+
+  describe('notifyViaSmtp', () => {
+    testToHaveDefaultAndOverride('notifyViaSmtp', false, 'NOTIFY_VIA_SMTP');
+  });
+
+  describe('smtpHost', () => {
+    testToThrowOrReturn('smtpHost', 'SMTP_HOST');
+  });
+
+  describe('smtpPort', () => {
+    testToHaveDefaultAndOverride('smtpPort', '587', 'SMTP_PORT');
+  });
+
+  describe('smtpTls', () => {
+    testToHaveDefaultAndOverride('smtpTls', false, 'SMTP_TLS');
+  });
+
+  describe('smtpUser', () => {
+    testToHaveDefaultAndOverride('smtpUser', undefined, 'SMTP_USER');
+  });
+
+  describe('smtpPassword', () => {
+    testToHaveDefaultAndOverride('smtpPassword', undefined, 'SMTP_PASSWORD');
+  });
+
+  describe('smtpFrom', () => {
+    testToHaveDefaultAndOverride('smtpFrom', undefined, 'SMTP_FROM');
+  });
+
+  describe('smtpTo', () => {
+    testToThrowOrReturn('smtpTo', 'SMTP_TO');
   });
 
   describe('runOnce', () => {
