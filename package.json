@@ -6,6 +6,8 @@
   "license": "MIT",
   "scripts": {
     "install:hooks": "git config core.hooksPath '.hooks'",
+    "lint": "eslint . && prettier --ignore-unknown --check .",
+    "lint:fix": "eslint . --fix && prettier --ignore-unknown --write .",
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "NODE_OPTIONS=--experimental-vm-modules npx jest --silent",
     "test:e2e": "docker-compose -f docker-compose.test.yml up --build --abort-on-container-exit",
