@@ -3,38 +3,85 @@ import { jest } from '@jest/globals';
 describe('Config', () => {
   const INITIAL_ENV = Object.assign({}, process.env);
   let Config: typeof import('./config').Config;
-  let MissingEnvironmentVariableError: typeof import('./config').MissingEnvironmentVariableError;
 
   const resetEnv = () => (process.env = Object.assign({}, INITIAL_ENV));
   const resetImport = async () => {
     jest.resetModules();
-    ({ Config, MissingEnvironmentVariableError } = await import('./config'));
+
+    ({ Config } = await import('./config'));
   };
 
-  beforeEach(async () => {
-    await resetImport();
-  });
+  beforeEach(() => resetImport());
+  afterEach(() => resetEnv());
 
-  afterEach(() => {
-    resetEnv();
-  });
+  const testToHaveDefaultAndOverride = (
+    getter: keyof typeof Config,
+    dflt: string | boolean | undefined,
+    env: string
+  ) => {
+    test('should return default', () => {
+      expect(Config[getter]).toStrictEqual(dflt);
+    });
 
-  describe('primaryHost', () => {
-    test('should throw if "PRIMARY_HOST_BASE_URL" is undefined', () => {
-      process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword';
+    test('should accept override', () => {
+      let override: string | boolean;
+      switch (typeof dflt) {
+        case 'string':
+          override = 'mock_value';
+          break;
+        case 'boolean':
+          override = !dflt;
+          break;
+        case 'undefined':
+          override = 'mock_value';
+          break;
+      }
 
-      expect(() => Config.primaryHost).toThrow(MissingEnvironmentVariableError);
-      expect(() => Config.primaryHost).toThrow(
-        'The environment variable PRIMARY_HOST_BASE_URL is required but not defined.'
+      process.env[env] = override.toString();
+
+      expect(Config[getter]).toStrictEqual(override);
+    });
+  };
+
+  const testToThrowOrReturn = (getter: keyof typeof Config, env: string) => {
+    test('should throw', () => {
+      expect(() => Config[getter]).toThrow(
+        expect.objectContaining({
+          message: `The environment variable ${env} is required but not defined.`,
+          exit: true
+        })
       );
     });
 
-    test('should throw if "PRIMARY_HOST_PASSWORD" is undefined', () => {
+    test('should accept override', () => {
+      process.env[env] = 'mock_value';
+
+      expect(Config[getter]).toStrictEqual('mock_value');
+    });
+  };
+
+  describe('primaryHost', () => {
+    test('should error and exit if "PRIMARY_HOST_BASE_URL" is undefined', () => {
+      process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword';
+
+      expect(() => Config.primaryHost).toThrow(
+        expect.objectContaining({
+          message:
+            'The environment variable PRIMARY_HOST_BASE_URL is required but not defined.',
+          exit: true
+        })
+      );
+    });
+
+    test('should error and exit if "PRIMARY_HOST_PASSWORD" is undefined', () => {
       process.env['PRIMARY_HOST_BASE_URL'] = 'http://10.0.0.2';
 
-      expect(() => Config.primaryHost).toThrow(MissingEnvironmentVariableError);
       expect(() => Config.primaryHost).toThrow(
-        'The environment variable PRIMARY_HOST_PASSWORD is required but not defined.'
+        expect.objectContaining({
+          message:
+            'The environment variable PRIMARY_HOST_PASSWORD is required but not defined.',
+          exit: true
+        })
       );
     });
 
@@ -54,21 +101,27 @@ describe('Config', () => {
   });
 
   describe('secondaryHosts', () => {
-    test('should throw if "SECONDARY_HOST_1_BASE_URL" is undefined', () => {
+    test('should error and exit if "SECONDARY_HOST_1_BASE_URL" is undefined', () => {
       process.env['SECONDARY_HOST_1_PASSWORD'] = 'mypassword';
 
-      expect(() => Config.secondaryHosts).toThrow(MissingEnvironmentVariableError);
       expect(() => Config.secondaryHosts).toThrow(
-        'The environment variable SECONDARY_HOST_1_BASE_URL is required but not defined.'
+        expect.objectContaining({
+          message:
+            'The environment variable SECONDARY_HOST_1_BASE_URL is required but not defined.',
+          exit: true
+        })
       );
     });
 
-    test('should throw if "SECONDARY_HOST_1_PASSWORD" is undefined', () => {
+    test('should error and exit if "SECONDARY_HOST_1_PASSWORD" is undefined', () => {
       process.env['SECONDARY_HOST_1_BASE_URL'] = 'http://10.0.0.3';
 
-      expect(() => Config.secondaryHosts).toThrow(MissingEnvironmentVariableError);
       expect(() => Config.secondaryHosts).toThrow(
-        'The environment variable SECONDARY_HOST_1_PASSWORD is required but not defined.'
+        expect.objectContaining({
+          message:
+            'The environment variable SECONDARY_HOST_1_PASSWORD is required but not defined.',
+          exit: true
+        })
       );
     });
 
@@ -111,6 +164,23 @@ describe('Config', () => {
           baseUrl: 'http://10.0.0.5',
           password: 'mypassword3'
         }
+      ]);
+    });
+  });
+
+  describe('allHostBaseUrls', () => {
+    test('should return all host base URLs', () => {
+      process.env['PRIMARY_HOST_BASE_URL'] = 'http://10.0.0.2';
+      process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword1';
+      process.env['SECONDARY_HOST_1_BASE_URL'] = 'http://10.0.0.3';
+      process.env['SECONDARY_HOST_1_PASSWORD'] = 'mypassword2';
+      process.env['SECONDARY_HOST_2_BASE_URL'] = 'http://10.0.0.4';
+      process.env['SECONDARY_HOST_2_PASSWORD'] = 'mypassword3';
+
+      expect(Config.allHostBaseUrls).toStrictEqual([
+        'http://10.0.0.2',
+        'http://10.0.0.3',
+        'http://10.0.0.4'
       ]);
     });
   });
@@ -169,31 +239,51 @@ describe('Config', () => {
   });
 
   describe('verboseMode', () => {
-    test('should return default false', () => {
-      expect(Config.verboseMode).toStrictEqual(false);
-    });
+    testToHaveDefaultAndOverride('verboseMode', false, 'VERBOSE');
+  });
 
-    test('should accept override and memoize', () => {
-      process.env['VERBOSE'] = 'true';
+  describe('notifyOnSuccess', () => {
+    testToHaveDefaultAndOverride('notifyOnSuccess', false, 'NOTIFY_ON_SUCCESS');
+  });
 
-      expect(Config.verboseMode).toStrictEqual(true);
-      resetEnv();
-      expect(Config.verboseMode).toStrictEqual(true);
-    });
+  describe('notifyOnFailure', () => {
+    testToHaveDefaultAndOverride('notifyOnFailure', true, 'NOTIFY_ON_FAILURE');
+  });
+
+  describe('notifyViaSmtp', () => {
+    testToHaveDefaultAndOverride('notifyViaSmtp', false, 'NOTIFY_VIA_SMTP');
+  });
+
+  describe('smtpHost', () => {
+    testToThrowOrReturn('smtpHost', 'SMTP_HOST');
+  });
+
+  describe('smtpPort', () => {
+    testToHaveDefaultAndOverride('smtpPort', '587', 'SMTP_PORT');
+  });
+
+  describe('smtpTls', () => {
+    testToHaveDefaultAndOverride('smtpTls', false, 'SMTP_TLS');
+  });
+
+  describe('smtpUser', () => {
+    testToHaveDefaultAndOverride('smtpUser', undefined, 'SMTP_USER');
+  });
+
+  describe('smtpPassword', () => {
+    testToHaveDefaultAndOverride('smtpPassword', undefined, 'SMTP_PASSWORD');
+  });
+
+  describe('smtpFrom', () => {
+    testToHaveDefaultAndOverride('smtpFrom', undefined, 'SMTP_FROM');
+  });
+
+  describe('smtpTo', () => {
+    testToThrowOrReturn('smtpTo', 'SMTP_TO');
   });
 
   describe('runOnce', () => {
-    test('should return default false', () => {
-      expect(Config.runOnce).toStrictEqual(false);
-    });
-
-    test('should accept override and memoize', () => {
-      process.env['RUN_ONCE'] = 'true';
-
-      expect(Config.runOnce).toStrictEqual(true);
-      resetEnv();
-      expect(Config.runOnce).toStrictEqual(true);
-    });
+    testToHaveDefaultAndOverride('runOnce', false, 'RUN_ONCE');
   });
 
   describe('intervalMinutes', () => {
@@ -224,14 +314,6 @@ describe('Config', () => {
   });
 
   describe('honeybadgerApiKey', () => {
-    test('should return undefined', () => {
-      expect(Config.honeybadgerApiKey).toBeUndefined();
-    });
-
-    test('should allow override', () => {
-      process.env['HONEYBADGER_API_KEY'] = 'hbp_x';
-
-      expect(Config.honeybadgerApiKey).toStrictEqual('hbp_x');
-    });
+    testToHaveDefaultAndOverride('honeybadgerApiKey', undefined, 'HONEYBADGER_API_KEY');
   });
 });

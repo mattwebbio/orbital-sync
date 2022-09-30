@@ -6,8 +6,10 @@
   "license": "MIT",
   "scripts": {
     "install:hooks": "git config core.hooksPath '.hooks'",
+    "lint": "eslint . && prettier --ignore-unknown --check .",
+    "lint:fix": "eslint . --fix && prettier --ignore-unknown --write .",
     "test": "npm run test:unit && npm run test:e2e",
-    "test:unit": "NODE_OPTIONS=--experimental-vm-modules npx jest",
+    "test:unit": "NODE_OPTIONS=--experimental-vm-modules npx jest --silent",
     "test:e2e": "docker-compose -f docker-compose.test.yml up --build --abort-on-container-exit",
     "preversion": "npm run test",
     "version": "auto-changelog -p && git add CHANGELOG.md && git commit -m 'Update CHANGELOG.md'",
@@ -23,6 +25,7 @@
     "@types/jest": "^29.0.1",
     "@types/luxon": "^3.0.1",
     "@types/node": "^18.7.16",
+    "@types/nodemailer": "^6.4.6",
     "@typescript-eslint/eslint-plugin": "^5.36.2",
     "@typescript-eslint/parser": "^5.36.2",
     "auto-changelog": "^2.4.0",
@@ -40,6 +43,7 @@
     "fetch-cookie": "^2.1.0",
     "node-fetch": "^3.2.10",
     "node-html-parser": "^6.0.0",
+    "nodemailer": "^6.7.8",
     "sleep-promise": "^9.1.0"
   }
 }

@@ -1,9 +1,9 @@
+import { ErrorNotification } from './notify.js';
+
 export class Config {
   private static _primaryHost?: Host;
   private static _secondaryHosts?: Host[];
   private static _syncOptions?: SyncOptions;
-  private static _verboseMode?: boolean;
-  private static _runOnce?: boolean;
   private static _intervalMinutes?: number;
 
   static get primaryHost(): Host {
@@ -41,6 +41,10 @@ export class Config {
     return this._secondaryHosts;
   }
 
+  static get allHostBaseUrls(): string[] {
+    return [this.primaryHost, ...this.secondaryHosts].map((host) => host.baseUrl);
+  }
+
   static get syncOptions(): SyncOptions {
     this._syncOptions ??= {
       whitelist: process.env['SYNC_WHITELIST'] !== 'false',
@@ -61,15 +65,51 @@ export class Config {
   }
 
   static get verboseMode(): boolean {
-    this._verboseMode ??= process.env['VERBOSE'] === 'true';
+    return process.env['VERBOSE'] === 'true';
+  }
 
-    return this._verboseMode;
+  static get notifyOnSuccess(): boolean {
+    return process.env['NOTIFY_ON_SUCCESS'] === 'true';
+  }
+
+  static get notifyOnFailure(): boolean {
+    return process.env['NOTIFY_ON_FAILURE'] !== 'false';
+  }
+
+  static get notifyViaSmtp(): boolean {
+    return process.env['NOTIFY_VIA_SMTP'] === 'true';
+  }
+
+  static get smtpHost(): string {
+    return this.getRequiredEnv('SMTP_HOST');
+  }
+
+  static get smtpPort(): string {
+    return process.env['SMTP_PORT'] ?? '587';
+  }
+
+  static get smtpTls(): boolean {
+    return process.env['SMTP_TLS'] === 'true';
+  }
+
+  static get smtpUser(): string | undefined {
+    return process.env['SMTP_USER'];
+  }
+
+  static get smtpPassword(): string | undefined {
+    return process.env['SMTP_PASSWORD'];
+  }
+
+  static get smtpFrom(): string | undefined {
+    return process.env['SMTP_FROM'];
+  }
+
+  static get smtpTo(): string {
+    return this.getRequiredEnv('SMTP_TO');
   }
 
   static get runOnce(): boolean {
-    this._runOnce ??= process.env['RUN_ONCE'] === 'true';
-
-    return this._runOnce;
+    return process.env['RUN_ONCE'] === 'true';
   }
 
   static get intervalMinutes(): number {
@@ -92,15 +132,14 @@ export class Config {
     const value = process.env[variable];
 
     if (value === undefined)
-      throw new MissingEnvironmentVariableError(
-        `The environment variable ${variable} is required but not defined.`
-      );
+      throw new ErrorNotification({
+        message: `The environment variable ${variable} is required but not defined.`,
+        exit: true
+      });
 
     return value;
   }
 }
-
-export class MissingEnvironmentVariableError extends Error {}
 
 export interface SyncOptions {
   whitelist: boolean;

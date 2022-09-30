@@ -8,9 +8,10 @@ import nodeFetch, {
   Response
 } from 'node-fetch';
 import { parse } from 'node-html-parser';
-import { log } from './log.js';
-import { Config } from './config.js';
 import type { Host } from './config.js';
+import { Config } from './config.js';
+import { Log } from './log.js';
+import { ErrorNotification } from './notify.js';
 
 export class Client {
   private constructor(
@@ -20,7 +21,7 @@ export class Client {
   ) {}
 
   public static async create(host: Host): Promise<Client> {
-    log(chalk.yellow(`➡️ Signing in to ${host.baseUrl}...`));
+    Log.info(chalk.yellow(`➡️ Signing in to ${host.baseUrl}...`));
     const fetch = fetchCookie(nodeFetch);
 
     await fetch(`${host.baseUrl}/admin/index.php?login`, { method: 'GET' });
@@ -32,30 +33,48 @@ export class Client {
       method: 'POST'
     });
     if (response.status !== 200)
-      throw new LoginError(host, {
-        status: response.status,
-        responseBody: await response.text()
+      throw new ErrorNotification({
+        message: `Error: there was an error logging in to "${host.baseUrl}" - are you able to log in with the configured password?`,
+        verbose: {
+          host: host.baseUrl,
+          status: response.status,
+          responseBody: await response.text()
+        }
       });
 
     const token = this.parseResponseForToken(host, await response.text());
 
-    log(chalk.green(`✔️ Successfully signed in to ${host.baseUrl}!`));
+    Log.info(chalk.green(`✔️ Successfully signed in to ${host.baseUrl}!`));
     return new this(fetch, host, token);
   }
 
   private static parseResponseForToken(host: Host, responseBody: string): string {
     const root = parse(responseBody);
     const tokenDiv = root.querySelector('#token');
-    if (!tokenDiv) throw new NoTokenError(host, { responseBody: root.innerHTML });
+    if (!tokenDiv)
+      throw new ErrorNotification({
+        message: `Error: no token could be found while logging in to "${host.baseUrl}" - are you able to log in with the configured password?`,
+        verbose: {
+          host: host.baseUrl,
+          innerHtml: root.innerHTML
+        }
+      });
 
     const token = tokenDiv.innerText;
-    if (token.length != 44) throw new MalformedTokenError(host, { responseBody: token });
+    if (token.length != 44)
+      throw new ErrorNotification({
+        message: `Error: a token was found but could not be validated while logging in to "${host.baseUrl}" - are you able to log in with the configured password?`,
+        verbose: {
+          host: host.baseUrl,
+          token: token
+        }
+      });
 
     return token;
   }
 
   public async downloadBackup(): Promise<Blob> {
-    log(chalk.yellow(`➡️ Downloading backup from ${this.host.baseUrl}...`));
+    Log.info(chalk.yellow(`➡️ Downloading backup from ${this.host.baseUrl}...`));
     const form = this.generateForm();
 
     const response = await this.fetch(
@@ -69,19 +88,23 @@ export class Client {
       response.status !== 200 ||
       response.headers.get('content-type') !== 'application/gzip'
     )
-      throw new BackupDownloadError(this.host, {
-        status: response.status,
-        responseBody: await response.text()
+      throw new ErrorNotification({
+        message: `Error: failed to download backup from "${this.host.baseUrl}".`,
+        verbose: {
+          host: this.host.baseUrl,
+          status: response.status,
+          responseBody: await response.text()
+        }
       });
 
     const data = await response.arrayBuffer();
 
-    log(chalk.green(`✔️ Backup from ${this.host.baseUrl} completed!`));
+    Log.info(chalk.green(`✔️ Backup from ${this.host.baseUrl} completed!`));
     return new Blob([data]);
   }
 
-  public async uploadBackup(backup: Blob): Promise<void> {
-    log(chalk.yellow(`➡️ Uploading backup to ${this.host.baseUrl}...`));
+  public async uploadBackup(backup: Blob): Promise<true | never> {
+    Log.info(chalk.yellow(`➡️ Uploading backup to ${this.host.baseUrl}...`));
 
     const form = this.generateForm();
     form.append('action', 'in');
@@ -96,13 +119,19 @@ export class Client {
     );
     const text = await response.text();
     if (response.status !== 200 || !text.endsWith('OK'))
-      throw new BackupUploadError(this.host, {
-        status: response.status,
-        responseBody: text
+      throw new ErrorNotification({
+        message: `Error: failed to upload backup to "${this.host.baseUrl}".`,
+        verbose: {
+          host: this.host.baseUrl,
+          status: response.status,
+          responseBody: text
+        }
       });
 
-    log(chalk.green(`✔️ Backup uploaded to ${this.host.baseUrl}!`));
-    if (Config.verboseMode) log(`Result:\n${chalk.blue(text)}`);
+    Log.info(chalk.green(`✔️ Backup uploaded to ${this.host.baseUrl}!`));
+    Log.verbose(`Result:\n${chalk.blue(text)}`);
+
+    return true;
   }
 
   private generateForm(): typeof FormData.prototype {
@@ -125,24 +154,5 @@ export class Client {
     return form;
   }
 }
-
-class BaseError extends Error {
-  constructor(
-    host: Host,
-    { status, responseBody }: { status?: number; responseBody?: string }
-  ) {
-    let msg = `Host: ${host.baseUrl}`;
-    if (status) msg += `\n\nStatus Code:\n${status}`;
-    if (responseBody) msg += `\n\nResponse Body:\n${responseBody}`;
-
-    super(msg);
-  }
-}
-
-export class LoginError extends BaseError {}
-export class NoTokenError extends BaseError {}
-export class MalformedTokenError extends BaseError {}
-export class BackupDownloadError extends BaseError {}
-export class BackupUploadError extends BaseError {}
 
 type NodeFetchCookie = ReturnType<typeof fetchCookie<RequestInfo, RequestInit, Response>>;

@@ -11,7 +11,7 @@ Orbital Sync synchronizes multiple Pi-hole instances for high availability (HA) 
 other words, it performs a "backup" in the Pi-hole admin interface of your primary Pi-hole instance, and then "restores"
 that backup to any number of "secondary" Pi-holes also via their admin interface. As a result, it supports the
 synchronization of anything currently supported by Pi-hole's "teleporter". See
-[Environment Variables](#environment-variables) for the defaults.
+"[Configuration](#configuration)" for the defaults.
 
 ### Alternatives
 
@@ -36,14 +36,13 @@ Set up your secondary Pi-hole instance(s) just like you did your primary. Once t
 [![Docker Image Size](https://img.shields.io/docker/image-size/mattwebbio/orbital-sync/latest?logo=docker&style=for-the-badge)](https://hub.docker.com/r/mattwebbio/orbital-sync)
 
 The following is an example Docker Compose file for running this project. See the
-[environment variables](#environment-variables) section for more configuration options.
+[configuration](#configuration) section for more environment variables.
 
 ```yaml
 version: '3'
 services:
   orbital-sync:
-    image: mattwebbio/orbital-sync
-    restart: unless-stopped
+    image: mattwebbio/orbital-sync:1
     environment:
       PRIMARY_HOST_BASE_URL: 'https://pihole1.example.com'
       PRIMARY_HOST_PASSWORD: 'your_password1'
@@ -63,7 +62,7 @@ The Orbital Sync Docker image is published to both DockerHub and the GitHub Pack
 [![NPM Downloads](https://img.shields.io/npm/dt/orbital-sync?logo=npm&style=for-the-badge)](https://www.npmjs.com/package/orbital-sync)
 
 As with Docker, running with Node requires you export any required environment variables before running Orbital Sync. See the
-[environment variables](#environment-variables) section for more information.
+[configuration](#configuration) section for more information.
 
 ```shell
 npm install -g orbital-sync
@@ -77,9 +76,11 @@ they have to be on the same network.
 
 It is recommended you run this service with Docker.
 
-## Environment Variables
+## Configuration
 
-| Variable                      | Required | Default | Examples                                                        | Description                                                                                                                                                                                                  |
+### Sync Configuration
+
+| Environment Variable          | Required | Default | Examples                                                        | Description                                                                                                                                                                                                  |
 | ----------------------------- | -------- | ------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `PRIMARY_HOST_BASE_URL`       | Yes      | N/A     | `http://192.168.1.2` or `https://pihole.example.com`            | The base URL of your Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash.                                                                                             |
 | `PRIMARY_HOST_PASSWORD`       | Yes      | N/A     | `mypassword`                                                    | The password used to log in to the admin interface.                                                                                                                                                          |
@@ -99,12 +100,33 @@ It is recommended you run this service with Docker.
 | `SYNC_LOCALCNAMERECORDS`      | No       | `true`  | `true`/`false`                                                  | Copies local CNAME records                                                                                                                                                                                   |
 | `SYNC_FLUSHTABLES`            | No       | `true`  | `true`/`false`                                                  | Clears existing data on the secondary (copy target) Pi-hole                                                                                                                                                  |
 | `RUN_ONCE`                    | No       | `false` | `true`/`false`                                                  | By default, `orbital-sync` runs indefinitely until stopped. Setting `RUN_ONCE` to `true` forces it to exit immediately after the first sync.                                                                 |
-| `VERBOSE`                     | No       | `false` | `true`/`false`                                                  | Whether to output extra log output. Used for debugging.                                                                                                                                                      |
-| `HONEYBADGER_API_KEY`         | No       | N/A     | `hbp_xxxxxxxxxxxxxxxxxx`                                        | Get notifications to honeybadger.io when the process crashes for any reason by creating a new project and putting your API key here.                                                                         |
 
 Secondary hosts must be sequential (`SECONDARY_HOST_1_BASE_URL`, `SECONDARY_HOST_2_BASE_URL`,
 `SECONDARY_HOST_3_BASE_URL`, and so on) and start at number `1`. Any gaps (for example, `3` to `5` skipping `4`) will
 result in hosts after the gap being skipped in the sync process.
+
+### Notifications
+
+| Environment Variable  | Required | Default | Examples                 | Description                                                                                                                          |
+| --------------------- | -------- | ------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `NOTIFY_ON_SUCCESS`   | No       | `false` | `true`/`false`           | Send a notification if a sync completes successfully.                                                                                |
+| `NOTIFY_ON_FAILURE`   | No       | `true`  | `true`/`false`           | Send notifications if a sync fails for any reason.                                                                                   |
+| `NOTIFY_VIA_SMTP`     | No       | `false` | `true`/`false`           | Send notifications via email.                                                                                                        |
+| `HONEYBADGER_API_KEY` | No       | N/A     | `hbp_xxxxxxxxxxxxxxxxxx` | Get notifications to honeybadger.io when the process crashes for any reason by creating a new project and putting your API key here. |
+| `VERBOSE`             | No       | `false` | `true`/`false`           | Increases the verbosity of log output. Useful for debugging.                                                                         |
+| `TZ`                  | No       | N/A     | `America/Los_Angeles`    | The timezone for the timestamps displayed in log output.                                                                             |
+
+#### SMTP
+
+| Environment Variable | Required | Default | Examples                  | Description                                                                  |
+| -------------------- | -------- | ------- | ------------------------- | ---------------------------------------------------------------------------- |
+| `SMTP_HOST`          | Yes      | N/A     | `smtp.example.com`        | The SMTP server host.                                                        |
+| `SMTP_PORT`          | No       | `587`   | `25`/`587`/`465`          | The SMTP server port.                                                        |
+| `SMTP_TLS`           | No       | `false` | `true`/`false`            | Should usually be set to `true` if using port `465`. Otherwise, leave as is. |
+| `SMTP_USER`          | No       | N/A     | `orbitalsync@example.com` | The SMTP account username.                                                   |
+| `SMTP_PASSWORD`      | No       | N/A     | `yourpasswordhere`        | The SMTP account password.                                                   |
+| `SMTP_FROM`          | No       | N/A     | `orbitalsync@example.com` | The email address to send notifications from.                                |
+| `SMTP_TO`            | Yes      | N/A     | `you@example.com`         | The email address to send notifications to. Can be a comma-seperated list.   |
 
 ## Disclaimer
 

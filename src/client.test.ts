@@ -1,14 +1,8 @@
 import { jest } from '@jest/globals';
 import nock from 'nock';
 import { Blob } from 'node-fetch';
-import {
-  BackupDownloadError,
-  BackupUploadError,
-  Client,
-  LoginError,
-  MalformedTokenError,
-  NoTokenError
-} from './client';
+import { ErrorNotification } from './notify';
+import { Client } from './client';
 import type { Host } from './config';
 import { Config } from './config';
 
@@ -35,34 +29,62 @@ describe('Client', () => {
   });
 
   describe('create', () => {
-    test('should throw LoginError if status code is not ok', async () => {
+    test('should throw error if status code is not ok', async () => {
       const initialRequest = nock(host.baseUrl).get('/admin/index.php?login').reply(200);
       const loginRequest = nock(host.baseUrl).post('/admin/index.php?login').reply(500);
 
-      await expect(Client.create(host)).rejects.toBeInstanceOf(LoginError);
+      const expectError = expect(Client.create(host)).rejects;
 
+      await expectError.toBeInstanceOf(ErrorNotification);
+      await expectError.toMatchObject({
+        message:
+          'Error: there was an error logging in to "http://10.0.0.2" - are you able to log in with the configured password?',
+        verbose: {
+          host: 'http://10.0.0.2',
+          status: 500,
+          responseBody: ''
+        }
+      });
       initialRequest.done();
       loginRequest.done();
     });
 
-    test('should throw NoTokenError if no token is present', async () => {
+    test('should throw error if no token is present', async () => {
       const initialRequest = nock(host.baseUrl).get('/admin/index.php?login').reply(200);
       const loginRequest = nock(host.baseUrl).post('/admin/index.php?login').reply(200);
 
-      await expect(Client.create(host)).rejects.toBeInstanceOf(NoTokenError);
+      const expectError = expect(Client.create(host)).rejects;
 
+      await expectError.toBeInstanceOf(ErrorNotification);
+      await expectError.toMatchObject({
+        message:
+          'Error: no token could be found while logging in to "http://10.0.0.2" - are you able to log in with the configured password?',
+        verbose: {
+          host: 'http://10.0.0.2',
+          innerHtml: ''
+        }
+      });
       initialRequest.done();
       loginRequest.done();
     });
 
-    test('should throw MalformedTokenError if token is in incorrect format', async () => {
+    test('should throw error if token is in incorrect format', async () => {
       const initialRequest = nock(host.baseUrl).get('/admin/index.php?login').reply(200);
       const loginRequest = nock(host.baseUrl)
         .post('/admin/index.php?login')
         .reply(200, '<html><body><div id="token">abcdef</div></body></html>');
 
-      await expect(Client.create(host)).rejects.toBeInstanceOf(MalformedTokenError);
+      const expectError = expect(Client.create(host)).rejects;
 
+      await expectError.toBeInstanceOf(ErrorNotification);
+      await expectError.toMatchObject({
+        message:
+          'Error: a token was found but could not be validated while logging in to "http://10.0.0.2" - are you able to log in with the configured password?',
+        verbose: {
+          host: 'http://10.0.0.2',
+          token: 'abcdef'
+        }
+      });
       initialRequest.done();
       loginRequest.done();
     });
@@ -95,18 +117,38 @@ describe('Client', () => {
       teleporter.done();
     });
 
-    test('should throw BackupDownloadError if response is non-200', async () => {
+    test('should throw error if response is non-200', async () => {
       teleporter.post('/admin/scripts/pi-hole/php/teleporter.php').reply(500);
 
-      await expect(client.downloadBackup()).rejects.toBeInstanceOf(BackupDownloadError);
+      const expectError = expect(client.downloadBackup()).rejects;
+
+      await expectError.toBeInstanceOf(ErrorNotification);
+      await expectError.toMatchObject({
+        message: 'Error: failed to download backup from "http://10.0.0.2".',
+        verbose: {
+          host: 'http://10.0.0.2',
+          status: 500,
+          responseBody: ''
+        }
+      });
     });
 
-    test('should throw BackupDownloadError if content type is not gzip', async () => {
+    test('should throw error if content type is not gzip', async () => {
       teleporter
         .post('/admin/scripts/pi-hole/php/teleporter.php')
         .reply(200, undefined, { 'content-type': 'text/html' });
 
-      await expect(client.downloadBackup()).rejects.toBeInstanceOf(BackupDownloadError);
+      const expectError = expect(client.downloadBackup()).rejects;
+
+      await expectError.toBeInstanceOf(ErrorNotification);
+      await expectError.toMatchObject({
+        message: 'Error: failed to download backup from "http://10.0.0.2".',
+        verbose: {
+          host: 'http://10.0.0.2',
+          status: 200,
+          responseBody: ''
+        }
+      });
     });
 
     test('should return response data', async () => {
@@ -160,13 +202,33 @@ describe('Client', () => {
     test('should throw BackupUploadError if response is non-200', async () => {
       teleporter.post('/admin/scripts/pi-hole/php/teleporter.php').reply(500);
 
-      await expect(client.uploadBackup(backup)).rejects.toBeInstanceOf(BackupUploadError);
+      const expectError = expect(client.uploadBackup(backup)).rejects;
+
+      await expectError.toBeInstanceOf(ErrorNotification);
+      await expectError.toMatchObject({
+        message: 'Error: failed to upload backup to "http://10.0.0.2".',
+        verbose: {
+          host: 'http://10.0.0.2',
+          status: 500,
+          responseBody: ''
+        }
+      });
     });
 
     test('should throw BackupUploadError if response does not end with "OK"', async () => {
       teleporter.post('/admin/scripts/pi-hole/php/teleporter.php').reply(200);
 
-      await expect(client.uploadBackup(backup)).rejects.toBeInstanceOf(BackupUploadError);
+      const expectError = expect(client.uploadBackup(backup)).rejects;
+
+      await expectError.toBeInstanceOf(ErrorNotification);
+      await expectError.toMatchObject({
+        message: 'Error: failed to upload backup to "http://10.0.0.2".',
+        verbose: {
+          host: 'http://10.0.0.2',
+          status: 200,
+          responseBody: ''
+        }
+      });
     });
 
     test('should upload backup successfully', async () => {
@@ -192,8 +254,9 @@ describe('Client', () => {
             'OK'
         );
 
-      await client.uploadBackup(backup);
+      const result = await client.uploadBackup(backup);
 
+      expect(result).toStrictEqual(true);
       expect(syncOptions).toHaveBeenCalled();
       expect(requestBody).toContain(
         'name="token"\r\n\r\nabcdefgijklmnopqrstuvwxyzabcdefgijklmnopqrst'
