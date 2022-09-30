@@ -8,10 +8,10 @@ import nodeFetch, {
   Response
 } from 'node-fetch';
 import { parse } from 'node-html-parser';
-import { ErrorNotification } from './notify.js';
 import type { Host } from './config.js';
 import { Config } from './config.js';
 import { Log } from './log.js';
+import { ErrorNotification } from './notify.js';
 
 export class Client {
   private constructor(
@@ -129,7 +129,7 @@ export class Client {
       });
 
     Log.info(chalk.green(`✔️ Backup uploaded to ${this.host.baseUrl}!`));
-    if (Config.verboseMode) Log.info(`Result:\n${chalk.blue(text)}`);
+    Log.verbose(`Result:\n${chalk.blue(text)}`);
 
     return true;
   }

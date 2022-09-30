@@ -11,6 +11,7 @@ import { ErrorNotification, Notify } from './notify';
 describe('Notify', () => {
   const logInfo = jest.spyOn(Log, 'info');
   const logError = jest.spyOn(Log, 'error');
+  const logVerbose = jest.spyOn(Log, 'verbose');
   const sendMail = jest.fn();
   const createTransport = jest
     .spyOn(nodemailer, 'createTransport')
@@ -34,6 +35,7 @@ describe('Notify', () => {
     nock.disableNetConnect();
     logInfo.mockClear();
     logError.mockClear();
+    logVerbose.mockClear();
     sendMail.mockClear();
     processExit.mockClear();
     notifyViaSmtp.mockReset();
@@ -145,9 +147,10 @@ describe('Notify', () => {
         verbose: 'Example verbose context'
       });
 
-      expect(logError).toHaveBeenCalledTimes(2);
+      expect(logError).toHaveBeenCalledTimes(1);
       expect(logError).toHaveBeenCalledWith('⚠ Failure: Example failure message');
-      expect(logError).toHaveBeenCalledWith('Example verbose context');
+      expect(logVerbose).toHaveBeenCalledTimes(1);
+      expect(logVerbose).toHaveBeenCalledWith('Example verbose context');
     });
 
     test('should notify and exit', async () => {

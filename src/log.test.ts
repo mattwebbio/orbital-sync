@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
 import chalk from 'chalk';
+import { Config } from './config';
 import { Log } from './log';
 
 describe('Log', () => {
@@ -25,6 +26,35 @@ describe('Log', () => {
       expect(consoleLog).toHaveBeenCalledWith(
         `${chalk.dim('8/27/2022, 8:17:31 AM')}: Hello world`
       );
+    });
+  });
+
+  describe('verbose', () => {
+    test('should not log if not verboseMode', () => {
+      const logInfo = jest.spyOn(Log, 'info');
+
+      Log.verbose('Hello world');
+
+      expect(logInfo).not.toHaveBeenCalled();
+    });
+
+    test('should not log if empty', () => {
+      jest.spyOn(Config, 'verboseMode', 'get').mockReturnValue(true);
+      const logInfo = jest.spyOn(Log, 'info');
+
+      Log.verbose(undefined);
+
+      expect(logInfo).not.toHaveBeenCalled();
+    });
+
+    test('should log if verboseMode', () => {
+      jest.spyOn(Config, 'verboseMode', 'get').mockReturnValue(true);
+      const logInfo = jest.spyOn(Log, 'info');
+
+      Log.verbose('Hello world');
+
+      expect(logInfo).toHaveBeenCalledTimes(1);
+      expect(logInfo).toHaveBeenCalledWith('Hello world');
     });
   });
 

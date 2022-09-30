@@ -47,7 +47,7 @@ export class Notify {
     }
 
     Log.info(`✔️ Success: ${message}`);
-    if (Config.verboseMode && verbose) Log.info(verbose);
+    Log.verbose(verbose);
 
     if (sendNotification ?? Config.notifyOnSuccess) {
       await this.dispatch('✔️ Success', message);
@@ -63,7 +63,7 @@ export class Notify {
     exit
   }: NotificationInterface): Promise<void> {
     Log.error(`⚠ Failure: ${message}`);
-    if (Config.verboseMode && verbose) Log.error(verbose);
+    Log.verbose(verbose);
 
     const errors = this.errorQueue.map((notif) => notif.message);
     this.errorQueue = [];
@@ -85,7 +85,7 @@ export class Notify {
 
   static queueError(error: NotificationInterface): void {
     Log.error(`⚠ Error: ${error.message}`);
-    if (Config.verboseMode && error.verbose) Log.error(error.verbose);
+    Log.verbose(error.verbose);
 
     this.errorQueue.push(error);
   }
@@ -107,7 +107,7 @@ export class Notify {
   private static async dispatchSmtp(subject: string, contents: string): Promise<void> {
     try {
       if (Config.notifyViaSmtp && this.smtpClient) {
-        if (Config.verboseMode) Log.info('➡️ Dispatching notification email...');
+        Log.verbose('➡️ Dispatching notification email...');
 
         await this.smtpClient.sendMail({
           from: Config.smtpFrom ? `"Orbital Sync" <${Config.smtpFrom}>` : undefined,
@@ -120,7 +120,7 @@ export class Notify {
           )}</p>`
         });
 
-        if (Config.verboseMode) Log.info('✔️ Notification email dispatched.');
+        Log.verbose('✔️ Notification email dispatched.');
       }
     } catch (e) {
       const error: NotificationInterface = {
@@ -135,7 +135,7 @@ export class Notify {
 
   private static get smtpClient(): nodemailer.Transporter | undefined {
     if (!this._smtpClient) {
-      if (Config.verboseMode) Log.info('➡️ Creating SMTP client...');
+      Log.verbose('➡️ Creating SMTP client...');
 
       this._smtpClient = nodemailer.createTransport({
         host: Config.smtpHost,
@@ -147,7 +147,7 @@ export class Notify {
         }
       });
 
-      if (Config.verboseMode) Log.info('✔️ SMTP client created successfully.');
+      Log.verbose('✔️ SMTP client created successfully.');
     }
 
     return this._smtpClient;
