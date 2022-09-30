@@ -312,19 +312,19 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@honeybadger-io/core@^4.1.1":
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@honeybadger-io/core/-/core-4.1.1.tgz#4cffb27289fd7281afc92fa24eecc861d4ca2615"
-  integrity sha512-gs/2tGD1G4y5DdmvOBlx0gCGm3xJdudENpgM1oXMSIurRd4+rzafKhQGljCLoq9ufAPs7Cm9ISuq0bkY81E/Kg==
+"@honeybadger-io/core@^4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@honeybadger-io/core/-/core-4.3.0.tgz#d10b7d6110063d92579f2bddf70caf65b232260b"
+  integrity sha512-bma9gilEJBwGLfcANOpHpK0a7j+Lhjre6Ao0jX/OmACZMWj5sbNYZ3maqiH5b2qX4mlg6/kNPkywERxhAWkuiw==
   dependencies:
     stacktrace-parser "^0.1.10"
 
-"@honeybadger-io/js@^4.1.3":
-  version "4.1.3"
-  resolved "https://registry.yarnpkg.com/@honeybadger-io/js/-/js-4.1.3.tgz#6d550cb035f4d6b6de19a2a81eccf1c1095393e0"
-  integrity sha512-wTKcRm8FPrz8y0DGOfn94cbNUKNk/d7H5l3nqcpfCjHgdp91cprXpY0Qk+4WAZ4o/v3MfOFGKqaqRHuwT7IWEg==
+"@honeybadger-io/js@^4.3.1":
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/@honeybadger-io/js/-/js-4.3.1.tgz#d7dd98099ea2597a148726b5cd9f310d066bd148"
+  integrity sha512-CetOrYHO4KziNGFxXYcvI/a09GGDbLBGXgymW+pslD6YrB6G03bVNvmSn55BhTQ92qnyH0KrJX2U4zex8uiVKQ==
   dependencies:
-    "@honeybadger-io/core" "^4.1.1"
+    "@honeybadger-io/core" "^4.3.0"
     "@types/aws-lambda" "^8.10.89"
 
 "@humanwhocodes/config-array@^0.10.4":
@@ -750,6 +750,13 @@
   version "18.7.16"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.7.16.tgz#0eb3cce1e37c79619943d2fd903919fc30850601"
   integrity sha512-EQHhixfu+mkqHMZl1R2Ovuvn47PUw18azMJOTwSZr9/fhzHNGXAJ0ma0dayRVchprpCj0Kc1K1xKoWaATWF1qg==
+
+"@types/nodemailer@^6.4.6":
+  version "6.4.6"
+  resolved "https://registry.yarnpkg.com/@types/nodemailer/-/nodemailer-6.4.6.tgz#ce21b4b474a08f672f182e15982b7945dde1f288"
+  integrity sha512-pD6fL5GQtUKvD2WnPmg5bC2e8kWCAPDwMPmHe/ohQbW+Dy0EcHgZ2oCSuPlWNqk74LS5BVMig1SymQbFMPPK3w==
+  dependencies:
+    "@types/node" "*"
 
 "@types/prettier@^2.1.5":
   version "2.7.0"
@@ -2454,6 +2461,11 @@ node-releases@^2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.6.tgz#8a7088c63a55e493845683ebf3c828d8c51c5503"
   integrity sha512-PiVXnNuFm5+iYkLBNeq5211hvO38y63T0i2KKh2KnUs3RpzJ+JtODFjkD8yjLwnDkTYF1eKXheUwdssR+NRZdg==
+
+nodemailer@^6.7.8:
+  version "6.7.8"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.7.8.tgz#9f1af9911314960c0b889079e1754e8d9e3f740a"
+  integrity sha512-2zaTFGqZixVmTxpJRCFC+Vk5eGRd/fYtvIR+dl5u9QXLTQWGIf48x/JXvo58g9sa0bU6To04XUv554Paykum3g==
 
 normalize-path@^3.0.0:
   version "3.0.0"
