@@ -110,26 +110,53 @@ export class Client {
     form.append('action', 'in');
     form.append('zip_file', backup, 'backup.tar.gz');
 
-    const response = await this.fetch(
+    const uploadResponse = await this.fetch(
       `${this.host.baseUrl}/admin/scripts/pi-hole/php/teleporter.php`,
       {
         body: form,
         method: 'POST'
       }
     );
-    const text = await response.text();
-    if (response.status !== 200 || !text.endsWith('OK'))
+    const uploadText = await uploadResponse.text();
+    if (uploadResponse.status !== 200 || !uploadText.endsWith('OK'))
       throw new ErrorNotification({
-        message: `Error: failed to upload backup to "${this.host.baseUrl}".`,
+        message: `Failed to upload backup to "${this.host.baseUrl}".`,
         verbose: {
           host: this.host.baseUrl,
-          status: response.status,
-          responseBody: text
+          status: uploadResponse.status,
+          responseBody: uploadText
         }
       });
 
     Log.info(chalk.green(`✔️ Backup uploaded to ${this.host.baseUrl}!`));
-    Log.verbose(`Result:\n${chalk.blue(text)}`);
+    Log.verbose(`Result:\n${chalk.blue(uploadText)}`);
+
+    if (Config.updateGravity) {
+      Log.info(chalk.yellow(`➡️ Updating gravity on ${this.host.baseUrl}...`));
+      const gravityUpdateResponse = await this.fetch(
+        `${this.host.baseUrl}/admin/scripts/pi-hole/php/gravity.sh.php`,
+        { method: 'GET' }
+      );
+
+      const updateText = (await gravityUpdateResponse.text())
+        .replaceAll('\ndata:', '')
+        .trim();
+      if (
+        gravityUpdateResponse.status !== 200 ||
+        !updateText.endsWith('Pi-hole blocking is enabled')
+      )
+        throw new ErrorNotification({
+          message: `Failed updating gravity on "${this.host.baseUrl}".`,
+          verbose: {
+            host: this.host.baseUrl,
+            status: gravityUpdateResponse.status,
+            eventStream: updateText
+          }
+        });
+
+      Log.info(chalk.green(`✔️ Gravity updated on ${this.host.baseUrl}!`));
+      Log.verbose(`Result:\n${chalk.blue(updateText)}`);
+    }
 
     return true;
   }
