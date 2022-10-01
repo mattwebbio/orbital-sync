@@ -80,7 +80,7 @@ export class Notify {
       await this.dispatch(`⚠ Failed`, formatted);
     }
 
-    if (exit) process.exit(1);
+    if (exit || Config.runOnce) process.exit(1);
   }
 
   static queueError(error: NotificationInterface): void {
