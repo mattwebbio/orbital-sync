@@ -34,7 +34,7 @@ export class Client {
     });
     if (response.status !== 200)
       throw new ErrorNotification({
-        message: `Error: there was an error logging in to "${host.baseUrl}" - are you able to log in with the configured password?`,
+        message: `There was an error logging in to "${host.baseUrl}" - are you able to log in with the configured password?`,
         verbose: {
           host: host.baseUrl,
           status: response.status,
@@ -53,7 +53,7 @@ export class Client {
     const tokenDiv = root.querySelector('#token');
     if (!tokenDiv)
       throw new ErrorNotification({
-        message: `Error: no token could be found while logging in to "${host.baseUrl}" - are you able to log in with the configured password?`,
+        message: `No token could be found while logging in to "${host.baseUrl}" - are you able to log in with the configured password?`,
         verbose: {
           host: host.baseUrl,
           innerHtml: root.innerHTML
@@ -63,7 +63,7 @@ export class Client {
     const token = tokenDiv.innerText;
     if (token.length != 44)
       throw new ErrorNotification({
-        message: `Error: a token was found but could not be validated while logging in to "${host.baseUrl}" - are you able to log in with the configured password?`,
+        message: `A token was found but could not be validated while logging in to "${host.baseUrl}" - are you able to log in with the configured password?`,
         verbose: {
           host: host.baseUrl,
           token: token
@@ -89,7 +89,7 @@ export class Client {
       response.headers.get('content-type') !== 'application/gzip'
     )
       throw new ErrorNotification({
-        message: `Error: failed to download backup from "${this.host.baseUrl}".`,
+        message: `Failed to download backup from "${this.host.baseUrl}".`,
         verbose: {
           host: this.host.baseUrl,
           status: response.status,
