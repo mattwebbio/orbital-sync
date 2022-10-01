@@ -18,6 +18,15 @@ services:
       interval: 10s
       timeout: 10s
       retries: 5
+  tertiary:
+    image: pihole/pihole:latest
+    environment:
+      WEBPASSWORD: tertiary_password1
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://tertiary/admin/']
+      interval: 10s
+      timeout: 10s
+      retries: 5
   orbital-sync:
     build:
       context: .
@@ -26,9 +35,14 @@ services:
         condition: service_healthy
       secondary:
         condition: service_healthy
+      tertiary:
+        condition: service_healthy
     environment:
       PRIMARY_HOST_BASE_URL: 'http://primary'
       PRIMARY_HOST_PASSWORD: 'primary_password1'
       SECONDARY_HOST_1_BASE_URL: 'http://secondary'
       SECONDARY_HOST_1_PASSWORD: 'secondary_password1'
+      SECONDARY_HOST_2_BASE_URL: 'http://tertiary'
+      SECONDARY_HOST_2_PASSWORD: 'tertiary_password1'
       RUN_ONCE: 'true'
+      VERBOSE: 'true'
