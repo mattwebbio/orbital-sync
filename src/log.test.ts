@@ -10,6 +10,7 @@ describe('Log', () => {
 
   afterEach(() => {
     jest.resetModules();
+    jest.restoreAllMocks();
   });
 
   afterAll(() => {
@@ -25,6 +26,18 @@ describe('Log', () => {
       expect(consoleLog).toHaveBeenCalledTimes(1);
       expect(consoleLog).toHaveBeenCalledWith(
         `${chalk.dim('8/27/2022, 8:17:31 AM')}: Hello world`
+      );
+    });
+
+    test('should log stringified', () => {
+      const consoleLog = jest.spyOn(console, 'log');
+
+      Log.info({ foo: 'bar' });
+
+      expect(consoleLog).toHaveBeenCalledTimes(1);
+      expect(consoleLog).toHaveBeenCalledWith(
+        // eslint-disable-next-line no-useless-escape
+        `${chalk.dim('8/27/2022, 8:17:31 AM')}: {\"foo\":\"bar\"}`
       );
     });
   });
