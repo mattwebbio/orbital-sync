@@ -1,10 +1,10 @@
 import { jest } from '@jest/globals';
 import nock from 'nock';
 import { Blob } from 'node-fetch';
-import { ErrorNotification } from './notify';
 import { Client } from './client';
 import type { Host } from './config';
 import { Config } from './config';
+import { ErrorNotification } from './notify';
 
 describe('Client', () => {
   const host: Host = {
@@ -38,7 +38,7 @@ describe('Client', () => {
       await expectError.toBeInstanceOf(ErrorNotification);
       await expectError.toMatchObject({
         message:
-          'Error: there was an error logging in to "http://10.0.0.2" - are you able to log in with the configured password?',
+          'There was an error logging in to "http://10.0.0.2" - are you able to log in with the configured password?',
         verbose: {
           host: 'http://10.0.0.2',
           status: 500,
@@ -58,7 +58,7 @@ describe('Client', () => {
       await expectError.toBeInstanceOf(ErrorNotification);
       await expectError.toMatchObject({
         message:
-          'Error: no token could be found while logging in to "http://10.0.0.2" - are you able to log in with the configured password?',
+          'No token could be found while logging in to "http://10.0.0.2" - are you able to log in with the configured password?',
         verbose: {
           host: 'http://10.0.0.2',
           innerHtml: ''
@@ -79,7 +79,7 @@ describe('Client', () => {
       await expectError.toBeInstanceOf(ErrorNotification);
       await expectError.toMatchObject({
         message:
-          'Error: a token was found but could not be validated while logging in to "http://10.0.0.2" - are you able to log in with the configured password?',
+          'A token was found but could not be validated while logging in to "http://10.0.0.2" - are you able to log in with the configured password?',
         verbose: {
           host: 'http://10.0.0.2',
           token: 'abcdef'
@@ -124,7 +124,7 @@ describe('Client', () => {
 
       await expectError.toBeInstanceOf(ErrorNotification);
       await expectError.toMatchObject({
-        message: 'Error: failed to download backup from "http://10.0.0.2".',
+        message: 'Failed to download backup from "http://10.0.0.2".',
         verbose: {
           host: 'http://10.0.0.2',
           status: 500,
@@ -142,7 +142,7 @@ describe('Client', () => {
 
       await expectError.toBeInstanceOf(ErrorNotification);
       await expectError.toMatchObject({
-        message: 'Error: failed to download backup from "http://10.0.0.2".',
+        message: 'Failed to download backup from "http://10.0.0.2".',
         verbose: {
           host: 'http://10.0.0.2',
           status: 200,
@@ -199,14 +199,14 @@ describe('Client', () => {
       teleporter.done();
     });
 
-    test('should throw BackupUploadError if response is non-200', async () => {
+    test('should throw error if response is non-200', async () => {
       teleporter.post('/admin/scripts/pi-hole/php/teleporter.php').reply(500);
 
       const expectError = expect(client.uploadBackup(backup)).rejects;
 
       await expectError.toBeInstanceOf(ErrorNotification);
       await expectError.toMatchObject({
-        message: 'Error: failed to upload backup to "http://10.0.0.2".',
+        message: 'Failed to upload backup to "http://10.0.0.2".',
         verbose: {
           host: 'http://10.0.0.2',
           status: 500,
@@ -215,14 +215,14 @@ describe('Client', () => {
       });
     });
 
-    test('should throw BackupUploadError if response does not end with "OK"', async () => {
+    test('should throw error if response does not end with "OK"', async () => {
       teleporter.post('/admin/scripts/pi-hole/php/teleporter.php').reply(200);
 
       const expectError = expect(client.uploadBackup(backup)).rejects;
 
       await expectError.toBeInstanceOf(ErrorNotification);
       await expectError.toMatchObject({
-        message: 'Error: failed to upload backup to "http://10.0.0.2".',
+        message: 'Failed to upload backup to "http://10.0.0.2".',
         verbose: {
           host: 'http://10.0.0.2',
           status: 200,
