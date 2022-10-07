@@ -238,6 +238,10 @@ describe('Config', () => {
     });
   });
 
+  describe('updateGravity', () => {
+    testToHaveDefaultAndOverride('updateGravity', true, 'UPDATE_GRAVITY');
+  });
+
   describe('verboseMode', () => {
     testToHaveDefaultAndOverride('verboseMode', false, 'VERBOSE');
   });

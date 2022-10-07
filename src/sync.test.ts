@@ -15,6 +15,7 @@ describe('entrypoint', () => {
   let notifyOfFailure: ReturnType<typeof jest.spyOn>;
   let notifyQueueError: ReturnType<typeof jest.spyOn>;
   let notifyOfSuccess: ReturnType<typeof jest.spyOn>;
+  let processExit: ReturnType<typeof jest.spyOn>;
   let primaryHostClient: Client;
   let secondaryHostClient1: Client;
   let secondaryHostClient2: Client;
@@ -59,6 +60,7 @@ describe('entrypoint', () => {
     secondaryTwoResult?: Promise<boolean | never>;
   } = {}) => {
     jest.spyOn(Config, 'runOnce', 'get').mockReturnValue(true);
+    processExit = jest.spyOn(process, 'exit').mockReturnValue(undefined as never);
     primaryHost = jest
       .spyOn(Config, 'primaryHost', 'get')
       .mockReturnValue(primaryHostValue);
@@ -110,6 +112,7 @@ describe('entrypoint', () => {
     expect(notifyOfSuccess).toHaveBeenCalledWith({
       message: '2/2 hosts synced.'
     });
+    expect(processExit).not.toHaveBeenCalled();
   });
 
   test('should perform sync and partially succeed', async () => {
@@ -132,6 +135,7 @@ describe('entrypoint', () => {
       sendNotification: true,
       message: '1/2 hosts synced.'
     });
+    expect(processExit).toHaveBeenCalledTimes(1);
   });
 
   test('should perform sync and fail', async () => {
@@ -161,6 +165,7 @@ describe('entrypoint', () => {
     expect(notifyOfFailure).toHaveBeenCalledWith({
       message: '0/2 hosts synced.'
     });
+    expect(processExit).toHaveBeenCalledTimes(1);
   });
 
   test('should perform sync and fail', async () => {
@@ -182,6 +187,7 @@ describe('entrypoint', () => {
     );
     expect(secondaryHostClient1.uploadBackup).not.toHaveBeenCalled();
     expect(secondaryHostClient2.uploadBackup).not.toHaveBeenCalled();
+    expect(processExit).toHaveBeenCalledTimes(1);
   });
 
   test('should wait if `runOnce` is false', async () => {
@@ -204,5 +210,6 @@ describe('entrypoint', () => {
     expect(notifyOfSuccess).toHaveBeenCalledWith({
       message: '2/2 hosts synced.'
     });
+    expect(processExit).not.toHaveBeenCalled();
   });
 });

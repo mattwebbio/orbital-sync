@@ -64,6 +64,10 @@ export class Config {
     return this._syncOptions;
   }
 
+  static get updateGravity(): boolean {
+    return process.env['UPDATE_GRAVITY'] !== 'false';
+  }
+
   static get verboseMode(): boolean {
     return process.env['VERBOSE'] === 'true';
   }
