@@ -26,7 +26,7 @@
     "@types/luxon": "^3.0.1",
     "@types/node": "^18.8.0",
     "@types/nodemailer": "^6.4.6",
-    "@typescript-eslint/eslint-plugin": "^5.38.1",
+    "@typescript-eslint/eslint-plugin": "^5.40.0",
     "@typescript-eslint/parser": "^5.38.1",
     "auto-changelog": "^2.4.0",
     "eslint": "^8.24.0",
