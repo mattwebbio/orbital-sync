@@ -10,9 +10,9 @@ describe('Client', () => {
   const host = new Host('http://10.0.0.2', 'mypassword');
 
   const createClient = async () => {
-    nock(host.fullUrl).get('/admin/index.php?login').reply(200);
+    nock(host.fullUrl).get('/index.php?login').reply(200);
     nock(host.fullUrl)
-      .post('/admin/index.php?login')
+      .post('/index.php?login')
       .reply(
         200,
         '<html><body><div id="token">abcdefgijklmnopqrstuvwxyzabcdefgijklmnopqrst</div></body></html>'
@@ -27,8 +27,8 @@ describe('Client', () => {
 
   describe('create', () => {
     test('should throw error if status code is not ok', async () => {
-      const initialRequest = nock(host.fullUrl).get('/admin/index.php?login').reply(200);
-      const loginRequest = nock(host.fullUrl).post('/admin/index.php?login').reply(500);
+      const initialRequest = nock(host.fullUrl).get('/index.php?login').reply(200);
+      const loginRequest = nock(host.fullUrl).post('/index.php?login').reply(500);
 
       const expectError = expect(Client.create(host)).rejects;
 
@@ -47,8 +47,8 @@ describe('Client', () => {
     });
 
     test('should throw error if no token is present', async () => {
-      const initialRequest = nock(host.fullUrl).get('/admin/index.php?login').reply(200);
-      const loginRequest = nock(host.fullUrl).post('/admin/index.php?login').reply(200);
+      const initialRequest = nock(host.fullUrl).get('/index.php?login').reply(200);
+      const loginRequest = nock(host.fullUrl).post('/index.php?login').reply(200);
 
       const expectError = expect(Client.create(host)).rejects;
 
@@ -66,9 +66,9 @@ describe('Client', () => {
     });
 
     test('should throw error if token is in incorrect format', async () => {
-      const initialRequest = nock(host.fullUrl).get('/admin/index.php?login').reply(200);
+      const initialRequest = nock(host.fullUrl).get('/index.php?login').reply(200);
       const loginRequest = nock(host.fullUrl)
-        .post('/admin/index.php?login')
+        .post('/index.php?login')
         .reply(200, '<html><body><div id="token">abcdef</div></body></html>');
 
       const expectError = expect(Client.create(host)).rejects;
@@ -87,9 +87,9 @@ describe('Client', () => {
     });
 
     test('should return client', async () => {
-      const initialRequest = nock(host.fullUrl).get('/admin/index.php?login').reply(200);
+      const initialRequest = nock(host.fullUrl).get('/index.php?login').reply(200);
       const loginRequest = nock(host.fullUrl)
-        .post('/admin/index.php?login')
+        .post('/index.php?login')
         .reply(
           200,
           '<html><body><div id="token">abcdefgijklmnopqrstuvwxyzabcdefgijklmnopqrst</div></body></html>'
@@ -115,7 +115,7 @@ describe('Client', () => {
     });
 
     test('should throw error if response is non-200', async () => {
-      teleporter.post('/admin/scripts/pi-hole/php/teleporter.php').reply(500);
+      teleporter.post('/scripts/pi-hole/php/teleporter.php').reply(500);
 
       const expectError = expect(client.downloadBackup()).rejects;
 
@@ -132,7 +132,7 @@ describe('Client', () => {
 
     test('should throw error if content type is not gzip', async () => {
       teleporter
-        .post('/admin/scripts/pi-hole/php/teleporter.php')
+        .post('/scripts/pi-hole/php/teleporter.php')
         .reply(200, undefined, { 'content-type': 'text/html' });
 
       const expectError = expect(client.downloadBackup()).rejects;
@@ -153,7 +153,7 @@ describe('Client', () => {
 
       let requestBody = '';
       teleporter
-        .post('/admin/scripts/pi-hole/php/teleporter.php', (body) => (requestBody = body))
+        .post('/scripts/pi-hole/php/teleporter.php', (body) => (requestBody = body))
         .reply(200, undefined, { 'content-type': 'application/gzip' });
 
       const backup = await client.downloadBackup();
@@ -197,7 +197,7 @@ describe('Client', () => {
     });
 
     test('should throw error if response is non-200', async () => {
-      teleporter.post('/admin/scripts/pi-hole/php/teleporter.php').reply(500);
+      teleporter.post('/scripts/pi-hole/php/teleporter.php').reply(500);
 
       const expectError = expect(client.uploadBackup(backup)).rejects;
 
@@ -213,7 +213,7 @@ describe('Client', () => {
     });
 
     test('should throw error if response does not end with "OK"', async () => {
-      teleporter.post('/admin/scripts/pi-hole/php/teleporter.php').reply(200);
+      teleporter.post('/scripts/pi-hole/php/teleporter.php').reply(200);
 
       const expectError = expect(client.uploadBackup(backup)).rejects;
 
@@ -230,7 +230,7 @@ describe('Client', () => {
 
     test('should throw error if gravity update fails', async () => {
       teleporter
-        .post('/admin/scripts/pi-hole/php/teleporter.php')
+        .post('/scripts/pi-hole/php/teleporter.php')
         .reply(
           200,
           'Processed adlist (14 entries)<br>\n' +
@@ -248,7 +248,7 @@ describe('Client', () => {
           'OK'
         );
       teleporter
-        .get('/admin/scripts/pi-hole/php/gravity.sh.php', undefined)
+        .get('/scripts/pi-hole/php/gravity.sh.php', undefined)
         .reply(200, '\ndata: \n\ndata:      [✓] TCP (IPv6)\ndata: \ndata: \n\ndata:');
 
       const expectError = expect(client.uploadBackup(backup)).rejects;
@@ -269,7 +269,7 @@ describe('Client', () => {
 
       let requestBody = '';
       teleporter
-        .post('/admin/scripts/pi-hole/php/teleporter.php', (body) => (requestBody = body))
+        .post('/scripts/pi-hole/php/teleporter.php', (body) => (requestBody = body))
         .reply(
           200,
           'Processed adlist (14 entries)<br>\n' +
@@ -287,7 +287,7 @@ describe('Client', () => {
           'OK'
         );
       teleporter
-        .get('/admin/scripts/pi-hole/php/gravity.sh.php', undefined)
+        .get('/scripts/pi-hole/php/gravity.sh.php', undefined)
         .reply(
           200,
           '\ndata: \n\ndata:      [✓] TCP (IPv6)\ndata: \ndata: \n\ndata:   [✓] Pi-hole blocking is enabled\ndata: \n\ndata:'
@@ -329,7 +329,7 @@ describe('Client', () => {
 
       let requestBody = '';
       teleporter
-        .post('/admin/scripts/pi-hole/php/teleporter.php', (body) => (requestBody = body))
+        .post('/scripts/pi-hole/php/teleporter.php', (body) => (requestBody = body))
         .reply(
           200,
           'Processed adlist (14 entries)<br>\n' +
