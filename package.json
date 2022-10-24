@@ -24,7 +24,7 @@
     "@tsconfig/node18-strictest-esm": "^1.0.1",
     "@types/jest": "^29.1.1",
     "@types/luxon": "^3.0.1",
-    "@types/node": "^18.8.0",
+    "@types/node": "^18.11.4",
     "@types/nodemailer": "^6.4.6",
     "@typescript-eslint/eslint-plugin": "^5.38.1",
     "@typescript-eslint/parser": "^5.38.1",
