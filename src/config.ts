@@ -173,19 +173,18 @@ export class Host {
   password: string;
 
   constructor(baseUrl: string, password: string, path?: string) {
-    this.baseUrl = baseUrl;
+    this.baseUrl = this.trimTrailingSlash(baseUrl) ?? baseUrl;
     this.password = password;
-
-    if (path && path.endsWith('/')) {
-      path = path.slice(0, path.length - 1);
-    }
 
     if (path && !path.startsWith('/')) {
       path = '/' + path;
     }
 
-    this.path = path ?? '/admin';
-
+    this.path = this.trimTrailingSlash(path) ?? '/admin';
     this.fullUrl = this.baseUrl + this.path;
+  }
+
+  private trimTrailingSlash(url: string | undefined): string | undefined {
+    return url?.endsWith('/') ? url.slice(0, url.length - 1) : url;
   }
 }

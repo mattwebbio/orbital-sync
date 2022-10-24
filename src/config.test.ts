@@ -161,6 +161,16 @@ describe('Config', () => {
 
       expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
     });
+
+    test('should manage double slash', () => {
+      process.env['PRIMARY_HOST_BASE_URL'] = 'http://10.0.0.2/';
+      process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword';
+      process.env['PRIMARY_HOST_PATH'] = '/mypath';
+
+      const expected = 'http://10.0.0.2/mypath';
+
+      expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
+    });
   });
 
   describe('secondaryHosts', () => {
@@ -217,6 +227,7 @@ describe('Config', () => {
       process.env['SECONDARY_HOST_3_PASSWORD'] = 'mypassword3';
       process.env['SECONDARY_HOST_3_PATH'] = '/mypath';
       process.env['SECONDARY_HOST_5_BASE_URL'] = 'http://10.0.0.7';
+      process.env['SECONDARY_HOST_5_PASSWORD'] = 'mypassword4';
       process.env['SECONDARY_HOST_5_PATH'] = '/mypath';
 
       expect(Config.secondaryHosts).toEqual([
