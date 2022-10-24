@@ -21,11 +21,11 @@ export class Client {
   ) { }
 
   public static async create(host: Host): Promise<Client> {
-    Log.info(chalk.yellow(`➡️ Signing in to ${host.fullUrl}...`));
+    Log.info(chalk.yellow(`➡️ Signing in to ${host.baseUrl}...`));
     const fetch = fetchCookie(nodeFetch);
 
-    await fetch(`${host.fullUrl}/admin/index.php?login`, { method: 'GET' });
-    const response = await fetch(`${host.fullUrl}/admin/index.php?login`, {
+    await fetch(`${host.fullUrl}/index.php?login`, { method: 'GET' });
+    const response = await fetch(`${host.fullUrl}/index.php?login`, {
       headers: {
         'content-type': 'application/x-www-form-urlencoded'
       },
@@ -34,9 +34,10 @@ export class Client {
     });
     if (response.status !== 200)
       throw new ErrorNotification({
-        message: `There was an error logging in to "${host.fullUrl}" - are you able to log in with the configured password?`,
+        message: `There was an error logging in to "${host.baseUrl}" - are you able to log in with the configured password?`,
         verbose: {
-          host: host.fullUrl,
+          host: host.baseUrl,
+          path: host.path,
           status: response.status,
           responseBody: await response.text()
         }
@@ -44,7 +45,7 @@ export class Client {
 
     const token = this.parseResponseForToken(host, await response.text());
 
-    Log.info(chalk.green(`✔️ Successfully signed in to ${host.fullUrl}!`));
+    Log.info(chalk.green(`✔️ Successfully signed in to ${host.baseUrl}!`));
     return new this(fetch, host, token);
   }
 
@@ -53,9 +54,10 @@ export class Client {
     const tokenDiv = root.querySelector('#token');
     if (!tokenDiv)
       throw new ErrorNotification({
-        message: `No token could be found while logging in to "${host.fullUrl}" - are you able to log in with the configured password?`,
+        message: `No token could be found while logging in to "${host.baseUrl}" - are you able to log in with the configured password?`,
         verbose: {
-          host: host.fullUrl,
+          host: host.baseUrl,
+          path: host.path,
           innerHtml: root.innerHTML
         }
       });
@@ -63,9 +65,10 @@ export class Client {
     const token = tokenDiv.innerText;
     if (token.length != 44)
       throw new ErrorNotification({
-        message: `A token was found but could not be validated while logging in to "${host.fullUrl}" - are you able to log in with the configured password?`,
+        message: `A token was found but could not be validated while logging in to "${host.baseUrl}" - are you able to log in with the configured password?`,
         verbose: {
-          host: host.fullUrl,
+          host: host.baseUrl,
+          path: host.path,
           token: token
         }
       });
@@ -74,11 +77,11 @@ export class Client {
   }
 
   public async downloadBackup(): Promise<Blob> {
-    Log.info(chalk.yellow(`➡️ Downloading backup from ${this.host.fullUrl}...`));
+    Log.info(chalk.yellow(`➡️ Downloading backup from ${this.host.baseUrl}...`));
     const form = this.generateForm();
 
     const response = await this.fetch(
-      `${this.host.fullUrl}/admin/scripts/pi-hole/php/teleporter.php`,
+      `${this.host.fullUrl}/scripts/pi-hole/php/teleporter.php`,
       {
         body: form,
         method: 'POST'
@@ -89,9 +92,10 @@ export class Client {
       response.headers.get('content-type') !== 'application/gzip'
     )
       throw new ErrorNotification({
-        message: `Failed to download backup from "${this.host.fullUrl}".`,
+        message: `Failed to download backup from "${this.host.baseUrl}".`,
         verbose: {
-          host: this.host.fullUrl,
+          host: this.host.baseUrl,
+          path: this.host.path,
           status: response.status,
           responseBody: await response.text()
         }
@@ -99,19 +103,19 @@ export class Client {
 
     const data = await response.arrayBuffer();
 
-    Log.info(chalk.green(`✔️ Backup from ${this.host.fullUrl} completed!`));
+    Log.info(chalk.green(`✔️ Backup from ${this.host.baseUrl} completed!`));
     return new Blob([data]);
   }
 
   public async uploadBackup(backup: Blob): Promise<true | never> {
-    Log.info(chalk.yellow(`➡️ Uploading backup to ${this.host.fullUrl}...`));
+    Log.info(chalk.yellow(`➡️ Uploading backup to ${this.host.baseUrl}...`));
 
     const form = this.generateForm();
     form.append('action', 'in');
     form.append('zip_file', backup, 'backup.tar.gz');
 
     const uploadResponse = await this.fetch(
-      `${this.host.fullUrl}/admin/scripts/pi-hole/php/teleporter.php`,
+      `${this.host.fullUrl}/scripts/pi-hole/php/teleporter.php`,
       {
         body: form,
         method: 'POST'
@@ -120,21 +124,22 @@ export class Client {
     const uploadText = await uploadResponse.text();
     if (uploadResponse.status !== 200 || !uploadText.endsWith('OK'))
       throw new ErrorNotification({
-        message: `Failed to upload backup to "${this.host.fullUrl}".`,
+        message: `Failed to upload backup to "${this.host.baseUrl}".`,
         verbose: {
-          host: this.host.fullUrl,
+          host: this.host.baseUrl,
+          path: this.host.path,
           status: uploadResponse.status,
           responseBody: uploadText
         }
       });
 
-    Log.info(chalk.green(`✔️ Backup uploaded to ${this.host.fullUrl}!`));
+    Log.info(chalk.green(`✔️ Backup uploaded to ${this.host.baseUrl}!`));
     Log.verbose(`Result:\n${chalk.blue(uploadText)}`);
 
     if (Config.updateGravity) {
-      Log.info(chalk.yellow(`➡️ Updating gravity on ${this.host.fullUrl}...`));
+      Log.info(chalk.yellow(`➡️ Updating gravity on ${this.host.baseUrl}...`));
       const gravityUpdateResponse = await this.fetch(
-        `${this.host.fullUrl}/admin/scripts/pi-hole/php/gravity.sh.php`,
+        `${this.host.fullUrl}/scripts/pi-hole/php/gravity.sh.php`,
         { method: 'GET' }
       );
 
@@ -146,15 +151,16 @@ export class Client {
         !updateText.endsWith('Pi-hole blocking is enabled')
       )
         throw new ErrorNotification({
-          message: `Failed updating gravity on "${this.host.fullUrl}".`,
+          message: `Failed updating gravity on "${this.host.baseUrl}".`,
           verbose: {
-            host: this.host.fullUrl,
+            host: this.host.baseUrl,
+            path: this.host.path,
             status: gravityUpdateResponse.status,
             eventStream: updateText
           }
         });
 
-      Log.info(chalk.green(`✔️ Gravity updated on ${this.host.fullUrl}!`));
+      Log.info(chalk.green(`✔️ Gravity updated on ${this.host.baseUrl}!`));
       Log.verbose(`Result:\n${chalk.blue(updateText)}`);
     }
 

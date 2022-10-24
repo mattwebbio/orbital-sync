@@ -91,8 +91,8 @@ describe('Config', () => {
 
       const expected = {
         baseUrl: 'http://10.0.0.2',
-        fullUrl: 'http://10.0.0.2',
-        path: '',
+        fullUrl: 'http://10.0.0.2/admin',
+        path: '/admin',
         password: 'mypassword'
       };
 
@@ -135,8 +135,8 @@ describe('Config', () => {
         {
           baseUrl: 'http://10.0.0.3',
           password: 'mypassword',
-          fullUrl: 'http://10.0.0.3',
-          path: ''
+          fullUrl: 'http://10.0.0.3/admin',
+          path: '/admin'
         }
       ];
 
@@ -159,20 +159,20 @@ describe('Config', () => {
         {
           baseUrl: 'http://10.0.0.3',
           password: 'mypassword1',
-          fullUrl: 'http://10.0.0.3',
-          path: ''
+          fullUrl: 'http://10.0.0.3/admin',
+          path: '/admin'
         },
         {
           baseUrl: 'http://10.0.0.4',
           password: 'mypassword2',
-          fullUrl: 'http://10.0.0.4',
-          path: ''
+          fullUrl: 'http://10.0.0.4/admin',
+          path: '/admin'
         },
         {
           baseUrl: 'http://10.0.0.5',
           password: 'mypassword3',
-          fullUrl: 'http://10.0.0.5',
-          path: ''
+          fullUrl: 'http://10.0.0.5/admin',
+          path: '/admin'
         }
       ]);
     });
@@ -187,10 +187,10 @@ describe('Config', () => {
       process.env['SECONDARY_HOST_2_BASE_URL'] = 'http://10.0.0.4';
       process.env['SECONDARY_HOST_2_PASSWORD'] = 'mypassword3';
 
-      expect(Config.allHostBaseUrls).toStrictEqual([
-        'http://10.0.0.2',
-        'http://10.0.0.3',
-        'http://10.0.0.4'
+      expect(Config.allHostUrls).toStrictEqual([
+        'http://10.0.0.2/admin',
+        'http://10.0.0.3/admin',
+        'http://10.0.0.4/admin'
       ]);
     });
   });

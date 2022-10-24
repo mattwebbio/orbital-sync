@@ -15,7 +15,7 @@ export class Notify {
       else Notify.queueError(error);
     } else if (error instanceof FetchError && error.code === 'ECONNREFUSED') {
       const messageSubstring = error.message.split('ECONNREFUSED')[0]!;
-      const url = Config.allHostBaseUrls.find((url) => messageSubstring.includes(url));
+      const url = Config.allHostUrls.find((url) => messageSubstring.includes(url));
 
       await Notify.ofThrow(
         new ErrorNotification({

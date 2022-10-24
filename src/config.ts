@@ -42,7 +42,8 @@ export class Config {
     return this._secondaryHosts;
   }
 
-  static get allHostBaseUrls(): string[] {
+  //TODO look at usages
+  static get allHostUrls(): string[] {
     return [this.primaryHost, ...this.secondaryHosts].map((host) => host.fullUrl);
   }
 
@@ -162,13 +163,13 @@ export interface SyncOptions {
 }
 
 export class Host {
-  private baseUrl: string;
-  private path: string;
+  baseUrl: string;
+  path: string;
   fullUrl: string;
   password: string;
 
   constructor(baseUrl: string, password: string, path?: string) {
-    this.path = path ?? '';
+    this.path = path ?? '/admin';
     this.baseUrl = baseUrl;
     this.password = password
     this.fullUrl = this.baseUrl + this.path
