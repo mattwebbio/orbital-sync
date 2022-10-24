@@ -2,26 +2,23 @@ import { jest } from '@jest/globals';
 import nock from 'nock';
 import { Blob } from 'node-fetch';
 import { Client } from './client';
-import type { Host } from './config';
+import { Host } from './config';
 import { Config } from './config';
 import { ErrorNotification } from './notify';
 
 describe('Client', () => {
-  const host: Host = {
-    baseUrl: 'http://10.0.0.2',
-    password: 'mypassword'
-  };
+  const host = new Host('http://10.0.0.2', 'mypassword');
 
   const createClient = async () => {
-    nock(host.baseUrl).get('/admin/index.php?login').reply(200);
-    nock(host.baseUrl)
+    nock(host.fullUrl).get('/admin/index.php?login').reply(200);
+    nock(host.fullUrl)
       .post('/admin/index.php?login')
       .reply(
         200,
         '<html><body><div id="token">abcdefgijklmnopqrstuvwxyzabcdefgijklmnopqrst</div></body></html>'
       );
 
-    return { teleporter: nock(host.baseUrl), client: await Client.create(host) };
+    return { teleporter: nock(host.fullUrl), client: await Client.create(host) };
   };
 
   beforeEach(() => {
@@ -30,8 +27,8 @@ describe('Client', () => {
 
   describe('create', () => {
     test('should throw error if status code is not ok', async () => {
-      const initialRequest = nock(host.baseUrl).get('/admin/index.php?login').reply(200);
-      const loginRequest = nock(host.baseUrl).post('/admin/index.php?login').reply(500);
+      const initialRequest = nock(host.fullUrl).get('/admin/index.php?login').reply(200);
+      const loginRequest = nock(host.fullUrl).post('/admin/index.php?login').reply(500);
 
       const expectError = expect(Client.create(host)).rejects;
 
@@ -50,8 +47,8 @@ describe('Client', () => {
     });
 
     test('should throw error if no token is present', async () => {
-      const initialRequest = nock(host.baseUrl).get('/admin/index.php?login').reply(200);
-      const loginRequest = nock(host.baseUrl).post('/admin/index.php?login').reply(200);
+      const initialRequest = nock(host.fullUrl).get('/admin/index.php?login').reply(200);
+      const loginRequest = nock(host.fullUrl).post('/admin/index.php?login').reply(200);
 
       const expectError = expect(Client.create(host)).rejects;
 
@@ -69,8 +66,8 @@ describe('Client', () => {
     });
 
     test('should throw error if token is in incorrect format', async () => {
-      const initialRequest = nock(host.baseUrl).get('/admin/index.php?login').reply(200);
-      const loginRequest = nock(host.baseUrl)
+      const initialRequest = nock(host.fullUrl).get('/admin/index.php?login').reply(200);
+      const loginRequest = nock(host.fullUrl)
         .post('/admin/index.php?login')
         .reply(200, '<html><body><div id="token">abcdef</div></body></html>');
 
@@ -90,8 +87,8 @@ describe('Client', () => {
     });
 
     test('should return client', async () => {
-      const initialRequest = nock(host.baseUrl).get('/admin/index.php?login').reply(200);
-      const loginRequest = nock(host.baseUrl)
+      const initialRequest = nock(host.fullUrl).get('/admin/index.php?login').reply(200);
+      const loginRequest = nock(host.fullUrl)
         .post('/admin/index.php?login')
         .reply(
           200,
@@ -237,18 +234,18 @@ describe('Client', () => {
         .reply(
           200,
           'Processed adlist (14 entries)<br>\n' +
-            'Processed adlist group assignments (13 entries)<br>\n' +
-            'Processed blacklist (exact) (0 entries)<br>\n' +
-            'Processed blacklist (regex) (3 entries)<br>\n' +
-            'Processed client (8 entries)<br>\n' +
-            'Processed client group assignments (16 entries)<br>\n' +
-            'Processed local DNS records (41 entries)<br>\n' +
-            'Processed domain_audit (0 entries)<br>\n' +
-            'Processed black-/whitelist group assignments (10 entries)<br>\n' +
-            'Processed group (3 entries)<br>\n' +
-            'Processed whitelist (exact) (4 entries)<br>\n' +
-            'Processed whitelist (regex) (0 entries)<br>\n' +
-            'OK'
+          'Processed adlist group assignments (13 entries)<br>\n' +
+          'Processed blacklist (exact) (0 entries)<br>\n' +
+          'Processed blacklist (regex) (3 entries)<br>\n' +
+          'Processed client (8 entries)<br>\n' +
+          'Processed client group assignments (16 entries)<br>\n' +
+          'Processed local DNS records (41 entries)<br>\n' +
+          'Processed domain_audit (0 entries)<br>\n' +
+          'Processed black-/whitelist group assignments (10 entries)<br>\n' +
+          'Processed group (3 entries)<br>\n' +
+          'Processed whitelist (exact) (4 entries)<br>\n' +
+          'Processed whitelist (regex) (0 entries)<br>\n' +
+          'OK'
         );
       teleporter
         .get('/admin/scripts/pi-hole/php/gravity.sh.php', undefined)
@@ -276,18 +273,18 @@ describe('Client', () => {
         .reply(
           200,
           'Processed adlist (14 entries)<br>\n' +
-            'Processed adlist group assignments (13 entries)<br>\n' +
-            'Processed blacklist (exact) (0 entries)<br>\n' +
-            'Processed blacklist (regex) (3 entries)<br>\n' +
-            'Processed client (8 entries)<br>\n' +
-            'Processed client group assignments (16 entries)<br>\n' +
-            'Processed local DNS records (41 entries)<br>\n' +
-            'Processed domain_audit (0 entries)<br>\n' +
-            'Processed black-/whitelist group assignments (10 entries)<br>\n' +
-            'Processed group (3 entries)<br>\n' +
-            'Processed whitelist (exact) (4 entries)<br>\n' +
-            'Processed whitelist (regex) (0 entries)<br>\n' +
-            'OK'
+          'Processed adlist group assignments (13 entries)<br>\n' +
+          'Processed blacklist (exact) (0 entries)<br>\n' +
+          'Processed blacklist (regex) (3 entries)<br>\n' +
+          'Processed client (8 entries)<br>\n' +
+          'Processed client group assignments (16 entries)<br>\n' +
+          'Processed local DNS records (41 entries)<br>\n' +
+          'Processed domain_audit (0 entries)<br>\n' +
+          'Processed black-/whitelist group assignments (10 entries)<br>\n' +
+          'Processed group (3 entries)<br>\n' +
+          'Processed whitelist (exact) (4 entries)<br>\n' +
+          'Processed whitelist (regex) (0 entries)<br>\n' +
+          'OK'
         );
       teleporter
         .get('/admin/scripts/pi-hole/php/gravity.sh.php', undefined)
@@ -336,18 +333,18 @@ describe('Client', () => {
         .reply(
           200,
           'Processed adlist (14 entries)<br>\n' +
-            'Processed adlist group assignments (13 entries)<br>\n' +
-            'Processed blacklist (exact) (0 entries)<br>\n' +
-            'Processed blacklist (regex) (3 entries)<br>\n' +
-            'Processed client (8 entries)<br>\n' +
-            'Processed client group assignments (16 entries)<br>\n' +
-            'Processed local DNS records (41 entries)<br>\n' +
-            'Processed domain_audit (0 entries)<br>\n' +
-            'Processed black-/whitelist group assignments (10 entries)<br>\n' +
-            'Processed group (3 entries)<br>\n' +
-            'Processed whitelist (exact) (4 entries)<br>\n' +
-            'Processed whitelist (regex) (0 entries)<br>\n' +
-            'OK'
+          'Processed adlist group assignments (13 entries)<br>\n' +
+          'Processed blacklist (exact) (0 entries)<br>\n' +
+          'Processed blacklist (regex) (3 entries)<br>\n' +
+          'Processed client (8 entries)<br>\n' +
+          'Processed client group assignments (16 entries)<br>\n' +
+          'Processed local DNS records (41 entries)<br>\n' +
+          'Processed domain_audit (0 entries)<br>\n' +
+          'Processed black-/whitelist group assignments (10 entries)<br>\n' +
+          'Processed group (3 entries)<br>\n' +
+          'Processed whitelist (exact) (4 entries)<br>\n' +
+          'Processed whitelist (regex) (0 entries)<br>\n' +
+          'OK'
         );
 
       const result = await client.uploadBackup(backup);
