@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import nock from 'nock';
 import { Blob } from 'node-fetch';
 import { Client } from './client';
-import { Config } from './config';
+import { Config, Host } from './config';
 import { Log } from './log';
 import { ErrorNotification, Notify } from './notify';
 import { Sync } from './sync';
@@ -20,19 +20,10 @@ describe('entrypoint', () => {
   let secondaryHostClient1: Client;
   let secondaryHostClient2: Client;
 
-  const primaryHostValue = {
-    baseUrl: 'http://10.0.0.2',
-    password: 'password1'
-  };
+  const primaryHostValue = new Host('http://10.0.0.2', 'password1');
   const secondaryHostsValue = [
-    {
-      baseUrl: 'http://10.0.0.3',
-      password: 'password2'
-    },
-    {
-      baseUrl: 'http://10.0.0.4',
-      password: 'password3'
-    }
+    new Host('http://10.0.0.3', 'password2'),
+    new Host('http://10.0.0.4', 'password3')
   ];
   const backupData = new Blob([]);
 

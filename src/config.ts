@@ -7,10 +7,10 @@ export class Config {
   private static _intervalMinutes?: number;
 
   static get primaryHost(): Host {
-    this._primaryHost ??= {
-      baseUrl: this.getRequiredEnv('PRIMARY_HOST_BASE_URL'),
-      password: this.getRequiredEnv('PRIMARY_HOST_PASSWORD')
-    };
+    this._primaryHost ??= new Host(
+      this.getRequiredEnv('PRIMARY_HOST_BASE_URL'),
+      this.getRequiredEnv('PRIMARY_HOST_PASSWORD')
+    );
 
     return this._primaryHost;
   }
@@ -18,10 +18,10 @@ export class Config {
   static get secondaryHosts(): Host[] {
     if (!this._secondaryHosts) {
       this._secondaryHosts = [
-        {
-          baseUrl: this.getRequiredEnv('SECONDARY_HOST_1_BASE_URL'),
-          password: this.getRequiredEnv('SECONDARY_HOST_1_PASSWORD')
-        }
+        new Host(
+          this.getRequiredEnv('SECONDARY_HOST_1_BASE_URL'),
+          this.getRequiredEnv('SECONDARY_HOST_1_PASSWORD')
+        )
       ];
 
       let count = 2;
@@ -29,10 +29,11 @@ export class Config {
         process.env[`SECONDARY_HOST_${count}_BASE_URL`] !== undefined &&
         process.env[`SECONDARY_HOST_${count}_PASSWORD`] !== undefined
       ) {
-        this._secondaryHosts.push({
-          baseUrl: process.env[`SECONDARY_HOST_${count}_BASE_URL`]!,
-          password: process.env[`SECONDARY_HOST_${count}_PASSWORD`]!
-        });
+        this._secondaryHosts.push(
+          new Host(
+            this.getRequiredEnv(`SECONDARY_HOST_${count}_BASE_URL`),
+            this.getRequiredEnv(`SECONDARY_HOST_${count}_PASSWORD`)
+          ));
 
         count++;
       }
@@ -42,7 +43,7 @@ export class Config {
   }
 
   static get allHostBaseUrls(): string[] {
-    return [this.primaryHost, ...this.secondaryHosts].map((host) => host.baseUrl);
+    return [this.primaryHost, ...this.secondaryHosts].map((host) => host.fullUrl);
   }
 
   static get syncOptions(): SyncOptions {
@@ -160,7 +161,18 @@ export interface SyncOptions {
   flushtables: boolean;
 }
 
-export interface Host {
-  baseUrl: string;
+export class Host {
+  private baseUrl: string;
+  private path: string;
+  fullUrl: string;
   password: string;
+
+  constructor(baseUrl: string, password: string, path?: string) {
+    this.path = path ?? '';
+    this.baseUrl = baseUrl;
+    this.password = password
+    this.fullUrl = this.baseUrl + this.path
+  }
 }
+
+

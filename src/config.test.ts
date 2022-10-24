@@ -91,12 +91,14 @@ describe('Config', () => {
 
       const expected = {
         baseUrl: 'http://10.0.0.2',
+        fullUrl: 'http://10.0.0.2',
+        path: '',
         password: 'mypassword'
       };
 
-      expect(Config.primaryHost).toStrictEqual(expected);
+      expect(Config.primaryHost).toEqual(expected);
       resetEnv();
-      expect(Config.primaryHost).toStrictEqual(expected);
+      expect(Config.primaryHost).toEqual(expected);
     });
   });
 
@@ -132,13 +134,15 @@ describe('Config', () => {
       const expected = [
         {
           baseUrl: 'http://10.0.0.3',
-          password: 'mypassword'
+          password: 'mypassword',
+          fullUrl: 'http://10.0.0.3',
+          path: ''
         }
       ];
 
-      expect(Config.secondaryHosts).toStrictEqual(expected);
+      expect(Config.secondaryHosts).toEqual(expected);
       resetEnv();
-      expect(Config.secondaryHosts).toStrictEqual(expected);
+      expect(Config.secondaryHosts).toEqual(expected);
     });
 
     test('should return multiple secondary hosts', () => {
@@ -151,18 +155,24 @@ describe('Config', () => {
       process.env['SECONDARY_HOST_5_BASE_URL'] = 'http://10.0.0.7';
       process.env['SECONDARY_HOST_5_PASSWORD'] = 'mypassword4';
 
-      expect(Config.secondaryHosts).toStrictEqual([
+      expect(Config.secondaryHosts).toEqual([
         {
           baseUrl: 'http://10.0.0.3',
-          password: 'mypassword1'
+          password: 'mypassword1',
+          fullUrl: 'http://10.0.0.3',
+          path: ''
         },
         {
           baseUrl: 'http://10.0.0.4',
-          password: 'mypassword2'
+          password: 'mypassword2',
+          fullUrl: 'http://10.0.0.4',
+          path: ''
         },
         {
           baseUrl: 'http://10.0.0.5',
-          password: 'mypassword3'
+          password: 'mypassword3',
+          fullUrl: 'http://10.0.0.5',
+          path: ''
         }
       ]);
     });
