@@ -38,6 +38,7 @@ describe('Client', () => {
           'There was an error logging in to "http://10.0.0.2" - are you able to log in with the configured password?',
         verbose: {
           host: 'http://10.0.0.2',
+          path: '/admin',
           status: 500,
           responseBody: ''
         }
@@ -58,6 +59,7 @@ describe('Client', () => {
           'No token could be found while logging in to "http://10.0.0.2" - are you able to log in with the configured password?',
         verbose: {
           host: 'http://10.0.0.2',
+          path: '/admin',
           innerHtml: ''
         }
       });
@@ -79,6 +81,7 @@ describe('Client', () => {
           'A token was found but could not be validated while logging in to "http://10.0.0.2" - are you able to log in with the configured password?',
         verbose: {
           host: 'http://10.0.0.2',
+          path: '/admin',
           token: 'abcdef'
         }
       });
@@ -124,6 +127,7 @@ describe('Client', () => {
         message: 'Failed to download backup from "http://10.0.0.2".',
         verbose: {
           host: 'http://10.0.0.2',
+          path: '/admin',
           status: 500,
           responseBody: ''
         }
@@ -142,6 +146,7 @@ describe('Client', () => {
         message: 'Failed to download backup from "http://10.0.0.2".',
         verbose: {
           host: 'http://10.0.0.2',
+          path: '/admin',
           status: 200,
           responseBody: ''
         }
@@ -206,6 +211,7 @@ describe('Client', () => {
         message: 'Failed to upload backup to "http://10.0.0.2".',
         verbose: {
           host: 'http://10.0.0.2',
+          path: '/admin',
           status: 500,
           responseBody: ''
         }
@@ -222,6 +228,7 @@ describe('Client', () => {
         message: 'Failed to upload backup to "http://10.0.0.2".',
         verbose: {
           host: 'http://10.0.0.2',
+          path: '/admin',
           status: 200,
           responseBody: ''
         }
@@ -234,18 +241,18 @@ describe('Client', () => {
         .reply(
           200,
           'Processed adlist (14 entries)<br>\n' +
-          'Processed adlist group assignments (13 entries)<br>\n' +
-          'Processed blacklist (exact) (0 entries)<br>\n' +
-          'Processed blacklist (regex) (3 entries)<br>\n' +
-          'Processed client (8 entries)<br>\n' +
-          'Processed client group assignments (16 entries)<br>\n' +
-          'Processed local DNS records (41 entries)<br>\n' +
-          'Processed domain_audit (0 entries)<br>\n' +
-          'Processed black-/whitelist group assignments (10 entries)<br>\n' +
-          'Processed group (3 entries)<br>\n' +
-          'Processed whitelist (exact) (4 entries)<br>\n' +
-          'Processed whitelist (regex) (0 entries)<br>\n' +
-          'OK'
+            'Processed adlist group assignments (13 entries)<br>\n' +
+            'Processed blacklist (exact) (0 entries)<br>\n' +
+            'Processed blacklist (regex) (3 entries)<br>\n' +
+            'Processed client (8 entries)<br>\n' +
+            'Processed client group assignments (16 entries)<br>\n' +
+            'Processed local DNS records (41 entries)<br>\n' +
+            'Processed domain_audit (0 entries)<br>\n' +
+            'Processed black-/whitelist group assignments (10 entries)<br>\n' +
+            'Processed group (3 entries)<br>\n' +
+            'Processed whitelist (exact) (4 entries)<br>\n' +
+            'Processed whitelist (regex) (0 entries)<br>\n' +
+            'OK'
         );
       teleporter
         .get('/scripts/pi-hole/php/gravity.sh.php', undefined)
@@ -258,6 +265,7 @@ describe('Client', () => {
         message: 'Failed updating gravity on "http://10.0.0.2".',
         verbose: {
           host: 'http://10.0.0.2',
+          path: '/admin',
           status: 200,
           eventStream: '[✓] TCP (IPv6)'
         }
@@ -273,18 +281,18 @@ describe('Client', () => {
         .reply(
           200,
           'Processed adlist (14 entries)<br>\n' +
-          'Processed adlist group assignments (13 entries)<br>\n' +
-          'Processed blacklist (exact) (0 entries)<br>\n' +
-          'Processed blacklist (regex) (3 entries)<br>\n' +
-          'Processed client (8 entries)<br>\n' +
-          'Processed client group assignments (16 entries)<br>\n' +
-          'Processed local DNS records (41 entries)<br>\n' +
-          'Processed domain_audit (0 entries)<br>\n' +
-          'Processed black-/whitelist group assignments (10 entries)<br>\n' +
-          'Processed group (3 entries)<br>\n' +
-          'Processed whitelist (exact) (4 entries)<br>\n' +
-          'Processed whitelist (regex) (0 entries)<br>\n' +
-          'OK'
+            'Processed adlist group assignments (13 entries)<br>\n' +
+            'Processed blacklist (exact) (0 entries)<br>\n' +
+            'Processed blacklist (regex) (3 entries)<br>\n' +
+            'Processed client (8 entries)<br>\n' +
+            'Processed client group assignments (16 entries)<br>\n' +
+            'Processed local DNS records (41 entries)<br>\n' +
+            'Processed domain_audit (0 entries)<br>\n' +
+            'Processed black-/whitelist group assignments (10 entries)<br>\n' +
+            'Processed group (3 entries)<br>\n' +
+            'Processed whitelist (exact) (4 entries)<br>\n' +
+            'Processed whitelist (regex) (0 entries)<br>\n' +
+            'OK'
         );
       teleporter
         .get('/scripts/pi-hole/php/gravity.sh.php', undefined)
@@ -333,18 +341,18 @@ describe('Client', () => {
         .reply(
           200,
           'Processed adlist (14 entries)<br>\n' +
-          'Processed adlist group assignments (13 entries)<br>\n' +
-          'Processed blacklist (exact) (0 entries)<br>\n' +
-          'Processed blacklist (regex) (3 entries)<br>\n' +
-          'Processed client (8 entries)<br>\n' +
-          'Processed client group assignments (16 entries)<br>\n' +
-          'Processed local DNS records (41 entries)<br>\n' +
-          'Processed domain_audit (0 entries)<br>\n' +
-          'Processed black-/whitelist group assignments (10 entries)<br>\n' +
-          'Processed group (3 entries)<br>\n' +
-          'Processed whitelist (exact) (4 entries)<br>\n' +
-          'Processed whitelist (regex) (0 entries)<br>\n' +
-          'OK'
+            'Processed adlist group assignments (13 entries)<br>\n' +
+            'Processed blacklist (exact) (0 entries)<br>\n' +
+            'Processed blacklist (regex) (3 entries)<br>\n' +
+            'Processed client (8 entries)<br>\n' +
+            'Processed client group assignments (16 entries)<br>\n' +
+            'Processed local DNS records (41 entries)<br>\n' +
+            'Processed domain_audit (0 entries)<br>\n' +
+            'Processed black-/whitelist group assignments (10 entries)<br>\n' +
+            'Processed group (3 entries)<br>\n' +
+            'Processed whitelist (exact) (4 entries)<br>\n' +
+            'Processed whitelist (regex) (0 entries)<br>\n' +
+            'OK'
         );
 
       const result = await client.uploadBackup(backup);

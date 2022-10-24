@@ -102,6 +102,67 @@ describe('Config', () => {
     });
   });
 
+  describe('paths', () => {
+    test('should add default /admin path when not provided', () => {
+      process.env['PRIMARY_HOST_BASE_URL'] = 'http://10.0.0.2';
+      process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword';
+
+      const expected = 'http://10.0.0.2/admin';
+
+      expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
+    });
+
+    test('should add user defined path', () => {
+      process.env['PRIMARY_HOST_BASE_URL'] = 'http://10.0.0.2';
+      process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword';
+      process.env['PRIMARY_HOST_PATH'] = '/mypath';
+
+      const expected = 'http://10.0.0.2/mypath';
+
+      expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
+    });
+
+    test('should trim trailing slash', () => {
+      process.env['PRIMARY_HOST_BASE_URL'] = 'http://10.0.0.2';
+      process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword';
+      process.env['PRIMARY_HOST_PATH'] = '/mypath/';
+
+      const expected = 'http://10.0.0.2/mypath';
+
+      expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
+    });
+
+    test('should allow empty path', () => {
+      process.env['PRIMARY_HOST_BASE_URL'] = 'http://10.0.0.2';
+      process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword';
+      process.env['PRIMARY_HOST_PATH'] = '';
+
+      const expected = 'http://10.0.0.2';
+
+      expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
+    });
+
+    test('should allow empty path from slash', () => {
+      process.env['PRIMARY_HOST_BASE_URL'] = 'http://10.0.0.2';
+      process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword';
+      process.env['PRIMARY_HOST_PATH'] = '/';
+
+      const expected = 'http://10.0.0.2';
+
+      expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
+    });
+
+    test('should add preceeding slash if ommitted', () => {
+      process.env['PRIMARY_HOST_BASE_URL'] = 'http://10.0.0.2';
+      process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword';
+      process.env['PRIMARY_HOST_PATH'] = 'mypath';
+
+      const expected = 'http://10.0.0.2/mypath';
+
+      expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
+    });
+  });
+
   describe('secondaryHosts', () => {
     test('should error and exit if "SECONDARY_HOST_1_BASE_URL" is undefined', () => {
       process.env['SECONDARY_HOST_1_PASSWORD'] = 'mypassword';
@@ -148,31 +209,34 @@ describe('Config', () => {
     test('should return multiple secondary hosts', () => {
       process.env['SECONDARY_HOST_1_BASE_URL'] = 'http://10.0.0.3';
       process.env['SECONDARY_HOST_1_PASSWORD'] = 'mypassword1';
+      process.env['SECONDARY_HOST_1_PATH'] = '/mypath';
       process.env['SECONDARY_HOST_2_BASE_URL'] = 'http://10.0.0.4';
       process.env['SECONDARY_HOST_2_PASSWORD'] = 'mypassword2';
+      process.env['SECONDARY_HOST_2_PATH'] = '/mypath';
       process.env['SECONDARY_HOST_3_BASE_URL'] = 'http://10.0.0.5';
       process.env['SECONDARY_HOST_3_PASSWORD'] = 'mypassword3';
+      process.env['SECONDARY_HOST_3_PATH'] = '/mypath';
       process.env['SECONDARY_HOST_5_BASE_URL'] = 'http://10.0.0.7';
-      process.env['SECONDARY_HOST_5_PASSWORD'] = 'mypassword4';
+      process.env['SECONDARY_HOST_5_PATH'] = '/mypath';
 
       expect(Config.secondaryHosts).toEqual([
         {
           baseUrl: 'http://10.0.0.3',
           password: 'mypassword1',
-          fullUrl: 'http://10.0.0.3/admin',
-          path: '/admin'
+          fullUrl: 'http://10.0.0.3/mypath',
+          path: '/mypath'
         },
         {
           baseUrl: 'http://10.0.0.4',
           password: 'mypassword2',
-          fullUrl: 'http://10.0.0.4/admin',
-          path: '/admin'
+          fullUrl: 'http://10.0.0.4/mypath',
+          path: '/mypath'
         },
         {
           baseUrl: 'http://10.0.0.5',
           password: 'mypassword3',
-          fullUrl: 'http://10.0.0.5/admin',
-          path: '/admin'
+          fullUrl: 'http://10.0.0.5/mypath',
+          path: '/mypath'
         }
       ]);
     });

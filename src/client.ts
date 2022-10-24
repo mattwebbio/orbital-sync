@@ -18,7 +18,7 @@ export class Client {
     private fetch: NodeFetchCookie,
     private host: Host,
     private token: string
-  ) { }
+  ) {}
 
   public static async create(host: Host): Promise<Client> {
     Log.info(chalk.yellow(`➡️ Signing in to ${host.baseUrl}...`));

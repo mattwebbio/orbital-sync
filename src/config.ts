@@ -9,7 +9,8 @@ export class Config {
   static get primaryHost(): Host {
     this._primaryHost ??= new Host(
       this.getRequiredEnv('PRIMARY_HOST_BASE_URL'),
-      this.getRequiredEnv('PRIMARY_HOST_PASSWORD')
+      this.getRequiredEnv('PRIMARY_HOST_PASSWORD'),
+      process.env['PRIMARY_HOST_PATH']
     );
 
     return this._primaryHost;
@@ -20,7 +21,8 @@ export class Config {
       this._secondaryHosts = [
         new Host(
           this.getRequiredEnv('SECONDARY_HOST_1_BASE_URL'),
-          this.getRequiredEnv('SECONDARY_HOST_1_PASSWORD')
+          this.getRequiredEnv('SECONDARY_HOST_1_PASSWORD'),
+          process.env['SECONDARY_HOST_1_PATH']
         )
       ];
 
@@ -32,8 +34,10 @@ export class Config {
         this._secondaryHosts.push(
           new Host(
             this.getRequiredEnv(`SECONDARY_HOST_${count}_BASE_URL`),
-            this.getRequiredEnv(`SECONDARY_HOST_${count}_PASSWORD`)
-          ));
+            this.getRequiredEnv(`SECONDARY_HOST_${count}_PASSWORD`),
+            process.env[`SECONDARY_HOST_${count}_PATH`]
+          )
+        );
 
         count++;
       }
@@ -169,11 +173,19 @@ export class Host {
   password: string;
 
   constructor(baseUrl: string, password: string, path?: string) {
-    this.path = path ?? '/admin';
     this.baseUrl = baseUrl;
-    this.password = password
-    this.fullUrl = this.baseUrl + this.path
+    this.password = password;
+
+    if (path && path.endsWith('/')) {
+      path = path.slice(0, path.length - 1);
+    }
+
+    if (path && !path.startsWith('/')) {
+      path = '/' + path;
+    }
+
+    this.path = path ?? '/admin';
+
+    this.fullUrl = this.baseUrl + this.path;
   }
 }
-
-
