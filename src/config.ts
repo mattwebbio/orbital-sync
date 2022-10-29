@@ -172,19 +172,27 @@ export class Host {
   fullUrl: string;
   password: string;
 
-  constructor(baseUrl: string, password: string, path?: string) {
-    this.baseUrl = this.trimTrailingSlash(baseUrl) ?? baseUrl;
-    this.password = password;
+  private static pathExtractor = RegExp('^(http[s]?:+//[^/s]+)([/]?[^?#]+)?');
 
+  constructor(baseUrl: string, password: string, path = '/admin') {
     if (path && !path.startsWith('/')) {
       path = '/' + path;
     }
 
-    this.path = this.trimTrailingSlash(path) ?? '/admin';
+    const includedPath = Host.pathExtractor.exec(baseUrl);
+
+    if (includedPath && includedPath[1] && includedPath[2]) {
+      baseUrl = includedPath[1];
+      path = (this.trimTrailingSlash(includedPath[2]) ?? '') + path;
+    }
+
+    this.baseUrl = baseUrl;
+    this.password = password;
+    this.path = this.trimTrailingSlash(path);
     this.fullUrl = this.baseUrl + this.path;
   }
 
-  private trimTrailingSlash(url: string | undefined): string | undefined {
-    return url?.endsWith('/') ? url.slice(0, url.length - 1) : url;
+  private trimTrailingSlash(url: string): string {
+    return url.endsWith('/') ? url.slice(0, url.length - 1) : url;
   }
 }
