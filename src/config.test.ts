@@ -103,6 +103,14 @@ describe('Config', () => {
   });
 
   describe('paths', () => {
+    test('should recognise https scheme', () => {
+      process.env['PRIMARY_HOST_BASE_URL'] = 'https://10.0.0.2';
+      process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword';
+
+      const expected = 'https://10.0.0.2';
+
+      expect(Config.primaryHost.baseUrl).toStrictEqual(expected);
+    });
     test('should add default /admin path when not provided', () => {
       process.env['PRIMARY_HOST_BASE_URL'] = 'http://10.0.0.2';
       process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword';
@@ -118,6 +126,17 @@ describe('Config', () => {
       process.env['PRIMARY_HOST_PATH'] = '/mypath';
 
       const expected = 'http://10.0.0.2/mypath';
+      const expectedPath = '/mypath';
+
+      expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
+      expect(Config.primaryHost.path).toStrictEqual(expectedPath);
+    });
+
+    test('should handle single slash in base url', () => {
+      process.env['PRIMARY_HOST_BASE_URL'] = 'http://10.0.0.2/';
+      process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword';
+
+      const expected = 'http://10.0.0.2/admin';
 
       expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
     });
@@ -170,6 +189,44 @@ describe('Config', () => {
       const expected = 'http://10.0.0.2/mypath';
 
       expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
+    });
+
+    test('should handle path provided in base url', () => {
+      process.env['PRIMARY_HOST_BASE_URL'] = 'http://10.0.0.2/mypath/admin';
+      process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword';
+      process.env['PRIMARY_HOST_PATH'] = '';
+
+      const expected = 'http://10.0.0.2/mypath/admin';
+      const expectedPath = '/mypath/admin';
+      const expectedBase = 'http://10.0.0.2';
+
+      expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
+      expect(Config.primaryHost.path).toStrictEqual(expectedPath);
+      expect(Config.primaryHost.baseUrl).toStrictEqual(expectedBase);
+    });
+
+    test('should combine path from base url and path env', () => {
+      process.env['PRIMARY_HOST_BASE_URL'] = 'http://10.0.0.2/mypath';
+      process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword';
+      process.env['PRIMARY_HOST_PATH'] = '/admin';
+
+      const expected = 'http://10.0.0.2/mypath/admin';
+      const expectedPath = '/mypath/admin';
+
+      expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
+      expect(Config.primaryHost.path).toStrictEqual(expectedPath);
+    });
+
+    test('should treat port as base url', () => {
+      process.env['PRIMARY_HOST_BASE_URL'] = 'http://10.0.0.2:8080/';
+      process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword';
+      process.env['PRIMARY_HOST_PATH'] = '/mypath';
+
+      const expected = 'http://10.0.0.2:8080/mypath';
+      const expectedPath = '/mypath';
+
+      expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
+      expect(Config.primaryHost.path).toStrictEqual(expectedPath);
     });
   });
 
