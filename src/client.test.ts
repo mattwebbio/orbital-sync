@@ -35,7 +35,7 @@ describe('Client', () => {
       await expectError.toBeInstanceOf(ErrorNotification);
       await expectError.toMatchObject({
         message:
-          'There was an error logging in to "http://10.0.0.2" - are you able to log in with the configured password?',
+          'There was an error logging in to "http://10.0.0.2/admin" - are you able to log in with the configured password?',
         verbose: {
           host: 'http://10.0.0.2',
           path: '/admin',
@@ -56,7 +56,7 @@ describe('Client', () => {
       await expectError.toBeInstanceOf(ErrorNotification);
       await expectError.toMatchObject({
         message:
-          'No token could be found while logging in to "http://10.0.0.2" - are you able to log in with the configured password?',
+          'No token could be found while logging in to "http://10.0.0.2/admin" - are you able to log in with the configured password?',
         verbose: {
           host: 'http://10.0.0.2',
           path: '/admin',
@@ -78,7 +78,7 @@ describe('Client', () => {
       await expectError.toBeInstanceOf(ErrorNotification);
       await expectError.toMatchObject({
         message:
-          'A token was found but could not be validated while logging in to "http://10.0.0.2" - are you able to log in with the configured password?',
+          'A token was found but could not be validated while logging in to "http://10.0.0.2/admin" - are you able to log in with the configured password?',
         verbose: {
           host: 'http://10.0.0.2',
           path: '/admin',
@@ -124,7 +124,7 @@ describe('Client', () => {
 
       await expectError.toBeInstanceOf(ErrorNotification);
       await expectError.toMatchObject({
-        message: 'Failed to download backup from "http://10.0.0.2".',
+        message: 'Failed to download backup from "http://10.0.0.2/admin".',
         verbose: {
           host: 'http://10.0.0.2',
           path: '/admin',
@@ -143,7 +143,7 @@ describe('Client', () => {
 
       await expectError.toBeInstanceOf(ErrorNotification);
       await expectError.toMatchObject({
-        message: 'Failed to download backup from "http://10.0.0.2".',
+        message: 'Failed to download backup from "http://10.0.0.2/admin".',
         verbose: {
           host: 'http://10.0.0.2',
           path: '/admin',
@@ -208,7 +208,7 @@ describe('Client', () => {
 
       await expectError.toBeInstanceOf(ErrorNotification);
       await expectError.toMatchObject({
-        message: 'Failed to upload backup to "http://10.0.0.2".',
+        message: 'Failed to upload backup to "http://10.0.0.2/admin".',
         verbose: {
           host: 'http://10.0.0.2',
           path: '/admin',
@@ -225,7 +225,7 @@ describe('Client', () => {
 
       await expectError.toBeInstanceOf(ErrorNotification);
       await expectError.toMatchObject({
-        message: 'Failed to upload backup to "http://10.0.0.2".',
+        message: 'Failed to upload backup to "http://10.0.0.2/admin".',
         verbose: {
           host: 'http://10.0.0.2',
           path: '/admin',
@@ -262,7 +262,7 @@ describe('Client', () => {
 
       await expectError.toBeInstanceOf(ErrorNotification);
       await expectError.toMatchObject({
-        message: 'Failed updating gravity on "http://10.0.0.2".',
+        message: 'Failed updating gravity on "http://10.0.0.2/admin".',
         verbose: {
           host: 'http://10.0.0.2',
           path: '/admin',
