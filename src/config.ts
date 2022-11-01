@@ -46,7 +46,6 @@ export class Config {
     return this._secondaryHosts;
   }
 
-  //TODO look at usages
   static get allHostUrls(): string[] {
     return [this.primaryHost, ...this.secondaryHosts].map((host) => host.fullUrl);
   }
