@@ -7,10 +7,11 @@ export class Config {
   private static _intervalMinutes?: number;
 
   static get primaryHost(): Host {
-    this._primaryHost ??= {
-      baseUrl: this.getRequiredEnv('PRIMARY_HOST_BASE_URL'),
-      password: this.getRequiredEnv('PRIMARY_HOST_PASSWORD')
-    };
+    this._primaryHost ??= new Host(
+      this.getRequiredEnv('PRIMARY_HOST_BASE_URL'),
+      this.getRequiredEnv('PRIMARY_HOST_PASSWORD'),
+      process.env['PRIMARY_HOST_PATH']
+    );
 
     return this._primaryHost;
   }
@@ -18,10 +19,11 @@ export class Config {
   static get secondaryHosts(): Host[] {
     if (!this._secondaryHosts) {
       this._secondaryHosts = [
-        {
-          baseUrl: this.getRequiredEnv('SECONDARY_HOST_1_BASE_URL'),
-          password: this.getRequiredEnv('SECONDARY_HOST_1_PASSWORD')
-        }
+        new Host(
+          this.getRequiredEnv('SECONDARY_HOST_1_BASE_URL'),
+          this.getRequiredEnv('SECONDARY_HOST_1_PASSWORD'),
+          process.env['SECONDARY_HOST_1_PATH']
+        )
       ];
 
       let count = 2;
@@ -29,10 +31,13 @@ export class Config {
         process.env[`SECONDARY_HOST_${count}_BASE_URL`] !== undefined &&
         process.env[`SECONDARY_HOST_${count}_PASSWORD`] !== undefined
       ) {
-        this._secondaryHosts.push({
-          baseUrl: process.env[`SECONDARY_HOST_${count}_BASE_URL`]!,
-          password: process.env[`SECONDARY_HOST_${count}_PASSWORD`]!
-        });
+        this._secondaryHosts.push(
+          new Host(
+            this.getRequiredEnv(`SECONDARY_HOST_${count}_BASE_URL`),
+            this.getRequiredEnv(`SECONDARY_HOST_${count}_PASSWORD`),
+            process.env[`SECONDARY_HOST_${count}_PATH`]
+          )
+        );
 
         count++;
       }
@@ -41,8 +46,8 @@ export class Config {
     return this._secondaryHosts;
   }
 
-  static get allHostBaseUrls(): string[] {
-    return [this.primaryHost, ...this.secondaryHosts].map((host) => host.baseUrl);
+  static get allHostUrls(): string[] {
+    return [this.primaryHost, ...this.secondaryHosts].map((host) => host.fullUrl);
   }
 
   static get syncOptions(): SyncOptions {
@@ -160,7 +165,33 @@ export interface SyncOptions {
   flushtables: boolean;
 }
 
-export interface Host {
+export class Host {
   baseUrl: string;
+  path: string;
+  fullUrl: string;
   password: string;
+
+  private static pathExtractor = RegExp('^(http[s]?:+//[^/s]+)([/]?[^?#]+)?');
+
+  constructor(baseUrl: string, password: string, path = '/admin') {
+    if (path && !path.startsWith('/')) {
+      path = '/' + path;
+    }
+
+    const includedPath = Host.pathExtractor.exec(baseUrl);
+
+    if (includedPath && includedPath[1] && includedPath[2]) {
+      baseUrl = includedPath[1];
+      path = (this.trimTrailingSlash(includedPath[2]) ?? '') + path;
+    }
+
+    this.baseUrl = baseUrl;
+    this.password = password;
+    this.path = this.trimTrailingSlash(path);
+    this.fullUrl = this.baseUrl + this.path;
+  }
+
+  private trimTrailingSlash(url: string): string {
+    return url.endsWith('/') ? url.slice(0, url.length - 1) : url;
+  }
 }

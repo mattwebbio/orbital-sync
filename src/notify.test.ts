@@ -220,8 +220,8 @@ describe('Notify', () => {
     test('should Notify on throw of connection refused FetchError', async () => {
       notifyOfFailure = jest.spyOn(Notify, 'ofFailure');
       const allHostBaseUrls = jest
-        .spyOn(Config, 'allHostBaseUrls', 'get')
-        .mockReturnValue(['http://10.0.0.2', 'http://10.0.0.3']);
+        .spyOn(Config, 'allHostUrls', 'get')
+        .mockReturnValue(['http://10.0.0.2/admin', 'http://10.0.0.3/admin']);
 
       await Notify.ofThrow(
         new FetchError(
@@ -235,7 +235,7 @@ describe('Notify', () => {
       expect(notifyOfFailure).toHaveBeenCalledTimes(1);
       expect(notifyOfFailure).toHaveBeenCalledWith(
         expect.objectContaining({
-          message: 'The host "http://10.0.0.3" refused to connect. Is it down?',
+          message: 'The host "http://10.0.0.3/admin" refused to connect. Is it down?',
           verbose:
             'request to http://10.0.0.3/admin/index.php?login failed, reason: connect ECONNREFUSED 10.0.0.2:443'
         })
