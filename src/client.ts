@@ -170,19 +170,15 @@ export class Client {
   private generateForm(): typeof FormData.prototype {
     const form = new FormData();
     form.append('token', this.token);
+    const variables = ['whitelist','regex_whitelist','blacklist','regexlist','adlist','client','group','auditlog','staticdhcpleases','localdnsrecords','localcnamerecords','flushtables'];
+    let fLen = variables.length;
 
-    form.append('whitelist', Config.syncOptions.whitelist);
-    form.append('regex_whitelist', Config.syncOptions.regexWhitelist);
-    form.append('blacklist', Config.syncOptions.blacklist);
-    form.append('regexlist', Config.syncOptions.regexlist);
-    form.append('adlist', Config.syncOptions.adlist);
-    form.append('client', Config.syncOptions.client);
-    form.append('group', Config.syncOptions.group);
-    form.append('auditlog', Config.syncOptions.auditlog);
-    form.append('staticdhcpleases', Config.syncOptions.staticdhcpleases);
-    form.append('localdnsrecords', Config.syncOptions.localdnsrecords);
-    form.append('localcnamerecords', Config.syncOptions.localcnamerecords);
-    form.append('flushtables', Config.syncOptions.flushtables);
+    for (let i = 0; i < fLen; i++) {
+      var configVariable = variables[i];
+      if(Config.syncOptions.[configVariable] != false) {
+        form.append(variables[i],Config.syncOptions.[configVariable]);
+      }
+    }
 
     return form;
   }
