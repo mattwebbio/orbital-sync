@@ -175,15 +175,15 @@ describe('Client', () => {
       expect(requestBody).toContain('name="adlist"\r\n\r\ntrue');
       expect(requestBody).toContain('name="client"\r\n\r\ntrue');
       expect(requestBody).toContain('name="group"\r\n\r\ntrue');
-      expect(requestBody).toContain('name="auditlog"\r\n\r\nfalse');
-      expect(requestBody).toContain('name="staticdhcpleases"\r\n\r\nfalse');
+      expect(requestBody).not.toContain('name="auditlog"');
+      expect(requestBody).not.toContain('name="staticdhcpleases"');
       expect(requestBody).toContain('name="localdnsrecords"\r\n\r\ntrue');
       expect(requestBody).toContain('name="localcnamerecords"\r\n\r\ntrue');
       expect(requestBody).toContain('name="flushtables"\r\n\r\ntrue');
       expect(requestBody).not.toContain('name="action"\r\n\r\nin');
       expect(requestBody).not.toContain('name="zip_file"\r\n\r\nin');
       expect(requestBody.match(/Content-Disposition: form-data; name=/g)).toHaveLength(
-        13
+        11
       );
     });
   });
@@ -315,8 +315,8 @@ describe('Client', () => {
       expect(requestBody).toContain('name="adlist"\r\n\r\ntrue');
       expect(requestBody).toContain('name="client"\r\n\r\ntrue');
       expect(requestBody).toContain('name="group"\r\n\r\ntrue');
-      expect(requestBody).toContain('name="auditlog"\r\n\r\nfalse');
-      expect(requestBody).toContain('name="staticdhcpleases"\r\n\r\nfalse');
+      expect(requestBody).not.toContain('name="auditlog"');
+      expect(requestBody).not.toContain('name="staticdhcpleases"');
       expect(requestBody).toContain('name="localdnsrecords"\r\n\r\ntrue');
       expect(requestBody).toContain('name="localcnamerecords"\r\n\r\ntrue');
       expect(requestBody).toContain('name="flushtables"\r\n\r\ntrue');
@@ -325,7 +325,7 @@ describe('Client', () => {
         'name="zip_file"; filename="backup.tar.gz"\r\nContent-Type: application/octet-stream'
       );
       expect(requestBody.match(/Content-Disposition: form-data; name=/g)).toHaveLength(
-        15
+        13
       );
     });
 
@@ -369,8 +369,8 @@ describe('Client', () => {
       expect(requestBody).toContain('name="adlist"\r\n\r\ntrue');
       expect(requestBody).toContain('name="client"\r\n\r\ntrue');
       expect(requestBody).toContain('name="group"\r\n\r\ntrue');
-      expect(requestBody).toContain('name="auditlog"\r\n\r\nfalse');
-      expect(requestBody).toContain('name="staticdhcpleases"\r\n\r\nfalse');
+      expect(requestBody).not.toContain('name="auditlog"');
+      expect(requestBody).not.toContain('name="staticdhcpleases"');
       expect(requestBody).toContain('name="localdnsrecords"\r\n\r\ntrue');
       expect(requestBody).toContain('name="localcnamerecords"\r\n\r\ntrue');
       expect(requestBody).toContain('name="flushtables"\r\n\r\ntrue');
@@ -379,7 +379,7 @@ describe('Client', () => {
         'name="zip_file"; filename="backup.tar.gz"\r\nContent-Type: application/octet-stream'
       );
       expect(requestBody.match(/Content-Disposition: form-data; name=/g)).toHaveLength(
-        15
+        13
       );
       updateGravity.mockRestore();
     });
