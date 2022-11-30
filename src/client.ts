@@ -171,18 +171,18 @@ export class Client {
     const form = new FormData();
     form.append('token', this.token);
 
-    form.append('whitelist', Config.syncOptions.whitelist);
-    form.append('regex_whitelist', Config.syncOptions.regexWhitelist);
-    form.append('blacklist', Config.syncOptions.blacklist);
-    form.append('regexlist', Config.syncOptions.regexlist);
-    form.append('adlist', Config.syncOptions.adlist);
-    form.append('client', Config.syncOptions.client);
-    form.append('group', Config.syncOptions.group);
-    form.append('auditlog', Config.syncOptions.auditlog);
-    form.append('staticdhcpleases', Config.syncOptions.staticdhcpleases);
-    form.append('localdnsrecords', Config.syncOptions.localdnsrecords);
-    form.append('localcnamerecords', Config.syncOptions.localcnamerecords);
-    form.append('flushtables', Config.syncOptions.flushtables);
+    if (Config.syncOptions.whitelist) form.append('whitelist', true);
+    if (Config.syncOptions.regexWhitelist) form.append('regex_whitelist', true);
+    if (Config.syncOptions.blacklist) form.append('blacklist', true);
+    if (Config.syncOptions.regexlist) form.append('regexlist', true);
+    if (Config.syncOptions.adlist) form.append('adlist', true);
+    if (Config.syncOptions.client) form.append('client', true);
+    if (Config.syncOptions.group) form.append('group', true);
+    if (Config.syncOptions.auditlog) form.append('auditlog', true);
+    if (Config.syncOptions.staticdhcpleases) form.append('staticdhcpleases', true);
+    if (Config.syncOptions.localdnsrecords) form.append('localdnsrecords', true);
+    if (Config.syncOptions.localcnamerecords) form.append('localcnamerecords', true);
+    if (Config.syncOptions.flushtables) form.append('flushtables', true);
 
     return form;
   }
