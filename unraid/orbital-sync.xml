@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<Container version="2">
+    <Name>orbital-sync</Name>
+    <Repository>mattwebbio/orbital-sync</Repository>
+    <Registry>https://hub.docker.com/r/mattwebbio/orbital-sync</Registry>
+    <Network>bridge</Network>
+    <Privileged>false</Privileged>
+    <Support>https://github.com/mattwebbio/orbital-sync/issues</Support>
+    <Project>https://github.com/mattwebbio/orbital-sync</Project>
+    <Overview>Orbital Sync synchronizes multiple Pi-hole instances for high availability (HA) using the built-in "teleporter". In other words, it performs a "backup" in the Pi-hole admin interface of your secondary Pi-hole instance, and then "restores" that backup to any number of "secondary" Pi-holes also via their admin interface.</Overview>
+    <WebUI />
+    <TemplateURL/>
+    <Icon>https://user-images.githubusercontent.com/420820/187585158-331400c3-18f3-4673-857e-44efd73c6104.svg</Icon>
+    <ExtraParams>--restart unless-stopped</ExtraParams>
+    <PostArgs/>
+    <Changes>https://github.com/mattwebbio/orbital-sync/blob/master/CHANGELOG.md</Changes>
+    <ReadMe>https://github.com/mattwebbio/orbital-sync#readme</ReadMe>
+    <Config Name="primary pihole baseurl" Target="PRIMARY_HOST_BASE_URL" Default="" Mode="" Description="The base URL of your Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash. i.e. 'http://192.168.1.2' or 'https://pihole.example.com'" Type="Variable" Display="always" Required="true" Mask="false" />
+    <Config Name="primary pihole password" Target="PRIMARY_HOST_PASSWORD" Default="" Mode="" Description="The password used to log in to the admin interface." Type="Variable" Display="always" Required="true" Mask="true" />
+    <Config Name="secondary pihole 1 baseurl" Target="SECONDARY_HOST_1_BASE_URL" Default="" Mode="" Description="The base URL of your secondary Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash. i.e. 'http://192.168.1.3' or 'https://pihole2.example.com'" Type="Variable" Display="always" Required="true" Mask="false" />
+    <Config Name="secondary pihole 1 password" Target="SECONDARY_HOST_1_PASSWORD" Default="" Mode="" Description="The password used to log in to the admin interface." Type="Variable" Display="always" Required="true" Mask="true" />
+    <Config Name="secondary pihole 2 baseurl" Target="SECONDARY_HOST_2_BASE_URL" Default="" Mode="" Description="The base URL of your secondary Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash. i.e. 'http://192.168.1.4' or 'https://pihole3.example.com'" Type="Variable" Display="always" Required="false" Mask="false" />
+    <Config Name="secondary pihole 2 password" Target="SECONDARY_HOST_2_PASSWORD" Default="" Mode="" Description="The password used to log in to the admin interface." Type="Variable" Display="always" Required="false" Mask="true" />
+    <Config Name="secondary pihole 3 baseurl" Target="SECONDARY_HOST_3_BASE_URL" Default="" Mode="" Description="The base URL of your secondary Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash. i.e. 'http://192.168.1.5' or 'https://pihole4.example.com'" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="secondary pihole 3 password" Target="SECONDARY_HOST_3_PASSWORD" Default="" Mode="" Description="The password used to log in to the admin interface." Type="Variable" Display="advanced" Required="false" Mask="true" />
+    <Config Name="secondary pihole 4 baseurl" Target="SECONDARY_HOST_4_BASE_URL" Default="" Mode="" Description="The base URL of your secondary Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash. i.e. 'http://192.168.1.6' or 'https://pihole5.example.com'" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="secondary pihole 4 password" Target="SECONDARY_HOST_4_PASSWORD" Default="" Mode="" Description="The password used to log in to the admin interface." Type="Variable" Display="advanced" Required="false" Mask="true" />
+    <Config Name="secondary pihole 5 baseurl" Target="SECONDARY_HOST_5_BASE_URL" Default="" Mode="" Description="The base URL of your secondary Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash. i.e. 'http://192.168.1.7' or 'https://pihole6.example.com'" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="secondary pihole 5 password" Target="SECONDARY_HOST_5_PASSWORD" Default="" Mode="" Description="The password used to log in to the admin interface." Type="Variable" Display="advanced" Required="false" Mask="true" />
+    <Config Name="secondary pihole 6 baseurl" Target="SECONDARY_HOST_6_BASE_URL" Default="" Mode="" Description="The base URL of your secondary Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash. i.e. 'http://192.168.1.8' or 'https://pihole7.example.com'" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="secondary pihole 6 password" Target="SECONDARY_HOST_6_PASSWORD" Default="" Mode="" Description="The password used to log in to the admin interface." Type="Variable" Display="advanced" Required="false" Mask="true" />
+    <Config Name="secondary pihole 7 baseurl" Target="SECONDARY_HOST_7_BASE_URL" Default="" Mode="" Description="The base URL of your secondary Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash. i.e. 'http://192.168.1.9' or 'https://pihole8.example.com'" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="secondary pihole 7 password" Target="SECONDARY_HOST_7_PASSWORD" Default="" Mode="" Description="The password used to log in to the admin interface." Type="Variable" Display="advanced" Required="false" Mask="true" />
+    <Config Name="secondary pihole 8 baseurl" Target="SECONDARY_HOST_8_BASE_URL" Default="" Mode="" Description="The base URL of your secondary Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash. i.e. 'http://192.168.1.10' or 'https://pihole9.example.com'" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="secondary pihole 8 password" Target="SECONDARY_HOST_8_PASSWORD" Default="" Mode="" Description="The password used to log in to the admin interface." Type="Variable" Display="advanced" Required="false" Mask="true" />
+    <Config Name="secondary pihole 9 baseurl" Target="SECONDARY_HOST_9_BASE_URL" Default="" Mode="" Description="The base URL of your secondary Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash. i.e. 'http://192.168.1.11' or 'https://pihole10.example.com'" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="secondary pihole 9 password" Target="SECONDARY_HOST_9_PASSWORD" Default="" Mode="" Description="The password used to log in to the admin interface." Type="Variable" Display="advanced" Required="false" Mask="true" />
+    <Config Name="interval minutes" Target="INTERVAL_MINUTES" Default="30" Mode="" Description="How long to wait between synchronizations. Defaults to five minutes. Remember that the DNS server on your secondary servers restarts everytime a sync is performed. i.e. '5', '30', or '1440'" Type="Variable" Display="always" Required="false" Mask="false" />
+    <Config Name="sync whitelist" Target="SYNC_WHITELIST" Default="true" Mode="" Description="Copies the whitelist" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="sync regex whitelist" Target="SYNC_REGEX_WHITELIST" Default="true" Mode="" Description="Copies the regex whitelist" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="sync blacklist" Target="SYNC_BLACKLIST" Default="true" Mode="" Description="Copies the blacklist" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="sync regexlist" Target="SYNC_REGEXLIST" Default="true" Mode="" Description="Copies the regex blacklist" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="sync adlist" Target="SYNC_ADLIST" Default="true" Mode="" Description="Copies the adlist" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="sync client" Target="SYNC_CLIENT" Default="true" Mode="" Description="Copies clients" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="sync group" Target="SYNC_GROUP" Default="true" Mode="" Description="Copies groups" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="sync audit log" Target="SYNC_AUDITLOG" Default="false" Mode="" Description="Copies the audit log" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="sync static dhcp leases" Target="SYNC_STATICDHCPLEASES" Default="false" Mode="" Description="Copies static dhcp leases" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="sync local dns records" Target="SYNC_LOCALDNSRECORDS" Default="true" Mode="" Description="Copies local DNS records" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="sync local cname records" Target="SYNC_LOCALCNAMERECORDS" Default="true" Mode="" Description="Copies local CNAME records" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="sync flush tables" Target="SYNC_FLUSHTABLES" Default="true" Mode="" Description="Clears existing data on the secondary (copy target) Pi-hole" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="notify on success" Target="NOTIFY_ON_SUCCESS" Default="false" Mode="" Description="Send a notification if a sync completes successfully." Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="notify on failure" Target="NOTIFY_ON_FAILURE" Default="true" Mode="" Description="Send notifications if a sync fails for any reason." Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="notify via SMTP" Target="NOTIFY_VIA_SMTP" Default="false" Mode="" Description="Send notifications via email." Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="smtp host" Target="SMTP_HOST" Default="" Mode="" Description="The SMTP server host. i.e. 'smtp.example.com'" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="smtp port" Target="SMTP_PORT" Default="" Mode="" Description="The SMTP server port. i.e. '25'/'587'/'465'" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="smtp tls" Target="SMTP_TLS" Default="" Mode="" Description="Should usually be set to true if using port 465. Otherwise, leave as is." Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="smtp user" Target="SMTP_USER" Default="" Mode="" Description="The SMTP account username. i.e. 'orbitalsync@example.com'" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="smtp password" Target="SMTP_PASSWORD" Default="" Mode="" Description="The SMTP account password." Type="Variable" Display="advanced" Required="false" Mask="true" />
+    <Config Name="smtp from" Target="SMTP_FROM" Default="" Mode="" Description="The email address to send notifications from. i.e. 'orbitalsync@example.com'" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="smtp to" Target="SMTP_TO" Default="" Mode="" Description="The email address to send notifications to. Can be a comma-seperated list. i.e. 'you@example.com'" Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="verbose mode" Target="VERBOSE" Default="false" Mode="" Description="Increases the verbosity of log output. Useful for debugging." Type="Variable" Display="advanced" Required="false" Mask="false" />
+    <Config Name="timezone" Target="TZ" Default="" Mode="" Description="The timezone for the timestamps displayed in log output. i.e. 'America/Los_Angeles'" Type="Variable" Display="advanced" Required="false" Mask="false" />
+</Container>
