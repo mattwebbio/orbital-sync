@@ -252,7 +252,7 @@ describe('Client', () => {
             'Processed group (3 entries)<br>\n' +
             'Processed whitelist (exact) (4 entries)<br>\n' +
             'Processed whitelist (regex) (0 entries)<br>\n' +
-            'OK'
+            'OK\n'
         );
       teleporter
         .get('/scripts/pi-hole/php/gravity.sh.php', undefined)
@@ -292,7 +292,7 @@ describe('Client', () => {
             'Processed group (3 entries)<br>\n' +
             'Processed whitelist (exact) (4 entries)<br>\n' +
             'Processed whitelist (regex) (0 entries)<br>\n' +
-            'OK'
+            'OK\n'
         );
       teleporter
         .get('/scripts/pi-hole/php/gravity.sh.php', undefined)
@@ -352,7 +352,7 @@ describe('Client', () => {
             'Processed group (3 entries)<br>\n' +
             'Processed whitelist (exact) (4 entries)<br>\n' +
             'Processed whitelist (regex) (0 entries)<br>\n' +
-            'OK'
+            'OK\n'
         );
 
       const result = await client.uploadBackup(backup);

@@ -122,7 +122,7 @@ export class Client {
       }
     );
     const uploadText = await uploadResponse.text();
-    if (uploadResponse.status !== 200 || !uploadText.endsWith('OK'))
+    if (uploadResponse.status !== 200 || !uploadText.trim().endsWith('OK'))
       throw new ErrorNotification({
         message: `Failed to upload backup to "${this.host.fullUrl}".`,
         verbose: {
