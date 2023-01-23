@@ -22,7 +22,7 @@
   "bin": "./dist/index.js",
   "devDependencies": {
     "@tsconfig/node18-strictest-esm": "^1.0.1",
-    "@types/jest": "^29.2.5",
+    "@types/jest": "^29.2.6",
     "@types/luxon": "^3.2.0",
     "@types/node": "^18.8.0",
     "@types/nodemailer": "^6.4.7",
