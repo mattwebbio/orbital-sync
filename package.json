@@ -38,7 +38,7 @@
     "typescript": "^4.9.4"
   },
   "dependencies": {
-    "@honeybadger-io/js": "^4.9.3",
+    "@honeybadger-io/js": "^5.0.0",
     "chalk": "^4.1.2",
     "fetch-cookie": "^2.1.0",
     "node-fetch": "^3.3.0",
