@@ -324,19 +324,19 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@honeybadger-io/core@^4.9.2":
-  version "4.9.2"
-  resolved "https://registry.yarnpkg.com/@honeybadger-io/core/-/core-4.9.2.tgz#800be351ae5fef13252161e12f2c88e2f5d4b592"
-  integrity sha512-l1dabSseq+qDAspHhUg4N9UjEhbu1W7ESJRXyyrWxuUxcPXDrk24ssSgAVowG/NLlCfUMLQ1iWYKIYY6f+25sw==
+"@honeybadger-io/core@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@honeybadger-io/core/-/core-5.0.0.tgz#13d4d211616e48a19bfcf24b1d57f9a3c0536ca5"
+  integrity sha512-k8rKIk0dfPg0zjVbkg4GSqYRka3aKs4T4z4PQ/txeUuvzifElXO324w2AL8J7I3/CwgwZ91839q0/54Ciiy+3A==
   dependencies:
     stacktrace-parser "^0.1.10"
 
-"@honeybadger-io/js@^4.9.3":
-  version "4.9.3"
-  resolved "https://registry.yarnpkg.com/@honeybadger-io/js/-/js-4.9.3.tgz#22a63c5cb5e873976bb22cf3cf273dd40f969e87"
-  integrity sha512-pk76zGxEWLj0I3h/ujzrWAkJJ5rq3YMJwjk4Bs+5ToJMD5Lwpb7B5dW56ivVCfffDPkFXDpXvhVJ8BcycrwRcA==
+"@honeybadger-io/js@^5.1.1":
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@honeybadger-io/js/-/js-5.1.1.tgz#b3608a9e42cff46252da75a3e3d9d53698f0f9a3"
+  integrity sha512-+kmQqa3GPDJFmjbSTD136M9aHNZ/5PDf2CbOoJ/K11P3MWBV1zutLU/OXJ2B2WA3lL8iFqnNgrzdK2fMIdNi9g==
   dependencies:
-    "@honeybadger-io/core" "^4.9.2"
+    "@honeybadger-io/core" "^5.0.0"
     "@types/aws-lambda" "^8.10.89"
     "@types/express" "^4.17.13"
 
