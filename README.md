@@ -4,7 +4,6 @@
 
 [![Tests](https://img.shields.io/github/actions/workflow/status/mattwebbio/orbital-sync/ci.yml?branch=master&label=tests&style=for-the-badge)](https://github.com/mattwebbio/orbital-sync/actions/workflows/ci.yml?query=branch%3Amaster)
 [![Coverage](https://img.shields.io/codecov/c/github/mattwebbio/orbital-sync/master?style=for-the-badge)](https://app.codecov.io/gh/mattwebbio/orbital-sync/)
-[![Release](https://img.shields.io/github/actions/workflow/status/mattwebbio/orbital-sync/release.yml?branch=master&label=release&style=for-the-badge)](https://github.com/mattwebbio/orbital-sync/actions/workflows/release.yml)
 [![Version](https://img.shields.io/github/v/tag/mattwebbio/orbital-sync?label=version&style=for-the-badge)](CHANGELOG.md)
 
 Orbital Sync synchronizes multiple Pi-hole instances for high availability (HA) using the built-in "teleporter". In
