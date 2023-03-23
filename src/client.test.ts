@@ -218,7 +218,7 @@ describe('Client', () => {
       });
     });
 
-    test('should throw error if response does not end with "OK"', async () => {
+    test('should throw error if response does not end with "OK" or "Done importing"', async () => {
       teleporter.post('/scripts/pi-hole/php/teleporter.php').reply(200);
 
       const expectError = expect(client.uploadBackup(backup)).rejects;
@@ -340,19 +340,19 @@ describe('Client', () => {
         .post('/scripts/pi-hole/php/teleporter.php', (body) => (requestBody = body))
         .reply(
           200,
-          'Processed adlist (14 entries)<br>\n' +
-            'Processed adlist group assignments (13 entries)<br>\n' +
+          'Start importing...<br>\n' +
+            'Processed adlist (5 entries)<br>\n' +
+            'Processed adlist group assignments (5 entries)<br>\n' +
             'Processed blacklist (exact) (0 entries)<br>\n' +
-            'Processed blacklist (regex) (3 entries)<br>\n' +
-            'Processed client (8 entries)<br>\n' +
-            'Processed client group assignments (16 entries)<br>\n' +
-            'Processed local DNS records (41 entries)<br>\n' +
-            'Processed domain_audit (0 entries)<br>\n' +
-            'Processed black-/whitelist group assignments (10 entries)<br>\n' +
-            'Processed group (3 entries)<br>\n' +
-            'Processed whitelist (exact) (4 entries)<br>\n' +
-            'Processed whitelist (regex) (0 entries)<br>\n' +
-            'OK'
+            'Processed blacklist (regex) (0 entries)<br>\n' +
+            'Processed client (0 entries)<br>\n' +
+            'Processed client group assignments (0 entries)<br>\n' +
+            'Processed local DNS records (20 entries)<br>\n' +
+            'Processed local CNAME records (0 entries)<br>\n' +
+            'Processed black-/whitelist group assignments (217 entries)<br>\n' +
+            'Processed group (1 entry)<br>\nProcessed whitelist (exact) (206 entries)<br>\n' +
+            'Processed whitelist (regex) (11 entries)<br>\n' +
+            'Done importing'
         );
 
       const result = await client.uploadBackup(backup);
