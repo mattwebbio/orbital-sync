@@ -67,7 +67,7 @@ jobs:
         with:
           node-version: '18.x'
       - run: yarn
-      - run: tsc
+      - run: yarn tsc
       - run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
       - run: yarn publish --registry https://npm.pkg.github.com
       - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc

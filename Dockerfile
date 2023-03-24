@@ -4,7 +4,7 @@ ENV NODE_ENV=development
 WORKDIR /usr/src/app
 COPY . .
 RUN yarn install && \
-    npx tsc
+    yarn tsc
 
 FROM node:18-alpine
 ENV NODE_ENV=production
