@@ -41,7 +41,7 @@
     "@honeybadger-io/js": "^5.1.1",
     "chalk": "^4.1.2",
     "fetch-cookie": "^2.1.0",
-    "node-fetch": "^3.3.0",
+    "node-fetch": "^3.3.1",
     "node-html-parser": "^6.1.4",
     "nodemailer": "^6.9.1",
     "sleep-promise": "^9.1.0"
