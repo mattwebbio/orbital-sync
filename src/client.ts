@@ -1,5 +1,7 @@
 import chalk from 'chalk';
 import fetchCookie from 'fetch-cookie';
+import fs from 'fs';
+import https from 'https';
 import nodeFetch, {
   Blob,
   FormData,
@@ -13,6 +15,26 @@ import { Config } from './config.js';
 import { Log } from './log.js';
 import { ErrorNotification } from './notify.js';
 
+const customCAPath = "/trusted-certs"
+const trustedCAsFetch = (url: RequestInfo, options: RequestInit = {}): Promise<Response> => {
+  let agent: https.Agent;
+  try {
+    const certFiles = fs.readdirSync(customCAPath);
+    if (certFiles.length > 0) {
+      const caCerts = certFiles.map(certFile => fs.readFileSync(`${customCAPath}/${certFile}`));
+      agent = new https.Agent({ ca: caCerts, rejectUnauthorized: true });
+    } else {
+      Log.verbose(`No custom certificates found in directory: ${customCAPath}`);
+      agent = new https.Agent({ rejectUnauthorized: true });
+    }
+  } catch (error) {
+    Log.error(`Error loading custom certificates: ${error}`);
+    agent = new https.Agent({ rejectUnauthorized: true });
+  }
+
+  return nodeFetch(url, { agent, ...options });
+};
+
 export class Client {
   private constructor(
     private fetch: NodeFetchCookie,
@@ -22,7 +44,7 @@ export class Client {
 
   public static async create(host: Host): Promise<Client> {
     Log.info(chalk.yellow(`➡️ Signing in to ${host.fullUrl}...`));
-    const fetch = fetchCookie(nodeFetch);
+    const fetch = fetchCookie(trustedCAsFetch);
 
     await fetch(`${host.fullUrl}/index.php?login`, { method: 'GET' });
     const response = await fetch(`${host.fullUrl}/index.php?login`, {
