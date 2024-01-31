@@ -7,3 +7,10 @@ updates:
     commit-message:
       prefix: fix
       prefix-development: chore
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    commit-message:
+      prefix: fix
+      prefix-development: chore
