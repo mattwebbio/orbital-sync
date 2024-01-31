@@ -141,10 +141,12 @@ export class Notify {
         host: Config.smtpHost,
         port: Number.parseInt(Config.smtpPort),
         secure: Config.smtpTls,
-        auth: {
-          user: Config.smtpUser,
-          pass: Config.smtpPassword
-        }
+        auth: Config.smtpUser
+          ? {
+              user: Config.smtpUser,
+              pass: Config.smtpPassword
+            }
+          : undefined
       });
 
       Log.verbose('✔️ SMTP client created successfully.');
