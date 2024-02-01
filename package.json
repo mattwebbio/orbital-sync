@@ -1,6 +1,6 @@
 {
   "name": "orbital-sync",
-  "version": "1.5.4",
+  "version": "1.5.5",
   "type": "module",
   "main": "dist/index.js",
   "license": "MIT",
@@ -27,7 +27,7 @@
     "@types/luxon": "^3.4.2",
     "@types/node": "^18.8.0",
     "@types/nodemailer": "^6.4.14",
-    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/eslint-plugin": "^5.55.0",
     "@typescript-eslint/parser": "^5.62.0",
     "auto-changelog": "^2.4.0",
     "commitlint": "^18.6.0",
