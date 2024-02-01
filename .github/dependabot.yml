@@ -12,5 +12,5 @@ updates:
     schedule:
       interval: 'weekly'
     commit-message:
-      prefix: fix
-      prefix-development: chore
+      prefix: ci
+      prefix-development: ci
