@@ -1,6 +1,13 @@
 ### Changelog
 
 
+## [1.5.6](https://github.com/mattwebbio/orbital-sync/compare/v1.5.5...v1.5.6) (2024-02-01)
+
+
+### Bug Fixes
+
+* perform release on tag push ([590f620](https://github.com/mattwebbio/orbital-sync/commit/590f62028ffb6e37104d8882af9d5f29308bb61e))
+
 ## [1.5.5](https://github.com/mattwebbio/orbital-sync/compare/v1.5.4...v1.5.5) (2024-02-01)
 
 ### Bug Fixes
