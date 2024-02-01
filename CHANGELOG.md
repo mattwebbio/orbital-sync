@@ -1,6 +1,14 @@
 ### Changelog
 
 
+## [1.5.7](https://github.com/mattwebbio/orbital-sync/compare/v1.5.6...v1.5.7) (2024-02-01)
+
+
+### Bug Fixes
+
+* bump nodemailer from 6.9.8 to 6.9.9 ([6b57526](https://github.com/mattwebbio/orbital-sync/commit/6b575269f438808218ae80bda2b9e8d130166917))
+* update `release-please` to use a token that will trigger release workflow ([e496c31](https://github.com/mattwebbio/orbital-sync/commit/e496c31ff87cdfc9579a6cdac0bd78b10999a8fd))
+
 ## [1.5.6](https://github.com/mattwebbio/orbital-sync/compare/v1.5.5...v1.5.6) (2024-02-01)
 
 
