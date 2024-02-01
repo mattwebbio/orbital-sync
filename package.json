@@ -44,7 +44,7 @@
     "chalk": "^4.1.2",
     "fetch-cookie": "^2.1.0",
     "node-fetch": "^3.3.1",
-    "node-html-parser": "^6.1.4",
+    "node-html-parser": "^6.1.12",
     "nodemailer": "^6.9.8",
     "sleep-promise": "^9.1.0"
   }
