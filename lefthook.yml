@@ -1,0 +1,21 @@
+pre-commit:
+  parallel: true
+  commands:
+    prettier:
+      run: yarn prettier --ignore-unknown --check {staged_files}
+    eslint:
+      glob: '*.ts'
+      run: yarn eslint {staged_files}
+    unit-test:
+      glob: '*.ts'
+      run: yarn test:unit
+
+pre-push:
+  parallel: true
+  commands:
+    unit-test:
+      run: yarn test:unit
+    prettier:
+      run: yarn prettier
+    eslint:
+      run: yarn lint

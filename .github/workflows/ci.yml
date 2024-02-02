@@ -18,7 +18,7 @@ jobs:
           node-version: '18.x'
       - run: yarn
       - uses: reviewdog/action-setup@v1
-      - run: yarn eslint .
+      - run: yarn lint
   prettier:
     runs-on: ubuntu-latest
     steps:
@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: '18.x'
       - run: yarn
-      - run: yarn prettier --ignore-unknown --check .
+      - run: yarn prettier
   codeql:
     runs-on: ubuntu-latest
     permissions:
