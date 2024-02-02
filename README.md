@@ -133,6 +133,10 @@ result in hosts after the gap being skipped in the sync process.
 | `SMTP_FROM`          | No       | N/A     | `orbitalsync@example.com` | The email address to send notifications from.                                |
 | `SMTP_TO`            | Yes      | N/A     | `you@example.com`         | The email address to send notifications to. Can be a comma-seperated list.   |
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=mattwebbio/orbital-sync&type=Date)](https://star-history.com/#mattwebbio/orbital-sync&Date)
+
 ## Disclaimer
 
 [![GitHub](https://img.shields.io/github/license/mattwebbio/orbital-sync?style=for-the-badge)](LICENSE)
