@@ -5,9 +5,9 @@ import nock from 'nock';
 import { FetchError } from 'node-fetch';
 import nodemailer from 'nodemailer';
 import type Mail from 'nodemailer/lib/mailer';
-import { Config } from './config';
-import { Log } from './log';
-import { ErrorNotification, Notify } from './notify';
+import { Config } from '../../src/config';
+import { Log } from '../../src/log';
+import { ErrorNotification, Notify } from '../../src/notify';
 
 describe('Notify', () => {
   const logInfo = jest.spyOn(Log, 'info');

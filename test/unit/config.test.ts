@@ -2,13 +2,13 @@ import { jest } from '@jest/globals';
 
 describe('Config', () => {
   const INITIAL_ENV = Object.assign({}, process.env);
-  let Config: typeof import('./config').Config;
+  let Config: typeof import('../../src/config').Config;
 
   const resetEnv = () => (process.env = Object.assign({}, INITIAL_ENV));
   const resetImport = async () => {
     jest.resetModules();
 
-    ({ Config } = await import('./config'));
+    ({ Config } = await import('../../src/config'));
   };
 
   beforeEach(() => resetImport());

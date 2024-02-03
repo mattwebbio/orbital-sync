@@ -2,11 +2,11 @@ import { describe, expect, jest, test } from '@jest/globals';
 import chalk from 'chalk';
 import nock from 'nock';
 import { Blob } from 'node-fetch';
-import { Client } from './client';
-import { Config, Host } from './config';
-import { Log } from './log';
-import { ErrorNotification, Notify } from './notify';
-import { Sync } from './sync';
+import { Client } from '../../src/client';
+import { Config, Host } from '../../src/config';
+import { Log } from '../../src/log';
+import { ErrorNotification, Notify } from '../../src/notify';
+import { Sync } from '../../src/sync';
 
 describe('entrypoint', () => {
   let primaryHost: ReturnType<typeof jest.spyOn>;

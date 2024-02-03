@@ -1,10 +1,10 @@
 import { jest } from '@jest/globals';
 import nock from 'nock';
 import { Blob } from 'node-fetch';
-import { Client } from './client';
-import { Host } from './config';
-import { Config } from './config';
-import { ErrorNotification } from './notify';
+import { Client } from '../../src/client';
+import { Host } from '../../src/config';
+import { Config } from '../../src/config';
+import { ErrorNotification } from '../../src/notify';
 
 describe('Client', () => {
   const host = new Host('http://10.0.0.2', 'mypassword');

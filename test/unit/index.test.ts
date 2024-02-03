@@ -1,7 +1,7 @@
 import { describe, expect, jest, test } from '@jest/globals';
 import nock from 'nock';
-import { Config } from './config';
-import { Sync } from './sync';
+import { Config } from '../../src/config';
+import { Sync } from '../../src/sync';
 
 describe('entrypoint', () => {
   beforeEach(() => {
@@ -16,7 +16,7 @@ describe('entrypoint', () => {
     const sync = jest.spyOn(Sync, 'perform').mockImplementation(() => Promise.resolve());
     const runOnce = jest.spyOn(Config, 'runOnce', 'get').mockReturnValue(true);
 
-    await import('./index');
+    await import('../../src/index');
 
     expect(runOnce).toHaveBeenCalledTimes(1);
     expect(sync).toHaveBeenCalledTimes(1);

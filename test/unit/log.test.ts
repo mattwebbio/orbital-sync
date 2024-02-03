@@ -1,7 +1,7 @@
 import { jest } from '@jest/globals';
 import chalk from 'chalk';
-import { Config } from './config';
-import { Log } from './log';
+import { Config } from '../../src/config';
+import { Log } from '../../src/log';
 
 describe('Log', () => {
   beforeEach(() => {
