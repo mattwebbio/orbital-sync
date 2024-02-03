@@ -1,4 +1,5 @@
 import Honeybadger from '@honeybadger-io/js';
+import Sentry from '@sentry/node';
 import { FetchError } from 'node-fetch';
 import nodemailer from 'nodemailer';
 import { Config } from './config.js';
@@ -7,6 +8,7 @@ import { Log } from './log.js';
 export class Notify {
   private static errorQueue: NotificationInterface[] = [];
   private static _honeybadger?: Honeybadger;
+  private static _sentry?: typeof Sentry;
   private static _smtpClient?: nodemailer.Transporter;
 
   static async ofThrow(error: unknown, queue = false): Promise<void> {
@@ -25,8 +27,10 @@ export class Notify {
         queue
       );
     } else {
-      if (error instanceof Error || typeof error === 'string')
+      if (error instanceof Error || typeof error === 'string') {
         this.honeybadger?.notify(error);
+        this.sentry?.captureException(error);
+      }
       await Notify.ofFailure({
         message: `An unexpected error was thrown:\n- ${error?.toString() ?? error}`
       });
@@ -98,6 +102,20 @@ export class Notify {
     });
 
     return this._honeybadger;
+  }
+
+  private static get sentry(): typeof Sentry | undefined {
+    if (Config.sentryDsn === undefined) return;
+
+    if (this._sentry === undefined) {
+      Sentry.init({
+        dsn: Config.sentryDsn
+      });
+
+      this._sentry = Sentry;
+    }
+
+    return this._sentry;
   }
 
   private static async dispatch(subject: string, contents: string): Promise<void> {

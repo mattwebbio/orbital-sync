@@ -462,4 +462,8 @@ describe('Config', () => {
   describe('honeybadgerApiKey', () => {
     testToHaveDefaultAndOverride('honeybadgerApiKey', undefined, 'HONEYBADGER_API_KEY');
   });
+
+  describe('sentryDsn', () => {
+    testToHaveDefaultAndOverride('sentryDsn', undefined, 'SENTRY_DSN');
+  });
 });

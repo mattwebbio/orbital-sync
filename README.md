@@ -118,14 +118,15 @@ result in hosts after the gap being skipped in the sync process.
 
 ### Notifications
 
-| Environment Variable  | Required | Default | Examples                 | Description                                                                                                                          |
-| --------------------- | -------- | ------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `NOTIFY_ON_SUCCESS`   | No       | `false` | `true`/`false`           | Send a notification if a sync completes successfully.                                                                                |
-| `NOTIFY_ON_FAILURE`   | No       | `true`  | `true`/`false`           | Send notifications if a sync fails for any reason.                                                                                   |
-| `NOTIFY_VIA_SMTP`     | No       | `false` | `true`/`false`           | Send notifications via email.                                                                                                        |
-| `HONEYBADGER_API_KEY` | No       | N/A     | `hbp_xxxxxxxxxxxxxxxxxx` | Get notifications to honeybadger.io when the process crashes for any reason by creating a new project and putting your API key here. |
-| `VERBOSE`             | No       | `false` | `true`/`false`           | Increases the verbosity of log output. Useful for debugging.                                                                         |
-| `TZ`                  | No       | N/A     | `America/Los_Angeles`    | The timezone for the timestamps displayed in log output.                                                                             |
+| Environment Variable  | Required | Default | Examples                            | Description                                                                                        |
+| --------------------- | -------- | ------- | ----------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `NOTIFY_ON_SUCCESS`   | No       | `false` | `true`/`false`                      | Send a notification if a sync completes successfully.                                              |
+| `NOTIFY_ON_FAILURE`   | No       | `true`  | `true`/`false`                      | Send notifications if a sync fails for any reason.                                                 |
+| `NOTIFY_VIA_SMTP`     | No       | `false` | `true`/`false`                      | Send notifications via email.                                                                      |
+| `HONEYBADGER_API_KEY` | No       | N/A     | `hbp_xxxxxxxxxxxxxxxxxx`            | Set to use Honeybadger for proper exception recording; mostly useful for development or debugging. |
+| `SENTRY_DSN`          | No       | N/A     | `https://key@o0.ingest.sentry.io/0` | Set to use Sentry for proper exception recording; mostly useful for development or debugging.      |
+| `VERBOSE`             | No       | `false` | `true`/`false`                      | Increases the verbosity of log output. Useful for debugging.                                       |
+| `TZ`                  | No       | N/A     | `America/Los_Angeles`               | The timezone for the timestamps displayed in log output.                                           |
 
 #### SMTP
 

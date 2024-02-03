@@ -1,4 +1,5 @@
 import Honeybadger from '@honeybadger-io/js';
+import Sentry from '@sentry/node';
 import { jest } from '@jest/globals';
 import nock from 'nock';
 import { FetchError } from 'node-fetch';
@@ -265,6 +266,29 @@ describe('Notify', () => {
       expect(honeybadgerApiKey).toHaveBeenCalledTimes(3);
       expect(honeybadgerConfigure).toHaveBeenCalledTimes(1);
       expect(honeybadgerConfigure).toHaveBeenCalledWith({ apiKey: 'foobar' });
+    });
+
+    test('should send unexpected error to Sentry if configured', async () => {
+      const sentryDsn = jest.spyOn(Config, 'sentryDsn', 'get').mockReturnValue('foobar');
+      const sentryCapture = jest
+        .spyOn(Sentry, 'captureException')
+        .mockImplementation(jest.fn<typeof Sentry.captureException>());
+      const sentryInit = jest.spyOn(Sentry, 'init').mockReturnValue({
+        captureException: sentryCapture
+      } as unknown as ReturnType<typeof Sentry.init>);
+      const mockError = new FetchError('Connection error', 'system', {
+        code: 'ECONNRESET'
+      });
+
+      await Notify.ofThrow(mockError);
+      await Notify.ofThrow('Example thrown string');
+
+      expect(sentryCapture).toHaveBeenCalledTimes(2);
+      expect(sentryCapture).toHaveBeenCalledWith(mockError);
+      expect(sentryCapture).toHaveBeenCalledWith('Example thrown string');
+      expect(sentryDsn).toHaveBeenCalledTimes(3);
+      expect(sentryInit).toHaveBeenCalledTimes(1);
+      expect(sentryInit).toHaveBeenCalledWith({ dsn: 'foobar' });
     });
   });
 

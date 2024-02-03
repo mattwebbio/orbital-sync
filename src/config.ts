@@ -137,6 +137,10 @@ export class Config {
     return process.env['HONEYBADGER_API_KEY'];
   }
 
+  static get sentryDsn(): string | undefined {
+    return process.env['SENTRY_DSN'];
+  }
+
   private static getRequiredEnv(variable: string): string {
     const value = process.env[variable];
 
