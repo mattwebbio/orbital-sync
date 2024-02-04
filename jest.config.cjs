@@ -13,5 +13,6 @@ module.exports = {
       lines: 80,
       statements: -10
     }
-  }
+  },
+  coveragePathIgnorePatterns: ['<rootDir>/test']
 };

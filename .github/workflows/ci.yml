@@ -59,6 +59,8 @@ jobs:
       - uses: codecov/codecov-action@v4
         with:
           flags: unit
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
   e2e:
     runs-on: ubuntu-latest
     steps:
@@ -80,3 +82,5 @@ jobs:
       - uses: codecov/codecov-action@v4
         with:
           flags: integration
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
