@@ -313,5 +313,26 @@ describe('Notify', () => {
       expect(processExit).not.toHaveBeenCalled();
       queueError.mockRestore();
     });
+
+    test('should stringify non-error objects', async () => {
+      const queueError = jest.spyOn(Notify, 'queueError');
+      jest.spyOn(Config, 'notifyViaSmtp', 'get').mockImplementation(() => {
+        throw 'Example configuration error';
+      });
+
+      await Notify.ofFailure({
+        message: 'Example failure message',
+        verbose: 'Example verbose context'
+      });
+
+      expect(queueError).toHaveBeenCalledTimes(1);
+      expect(queueError).toHaveBeenCalledWith({
+        message: 'SMTP is misconfigured. Please check your configuration.',
+        verbose: '"Example configuration error"'
+      });
+      expect(sendMail).not.toHaveBeenCalled();
+      expect(processExit).not.toHaveBeenCalled();
+      queueError.mockRestore();
+    });
   });
 });
