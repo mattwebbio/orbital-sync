@@ -1,5 +1,5 @@
 import { Network } from 'testcontainers';
-import { orbitalSync, pihole } from '../containers';
+import { createOrbitalSyncContainer, createPiholeContainer } from '../containers';
 import { inspectById } from '../docker';
 import sleep from 'sleep-promise';
 
@@ -7,10 +7,10 @@ describe('Orbital', () => {
   it('should sync two targets and exit with "zero" exit code', async () => {
     const network = await new Network().start();
     const [pihole1, pihole2, pihole3, orbitalImage] = await Promise.all([
-      pihole({ password: 'primary' }).withNetwork(network).start(),
-      pihole({ password: 'secondary' }).withNetwork(network).start(),
-      pihole({ password: 'tertiary' }).withNetwork(network).start(),
-      orbitalSync()
+      createPiholeContainer({ password: 'primary' }).withNetwork(network).start(),
+      createPiholeContainer({ password: 'secondary' }).withNetwork(network).start(),
+      createPiholeContainer({ password: 'tertiary' }).withNetwork(network).start(),
+      createOrbitalSyncContainer()
     ]);
 
     const orbital = await orbitalImage

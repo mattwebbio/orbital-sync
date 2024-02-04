@@ -57,6 +57,8 @@ jobs:
       - run: yarn
       - run: yarn test:unit
       - uses: codecov/codecov-action@v4
+        with:
+          flags: unit
   e2e:
     runs-on: ubuntu-latest
     steps:
@@ -66,3 +68,15 @@ jobs:
           node-version: '18.x'
       - run: yarn
       - run: yarn test:e2e
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+      - run: yarn
+      - run: yarn test:integration
+      - uses: codecov/codecov-action@v4
+        with:
+          flags: integration

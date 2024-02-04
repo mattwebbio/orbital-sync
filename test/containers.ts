@@ -1,6 +1,10 @@
 import { GenericContainer, Wait } from 'testcontainers';
 
-export function pihole({ password }: { password: string }): GenericContainer {
+export function createPiholeContainer({
+  password
+}: {
+  password: string;
+}): GenericContainer {
   return new GenericContainer('pihole/pihole:latest')
     .withEnvironment({
       WEBPASSWORD: password
@@ -15,6 +19,6 @@ export function pihole({ password }: { password: string }): GenericContainer {
     .withWaitStrategy(Wait.forHealthCheck());
 }
 
-export function orbitalSync(): Promise<GenericContainer> {
+export function createOrbitalSyncContainer(): Promise<GenericContainer> {
   return GenericContainer.fromDockerfile('./', 'Dockerfile').build();
 }

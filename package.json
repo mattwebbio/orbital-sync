@@ -9,9 +9,10 @@
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --ignore-unknown --check .",
     "prettier:fix": "prettier --ignore-unknown --write .",
-    "test": "npm run test:unit && npm run test:e2e",
+    "test": "npm run test:unit && npm run test:integration && npm run test:e2e",
     "test:unit": "NODE_OPTIONS=--experimental-vm-modules yarn jest --silent test/unit/",
-    "test:e2e": "test/e2e.sh"
+    "test:e2e": "test/e2e.sh",
+    "test:integration": "test/integration.sh"
   },
   "repository": {
     "type": "git",

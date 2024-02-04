@@ -8,7 +8,7 @@ import { Log } from '../../src/log';
 import { ErrorNotification, Notify } from '../../src/notify';
 import { Sync } from '../../src/sync';
 
-describe('entrypoint', () => {
+describe('sync', () => {
   let primaryHost: ReturnType<typeof jest.spyOn>;
   let secondaryHosts: ReturnType<typeof jest.spyOn>;
   let clientCreate: ReturnType<typeof jest.spyOn>;
