@@ -34,7 +34,7 @@
     "jest": "^29.7.0",
     "lefthook": "^1.6.1",
     "nock": "^13.5.1",
-    "prettier": "^2.8.8",
+    "prettier": "^3.2.5",
     "testcontainers": "^10.6.0",
     "ts-jest": "^29.0.5",
     "typescript": "^5.3.3"
