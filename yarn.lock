@@ -568,19 +568,20 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.56.0.tgz#ef20350fec605a7f7035a01764731b2de0f3782b"
   integrity sha512-gMsVel9D7f2HLkBma9VbtzZRehRogVRfbr++f06nL2vnCGCNlzOD+/MUov/F4p8myyAHspEhVobgjpX64q5m6A==
 
-"@honeybadger-io/core@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/@honeybadger-io/core/-/core-6.0.0.tgz#3b3290f2ed30022d9c80c27c3efa862e53cf7cd7"
-  integrity sha512-RA2x9IzwLpiX+KKHrc7ABlyup/2DGDMlngv9J/SnlSfTOj5T2ITXKbkF9ekqs5rTzxsj/DNIvzFROr9e90OJJQ==
+"@honeybadger-io/core@^6.5.1":
+  version "6.5.1"
+  resolved "https://registry.yarnpkg.com/@honeybadger-io/core/-/core-6.5.1.tgz#4a54ff253aacae676a6bc9dd1606cd807ce93a61"
+  integrity sha512-E/cNkReUDH6dNvhskZ/U2yCwemQcwvMlxa5BwuuGuLOCtErEaI2AxsQg07ZJ6Z8fwTDiX6Iw995tDOz4UqE4Rw==
   dependencies:
+    json-nd "^1.0.0"
     stacktrace-parser "^0.1.10"
 
-"@honeybadger-io/js@^6.1.1":
-  version "6.1.1"
-  resolved "https://registry.yarnpkg.com/@honeybadger-io/js/-/js-6.1.1.tgz#35da6c4bd43d8e48891478c20a03a377aeed5f8e"
-  integrity sha512-dcapKBNPqt0ytlt2eBlX6ENtDystM0Ykb3sgddaS1GRt8s4RxadwkjUPry4EQGuKt9JfvvMmSk5vvoS9rzaiTw==
+"@honeybadger-io/js@^6.8.3":
+  version "6.8.3"
+  resolved "https://registry.yarnpkg.com/@honeybadger-io/js/-/js-6.8.3.tgz#9ac79f16e38f9e4ebb464ef7fff656ffbc485022"
+  integrity sha512-cS/WIX2tGZoAXQLkChGJcwsjkZydjdZQEiPWEusX10cbkPIi8r6fVPPQ0fB0vHvktMrA+WO9fpxi1/SSL39pHQ==
   dependencies:
-    "@honeybadger-io/core" "^6.0.0"
+    "@honeybadger-io/core" "^6.5.1"
     "@types/aws-lambda" "^8.10.89"
     "@types/express" "^4.17.13"
 
@@ -3076,6 +3077,11 @@ jsesc@^2.5.1:
   version "2.5.2"
   resolved "https://registry.yarnpkg.com/jsesc/-/jsesc-2.5.2.tgz#80564d2e483dacf6e8ef209650a67df3f0c283a4"
   integrity sha512-OYu7XEzjkCQ3C5Ps3QIZsQfNpqoJyZZA99wd9aWd05NCtC5pWOkShK2mkL6HXQR6/Cy2lbNdPlZBpuQHXE63gA==
+
+json-nd@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/json-nd/-/json-nd-1.0.0.tgz#e52283b7ee3f5e6f9920f668c94044bda912120c"
+  integrity sha512-8TIp0HZAY0VVrwRQJJPb4+nOTSPoOWZeEKBTLizUfQO4oym5Fc/MKqN8vEbLCxcyxDf2vwNxOQ1q84O49GWPyQ==
 
 json-parse-even-better-errors@^2.3.0:
   version "2.3.1"
