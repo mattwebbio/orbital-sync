@@ -36,7 +36,7 @@
     "nock": "^13.5.1",
     "prettier": "^2.8.8",
     "testcontainers": "^10.6.0",
-    "ts-jest": "^29.0.5",
+    "ts-jest": "^29.1.2",
     "typescript": "^5.3.3"
   },
   "dependencies": {
