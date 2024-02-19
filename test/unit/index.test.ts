@@ -1,6 +1,6 @@
 import { describe, expect, jest, test } from '@jest/globals';
 import nock from 'nock';
-import { Config } from '../../src/config';
+import { Config } from '../../src/config/environment';
 import { Sync } from '../../src/sync';
 
 describe('entrypoint', () => {

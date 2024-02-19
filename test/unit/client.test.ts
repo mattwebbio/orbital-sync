@@ -2,8 +2,8 @@ import { jest } from '@jest/globals';
 import nock from 'nock';
 import { Blob } from 'node-fetch';
 import { Client } from '../../src/client';
-import { Host } from '../../src/config';
-import { Config } from '../../src/config';
+import { Host } from '../../src/config/environment';
+import { Config } from '../../src/config/environment';
 import { ErrorNotification } from '../../src/notify';
 
 describe('Client', () => {

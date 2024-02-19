@@ -5,7 +5,7 @@ import nock from 'nock';
 import { FetchError } from 'node-fetch';
 import nodemailer from 'nodemailer';
 import type Mail from 'nodemailer/lib/mailer';
-import { Config } from '../../src/config';
+import { Config } from '../../src/config/environment';
 import { Log } from '../../src/log';
 import { ErrorNotification, Notify } from '../../src/notify';
 

@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import chalk from 'chalk';
-import { Config } from '../../src/config';
+import { Config } from '../../src/config/environment';
 import { Log } from '../../src/log';
 
 describe('Log', () => {

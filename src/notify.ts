@@ -2,7 +2,7 @@ import Honeybadger from '@honeybadger-io/js';
 import Sentry from '@sentry/node';
 import { FetchError } from 'node-fetch';
 import nodemailer from 'nodemailer';
-import { Config } from './config.js';
+import { Config } from './config/environment.js';
 import { Log } from './log.js';
 
 export class Notify {

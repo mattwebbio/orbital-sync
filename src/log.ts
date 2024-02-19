@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { Config } from './config.js';
+import { Config } from './config/environment.js';
 
 export class Log {
   static info(message: unknown) {

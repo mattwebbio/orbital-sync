@@ -8,8 +8,8 @@ import nodeFetch, {
   Response
 } from 'node-fetch';
 import { parse } from 'node-html-parser';
-import type { Host } from './config.js';
-import { Config } from './config.js';
+import type { Host } from './config/environment.js';
+import { Config } from './config/environment.js';
 import { Log } from './log.js';
 import { ErrorNotification } from './notify.js';
 

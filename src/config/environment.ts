@@ -1,4 +1,4 @@
-import { ErrorNotification } from './notify.js';
+import { ErrorNotification } from '../notify.js';
 
 export class Config {
   private static _primaryHost?: Host;

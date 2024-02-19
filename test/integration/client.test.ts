@@ -3,7 +3,7 @@ import { StartedTestContainer } from 'testcontainers';
 import { Blob } from 'node-fetch';
 import { createPiholeContainer } from '../containers';
 import { Client } from '../../src/client';
-import { Host } from '../../src/config';
+import { Host } from '../../src/config/environment';
 
 describe('client', () => {
   let piholeContainer: StartedTestContainer;

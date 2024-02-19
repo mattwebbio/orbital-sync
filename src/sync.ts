@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import sleep from 'sleep-promise';
 import { Client } from './client.js';
-import { Config } from './config.js';
+import { Config } from './config/environment.js';
 import { Log } from './log.js';
 import { Notify } from './notify.js';
 

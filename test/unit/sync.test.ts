@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import nock from 'nock';
 import { Blob } from 'node-fetch';
 import { Client } from '../../src/client';
-import { Config, Host } from '../../src/config';
+import { Config, Host } from '../../src/config/environment';
 import { Log } from '../../src/log';
 import { ErrorNotification, Notify } from '../../src/notify';
 import { Sync } from '../../src/sync';
