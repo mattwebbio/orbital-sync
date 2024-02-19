@@ -8,19 +8,19 @@ import nodeFetch, {
   Response
 } from 'node-fetch';
 import { parse } from 'node-html-parser';
-import type { Host } from './config/environment.js';
-import { Config } from './config/environment.js';
-import { Log } from './log.js';
-import { ErrorNotification } from './notify.js';
+import type { Host } from '../../config/environment.js';
+import { Config } from '../../config/environment.js';
+import { Log } from '../../log.js';
+import { ErrorNotification } from '../../notify.js';
 
-export class Client {
+export class ClientV5 {
   private constructor(
     private fetch: NodeFetchCookie,
     private host: Host,
     private token: string
   ) {}
 
-  public static async create(host: Host): Promise<Client> {
+  public static async create(host: Host): Promise<ClientV5> {
     Log.info(chalk.yellow(`➡️ Signing in to ${host.fullUrl}...`));
     const fetch = fetchCookie(nodeFetch);
 

@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import sleep from 'sleep-promise';
-import { Client } from './client.js';
+import { ClientV5 } from './client/v5/index.js';
 import { Config } from './config/environment.js';
 import { Log } from './log.js';
 import { Notify } from './notify.js';
@@ -8,14 +8,14 @@ import { Notify } from './notify.js';
 export class Sync {
   static async perform(): Promise<void> {
     try {
-      const primaryHost = await Client.create(Config.primaryHost);
+      const primaryHost = await ClientV5.create(Config.primaryHost);
       const backup = await primaryHost.downloadBackup();
 
       const secondaryHostCount = Config.secondaryHosts.length;
       const successfulRestoreCount = (
         await Promise.all(
           Config.secondaryHosts.map((host) =>
-            Client.create(host)
+            ClientV5.create(host)
               .then((client) => client.uploadBackup(backup))
               .catch((error) => Notify.ofThrow(error, true))
           )

@@ -2,7 +2,7 @@ import { describe, expect, jest, test } from '@jest/globals';
 import chalk from 'chalk';
 import nock from 'nock';
 import { Blob } from 'node-fetch';
-import { Client } from '../../src/client';
+import { ClientV5 } from '../../src/client/v5';
 import { Config, Host } from '../../src/config/environment';
 import { Log } from '../../src/log';
 import { ErrorNotification, Notify } from '../../src/notify';
@@ -16,9 +16,9 @@ describe('sync', () => {
   let notifyQueueError: ReturnType<typeof jest.spyOn>;
   let notifyOfSuccess: ReturnType<typeof jest.spyOn>;
   let processExit: ReturnType<typeof jest.spyOn>;
-  let primaryHostClient: Client;
-  let secondaryHostClient1: Client;
-  let secondaryHostClient2: Client;
+  let primaryHostClient: ClientV5;
+  let secondaryHostClient1: ClientV5;
+  let secondaryHostClient2: ClientV5;
 
   const primaryHostValue = new Host('http://10.0.0.2', 'password1');
   const secondaryHostsValue = [
@@ -60,15 +60,15 @@ describe('sync', () => {
       .mockReturnValue(secondaryHostsValue);
     primaryHostClient = {
       downloadBackup: jest.fn(() => primaryResult ?? Promise.resolve(backupData))
-    } as unknown as Client;
+    } as unknown as ClientV5;
     secondaryHostClient1 = {
       uploadBackup: jest.fn(() => secondaryOneResult ?? Promise.resolve(true))
-    } as unknown as Client;
+    } as unknown as ClientV5;
     secondaryHostClient2 = {
       uploadBackup: jest.fn(() => secondaryTwoResult ?? Promise.resolve(true))
-    } as unknown as Client;
+    } as unknown as ClientV5;
     clientCreate = jest
-      .spyOn(Client, 'create')
+      .spyOn(ClientV5, 'create')
       .mockResolvedValueOnce(primaryHostClient)
       .mockResolvedValueOnce(secondaryHostClient1)
       .mockResolvedValueOnce(secondaryHostClient2);
