@@ -1,9 +1,10 @@
+import { SyncOptionsV5 } from '../client/v5/sync-options.js';
 import { ErrorNotification } from '../notify.js';
 
 export class Config {
   private static _primaryHost?: Host;
   private static _secondaryHosts?: Host[];
-  private static _syncOptions?: SyncOptions;
+  private static _syncOptions?: SyncOptionsV5;
   private static _intervalMinutes?: number;
 
   static get primaryHost(): Host {
@@ -50,7 +51,7 @@ export class Config {
     return [this.primaryHost, ...this.secondaryHosts].map((host) => host.fullUrl);
   }
 
-  static get syncOptions(): SyncOptions {
+  static get syncOptions(): SyncOptionsV5 {
     this._syncOptions ??= {
       whitelist: process.env['SYNC_WHITELIST'] !== 'false',
       regexWhitelist: process.env['SYNC_REGEX_WHITELIST'] !== 'false',
@@ -152,21 +153,6 @@ export class Config {
 
     return value;
   }
-}
-
-export interface SyncOptions {
-  whitelist: boolean;
-  regexWhitelist: boolean;
-  blacklist: boolean;
-  regexlist: boolean;
-  adlist: boolean;
-  client: boolean;
-  group: boolean;
-  auditlog: boolean;
-  staticdhcpleases: boolean;
-  localdnsrecords: boolean;
-  localcnamerecords: boolean;
-  flushtables: boolean;
 }
 
 export class Host {
