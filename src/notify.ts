@@ -2,24 +2,29 @@ import Honeybadger from '@honeybadger-io/js';
 import Sentry from '@sentry/node';
 import { FetchError } from 'node-fetch';
 import nodemailer from 'nodemailer';
-import { Config } from './config/environment.js';
+import { EnvironmentConfig } from './config/environment.js';
 import { Log } from './log.js';
 
 export class Notify {
-  private static errorQueue: NotificationInterface[] = [];
-  private static _honeybadger?: Honeybadger;
-  private static _sentry?: typeof Sentry;
-  private static _smtpClient?: nodemailer.Transporter;
+  private errorQueue: NotificationInterface[] = [];
+  private _honeybadger?: Honeybadger;
+  private _sentry?: typeof Sentry;
+  private _smtpClient?: nodemailer.Transporter;
 
-  static async ofThrow(error: unknown, queue = false): Promise<void> {
+  constructor(
+    private config: EnvironmentConfig,
+    private log: Log = new Log(config.verboseMode)
+  ) {}
+
+  async ofThrow(error: unknown, queue = false): Promise<void> {
     if (error instanceof ErrorNotification) {
-      if (!queue || (error as NotificationInterface).exit) await Notify.ofFailure(error);
-      else Notify.queueError(error);
+      if (!queue || (error as NotificationInterface).exit) await this.ofFailure(error);
+      else this.queueError(error);
     } else if (error instanceof FetchError && error.code === 'ECONNREFUSED') {
-      const messageSubstring = error.message.split('ECONNREFUSED')[0]!;
-      const url = Config.allHostUrls.find((url) => messageSubstring.includes(url));
+      const messageSubstring = error.message.split('ECONNREFUSED')[0];
+      const url = this.config.allHostUrls.find((url) => messageSubstring.includes(url));
 
-      await Notify.ofThrow(
+      await this.ofThrow(
         new ErrorNotification({
           message: `The host "${url}" refused to connect. Is it down?`,
           verbose: error.message
@@ -31,13 +36,13 @@ export class Notify {
         this.honeybadger?.notify(error);
         this.sentry?.captureException(error);
       }
-      await Notify.ofFailure({
+      await this.ofFailure({
         message: `An unexpected error was thrown:\n- ${error?.toString() ?? error}`
       });
     }
   }
 
-  static async ofSuccess({
+  async ofSuccess({
     message,
     verbose,
     sendNotification
@@ -50,29 +55,29 @@ export class Notify {
       return;
     }
 
-    Log.info(`✔️ Success: ${message}`);
-    Log.verbose(verbose);
+    this.log.info(`✔️ Success: ${message}`);
+    this.log.verbose(verbose);
 
-    if (sendNotification ?? Config.notifyOnSuccess) {
+    if (sendNotification ?? this.config.notifyOnSuccess) {
       await this.dispatch('✔️ Success', message);
     }
   }
 
-  static ofFailure({ exit }: NotificationInterface & { exit: true }): never;
-  static ofFailure({ exit }: NotificationInterface): Promise<void>;
-  static async ofFailure({
+  ofFailure({ exit }: NotificationInterface & { exit: true }): never;
+  ofFailure({ exit }: NotificationInterface): Promise<void>;
+  async ofFailure({
     message,
     verbose,
     sendNotification,
     exit
   }: NotificationInterface): Promise<void> {
-    Log.error(`⚠ Failure: ${message}`);
-    Log.verbose(verbose);
+    this.log.error(`⚠ Failure: ${message}`);
+    this.log.verbose(verbose);
 
     const errors = this.errorQueue.map((notif) => notif.message);
     this.errorQueue = [];
 
-    if (sendNotification ?? Config.notifyOnFailure) {
+    if (sendNotification ?? this.config.notifyOnFailure) {
       let formatted = message;
       if (errors.length > 0) {
         formatted = formatted.concat(
@@ -84,32 +89,32 @@ export class Notify {
       await this.dispatch(`⚠ Failed`, formatted);
     }
 
-    if (exit || Config.runOnce) process.exit(1);
+    if (exit || this.config.runOnce) process.exit(1);
   }
 
-  static queueError(error: NotificationInterface): void {
-    Log.error(`⚠ Error: ${error.message}`);
-    Log.verbose(error.verbose);
+  queueError(error: NotificationInterface): void {
+    this.log.error(`⚠ Error: ${error.message}`);
+    this.log.verbose(error.verbose);
 
     this.errorQueue.push(error);
   }
 
-  private static get honeybadger(): Honeybadger | undefined {
-    if (Config.honeybadgerApiKey === undefined) return;
+  private get honeybadger(): Honeybadger | undefined {
+    if (this.config.honeybadgerApiKey === undefined) return;
 
     this._honeybadger ??= Honeybadger.configure({
-      apiKey: Config.honeybadgerApiKey
+      apiKey: this.config.honeybadgerApiKey
     });
 
     return this._honeybadger;
   }
 
-  private static get sentry(): typeof Sentry | undefined {
-    if (Config.sentryDsn === undefined) return;
+  private get sentry(): typeof Sentry | undefined {
+    if (this.config.sentryDsn === undefined) return;
 
     if (this._sentry === undefined) {
       Sentry.init({
-        dsn: Config.sentryDsn
+        dsn: this.config.sentryDsn
       });
 
       this._sentry = Sentry;
@@ -118,18 +123,20 @@ export class Notify {
     return this._sentry;
   }
 
-  private static async dispatch(subject: string, contents: string): Promise<void> {
+  private async dispatch(subject: string, contents: string): Promise<void> {
     await Promise.allSettled([this.dispatchSmtp(subject, contents)]);
   }
 
-  private static async dispatchSmtp(subject: string, contents: string): Promise<void> {
+  private async dispatchSmtp(subject: string, contents: string): Promise<void> {
     try {
-      if (Config.notifyViaSmtp && this.smtpClient) {
-        Log.verbose('➡️ Dispatching notification email...');
+      if (this.config.notifyViaSmtp && this.smtpClient) {
+        this.log.verbose('➡️ Dispatching notification email...');
 
         await this.smtpClient.sendMail({
-          from: Config.smtpFrom ? `"Orbital Sync" <${Config.smtpFrom}>` : undefined,
-          to: Config.smtpTo,
+          from: this.config.smtpFrom
+            ? `"Orbital Sync" <${this.config.smtpFrom}>`
+            : undefined,
+          to: this.config.smtpTo,
           subject: `Orbital Sync: ${subject}`,
           text: `Orbital Sync\n${subject}\n\n${contents}`,
           html: `<p><h2>Orbital Sync</h2>${subject}</p><p>${contents.replaceAll(
@@ -138,7 +145,7 @@ export class Notify {
           )}</p>`
         });
 
-        Log.verbose('✔️ Notification email dispatched.');
+        this.log.verbose('✔️ Notification email dispatched.');
       }
     } catch (e) {
       const error: NotificationInterface = {
@@ -151,23 +158,23 @@ export class Notify {
     }
   }
 
-  private static get smtpClient(): nodemailer.Transporter | undefined {
+  private get smtpClient(): nodemailer.Transporter | undefined {
     if (!this._smtpClient) {
-      Log.verbose('➡️ Creating SMTP client...');
+      this.log.verbose('➡️ Creating SMTP client...');
 
       this._smtpClient = nodemailer.createTransport({
-        host: Config.smtpHost,
-        port: Number.parseInt(Config.smtpPort),
-        secure: Config.smtpTls,
-        auth: Config.smtpUser
+        host: this.config.smtpHost,
+        port: Number.parseInt(this.config.smtpPort),
+        secure: this.config.smtpTls,
+        auth: this.config.smtpUser
           ? {
-              user: Config.smtpUser,
-              pass: Config.smtpPassword
+              user: this.config.smtpUser,
+              pass: this.config.smtpPassword
             }
           : undefined
       });
 
-      Log.verbose('✔️ SMTP client created successfully.');
+      this.log.verbose('✔️ SMTP client created successfully.');
     }
 
     return this._smtpClient;

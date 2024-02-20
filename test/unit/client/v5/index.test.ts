@@ -1,14 +1,16 @@
-import { jest } from '@jest/globals';
 import nock from 'nock';
 import { Blob } from 'node-fetch';
 import { ClientV5 } from '../../../../src/client/v5';
-import { Host } from '../../../../src/config/environment';
-import { Config } from '../../../../src/config/environment';
+import { Host } from '../../../../src/config/host';
+import { EnvironmentConfig } from '../../../../src/config/environment';
 import { ErrorNotification } from '../../../../src/notify';
+import { Log } from '../../../../src/log';
 
 describe('Client', () => {
   describe('V5', () => {
     const host = new Host('http://10.0.0.2', 'mypassword');
+    const config = new EnvironmentConfig();
+    const log = new Log(false);
 
     const createClient = async () => {
       nock(host.fullUrl).get('/index.php?login').reply(200);
@@ -19,7 +21,10 @@ describe('Client', () => {
           '<html><body><div id="token">abcdefgijklmnopqrstuvwxyzabcdefgijklmnopqrst</div></body></html>'
         );
 
-      return { teleporter: nock(host.fullUrl), client: await ClientV5.create(host) };
+      return {
+        teleporter: nock(host.fullUrl),
+        client: await ClientV5.create({ host, log, options: config.syncOptions })
+      };
     };
 
     beforeEach(() => {
@@ -31,7 +36,9 @@ describe('Client', () => {
         const initialRequest = nock(host.fullUrl).get('/index.php?login').reply(200);
         const loginRequest = nock(host.fullUrl).post('/index.php?login').reply(500);
 
-        const expectError = expect(ClientV5.create(host)).rejects;
+        const expectError = expect(
+          ClientV5.create({ host, log, options: config.syncOptions })
+        ).rejects;
 
         await expectError.toBeInstanceOf(ErrorNotification);
         await expectError.toMatchObject({
@@ -52,7 +59,9 @@ describe('Client', () => {
         const initialRequest = nock(host.fullUrl).get('/index.php?login').reply(200);
         const loginRequest = nock(host.fullUrl).post('/index.php?login').reply(200);
 
-        const expectError = expect(ClientV5.create(host)).rejects;
+        const expectError = expect(
+          ClientV5.create({ host, log, options: config.syncOptions })
+        ).rejects;
 
         await expectError.toBeInstanceOf(ErrorNotification);
         await expectError.toMatchObject({
@@ -74,7 +83,9 @@ describe('Client', () => {
           .post('/index.php?login')
           .reply(200, '<html><body><div id="token">abcdef</div></body></html>');
 
-        const expectError = expect(ClientV5.create(host)).rejects;
+        const expectError = expect(
+          ClientV5.create({ host, log, options: config.syncOptions })
+        ).rejects;
 
         await expectError.toBeInstanceOf(ErrorNotification);
         await expectError.toMatchObject({
@@ -99,7 +110,9 @@ describe('Client', () => {
             '<html><body><div id="token">abcdefgijklmnopqrstuvwxyzabcdefgijklmnopqrst</div></body></html>'
           );
 
-        await expect(ClientV5.create(host)).resolves.toBeInstanceOf(ClientV5);
+        await expect(
+          ClientV5.create({ host, log, options: config.syncOptions })
+        ).resolves.toBeInstanceOf(ClientV5);
 
         initialRequest.done();
         loginRequest.done();
@@ -155,8 +168,6 @@ describe('Client', () => {
       });
 
       test('should return response data', async () => {
-        const syncOptions = jest.spyOn(Config, 'syncOptions', 'get');
-
         let requestBody = '';
         teleporter
           .post('/scripts/pi-hole/php/teleporter.php', (body) => (requestBody = body))
@@ -165,7 +176,6 @@ describe('Client', () => {
         const backup = await client.downloadBackup();
 
         expect(backup).toBeInstanceOf(Blob);
-        expect(syncOptions).toHaveBeenCalled();
         expect(requestBody).toContain(
           'name="token"\r\n\r\nabcdefgijklmnopqrstuvwxyzabcdefgijklmnopqrst'
         );
@@ -235,31 +245,39 @@ describe('Client', () => {
           }
         });
       });
+    });
 
-      test('should throw error if gravity update fails', async () => {
+    describe('updateGravity', () => {
+      let client: ClientV5;
+      let teleporter: nock.Scope;
+
+      beforeEach(async () => {
+        ({ client, teleporter } = await createClient());
+      });
+
+      afterEach(() => {
+        teleporter.done();
+      });
+
+      test('should upload backup and update gravity successfully', async () => {
         teleporter
-          .post('/scripts/pi-hole/php/teleporter.php')
+          .get('/scripts/pi-hole/php/gravity.sh.php', undefined)
           .reply(
             200,
-            'Processed adlist (14 entries)<br>\n' +
-              'Processed adlist group assignments (13 entries)<br>\n' +
-              'Processed blacklist (exact) (0 entries)<br>\n' +
-              'Processed blacklist (regex) (3 entries)<br>\n' +
-              'Processed client (8 entries)<br>\n' +
-              'Processed client group assignments (16 entries)<br>\n' +
-              'Processed local DNS records (41 entries)<br>\n' +
-              'Processed domain_audit (0 entries)<br>\n' +
-              'Processed black-/whitelist group assignments (10 entries)<br>\n' +
-              'Processed group (3 entries)<br>\n' +
-              'Processed whitelist (exact) (4 entries)<br>\n' +
-              'Processed whitelist (regex) (0 entries)<br>\n' +
-              'OK'
+            '\ndata: \n\ndata:      [✓] TCP (IPv6)\ndata: \ndata: \n\ndata:   [✓] Pi-hole blocking is enabled\ndata: \n\ndata:'
           );
+
+        const result = await client.updateGravity();
+
+        expect(result).toStrictEqual(true);
+      });
+
+      test('should throw error if gravity update fails', async () => {
         teleporter
           .get('/scripts/pi-hole/php/gravity.sh.php', undefined)
           .reply(200, '\ndata: \n\ndata:      [✓] TCP (IPv6)\ndata: \ndata: \n\ndata:');
 
-        const expectError = expect(client.uploadBackup(backup)).rejects;
+        const expectError = expect(client.updateGravity()).rejects;
 
         await expectError.toBeInstanceOf(ErrorNotification);
         await expectError.toMatchObject({
@@ -271,118 +289,6 @@ describe('Client', () => {
             eventStream: '[✓] TCP (IPv6)'
           }
         });
-      });
-
-      test('should upload backup and update gravity successfully', async () => {
-        const syncOptions = jest.spyOn(Config, 'syncOptions', 'get');
-
-        let requestBody = '';
-        teleporter
-          .post('/scripts/pi-hole/php/teleporter.php', (body) => (requestBody = body))
-          .reply(
-            200,
-            'Processed adlist (14 entries)<br>\n' +
-              'Processed adlist group assignments (13 entries)<br>\n' +
-              'Processed blacklist (exact) (0 entries)<br>\n' +
-              'Processed blacklist (regex) (3 entries)<br>\n' +
-              'Processed client (8 entries)<br>\n' +
-              'Processed client group assignments (16 entries)<br>\n' +
-              'Processed local DNS records (41 entries)<br>\n' +
-              'Processed domain_audit (0 entries)<br>\n' +
-              'Processed black-/whitelist group assignments (10 entries)<br>\n' +
-              'Processed group (3 entries)<br>\n' +
-              'Processed whitelist (exact) (4 entries)<br>\n' +
-              'Processed whitelist (regex) (0 entries)<br>\n' +
-              'OK'
-          );
-        teleporter
-          .get('/scripts/pi-hole/php/gravity.sh.php', undefined)
-          .reply(
-            200,
-            '\ndata: \n\ndata:      [✓] TCP (IPv6)\ndata: \ndata: \n\ndata:   [✓] Pi-hole blocking is enabled\ndata: \n\ndata:'
-          );
-
-        const result = await client.uploadBackup(backup);
-
-        expect(result).toStrictEqual(true);
-        expect(syncOptions).toHaveBeenCalled();
-        expect(requestBody).toContain(
-          'name="token"\r\n\r\nabcdefgijklmnopqrstuvwxyzabcdefgijklmnopqrst'
-        );
-        expect(requestBody).toContain('name="whitelist"\r\n\r\ntrue');
-        expect(requestBody).toContain('name="regex_whitelist"\r\n\r\ntrue');
-        expect(requestBody).toContain('name="blacklist"\r\n\r\ntrue');
-        expect(requestBody).toContain('name="regexlist"\r\n\r\ntrue');
-        expect(requestBody).toContain('name="adlist"\r\n\r\ntrue');
-        expect(requestBody).toContain('name="client"\r\n\r\ntrue');
-        expect(requestBody).toContain('name="group"\r\n\r\ntrue');
-        expect(requestBody).not.toContain('name="auditlog"');
-        expect(requestBody).not.toContain('name="staticdhcpleases"');
-        expect(requestBody).toContain('name="localdnsrecords"\r\n\r\ntrue');
-        expect(requestBody).toContain('name="localcnamerecords"\r\n\r\ntrue');
-        expect(requestBody).toContain('name="flushtables"\r\n\r\ntrue');
-        expect(requestBody).toContain('name="action"\r\n\r\nin');
-        expect(requestBody).toContain(
-          'name="zip_file"; filename="backup.tar.gz"\r\nContent-Type: application/octet-stream'
-        );
-        expect(requestBody.match(/Content-Disposition: form-data; name=/g)).toHaveLength(
-          13
-        );
-      });
-
-      test('should not update gravity if `updateGravity` is disabled', async () => {
-        const syncOptions = jest.spyOn(Config, 'syncOptions', 'get');
-        const updateGravity = jest
-          .spyOn(Config, 'updateGravity', 'get')
-          .mockReturnValue(false);
-
-        let requestBody = '';
-        teleporter
-          .post('/scripts/pi-hole/php/teleporter.php', (body) => (requestBody = body))
-          .reply(
-            200,
-            'Start importing...<br>\n' +
-              'Processed adlist (5 entries)<br>\n' +
-              'Processed adlist group assignments (5 entries)<br>\n' +
-              'Processed blacklist (exact) (0 entries)<br>\n' +
-              'Processed blacklist (regex) (0 entries)<br>\n' +
-              'Processed client (0 entries)<br>\n' +
-              'Processed client group assignments (0 entries)<br>\n' +
-              'Processed local DNS records (20 entries)<br>\n' +
-              'Processed local CNAME records (0 entries)<br>\n' +
-              'Processed black-/whitelist group assignments (217 entries)<br>\n' +
-              'Processed group (1 entry)<br>\nProcessed whitelist (exact) (206 entries)<br>\n' +
-              'Processed whitelist (regex) (11 entries)<br>\n' +
-              'Done importing'
-          );
-
-        const result = await client.uploadBackup(backup);
-
-        expect(result).toStrictEqual(true);
-        expect(syncOptions).toHaveBeenCalled();
-        expect(requestBody).toContain(
-          'name="token"\r\n\r\nabcdefgijklmnopqrstuvwxyzabcdefgijklmnopqrst'
-        );
-        expect(requestBody).toContain('name="whitelist"\r\n\r\ntrue');
-        expect(requestBody).toContain('name="regex_whitelist"\r\n\r\ntrue');
-        expect(requestBody).toContain('name="blacklist"\r\n\r\ntrue');
-        expect(requestBody).toContain('name="regexlist"\r\n\r\ntrue');
-        expect(requestBody).toContain('name="adlist"\r\n\r\ntrue');
-        expect(requestBody).toContain('name="client"\r\n\r\ntrue');
-        expect(requestBody).toContain('name="group"\r\n\r\ntrue');
-        expect(requestBody).not.toContain('name="auditlog"');
-        expect(requestBody).not.toContain('name="staticdhcpleases"');
-        expect(requestBody).toContain('name="localdnsrecords"\r\n\r\ntrue');
-        expect(requestBody).toContain('name="localcnamerecords"\r\n\r\ntrue');
-        expect(requestBody).toContain('name="flushtables"\r\n\r\ntrue');
-        expect(requestBody).toContain('name="action"\r\n\r\nin');
-        expect(requestBody).toContain(
-          'name="zip_file"; filename="backup.tar.gz"\r\nContent-Type: application/octet-stream'
-        );
-        expect(requestBody.match(/Content-Disposition: form-data; name=/g)).toHaveLength(
-          13
-        );
-        updateGravity.mockRestore();
       });
     });
   });

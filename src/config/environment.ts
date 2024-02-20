@@ -1,13 +1,14 @@
 import { SyncOptionsV5 } from '../client/v5/sync-options.js';
 import { ErrorNotification } from '../notify.js';
+import { Host } from './host.js';
 
-export class Config {
-  private static _primaryHost?: Host;
-  private static _secondaryHosts?: Host[];
-  private static _syncOptions?: SyncOptionsV5;
-  private static _intervalMinutes?: number;
+export class EnvironmentConfig {
+  private _primaryHost?: Host;
+  private _secondaryHosts?: Host[];
+  private _syncOptions?: SyncOptionsV5;
+  private _intervalMinutes?: number;
 
-  static get primaryHost(): Host {
+  get primaryHost(): Host {
     this._primaryHost ??= new Host(
       this.getRequiredEnv('PRIMARY_HOST_BASE_URL'),
       this.getRequiredEnv('PRIMARY_HOST_PASSWORD'),
@@ -17,7 +18,7 @@ export class Config {
     return this._primaryHost;
   }
 
-  static get secondaryHosts(): Host[] {
+  get secondaryHosts(): Host[] {
     if (!this._secondaryHosts) {
       this._secondaryHosts = [
         new Host(
@@ -47,11 +48,11 @@ export class Config {
     return this._secondaryHosts;
   }
 
-  static get allHostUrls(): string[] {
+  get allHostUrls(): string[] {
     return [this.primaryHost, ...this.secondaryHosts].map((host) => host.fullUrl);
   }
 
-  static get syncOptions(): SyncOptionsV5 {
+  get syncOptions(): SyncOptionsV5 {
     this._syncOptions ??= {
       whitelist: process.env['SYNC_WHITELIST'] !== 'false',
       regexWhitelist: process.env['SYNC_REGEX_WHITELIST'] !== 'false',
@@ -70,59 +71,59 @@ export class Config {
     return this._syncOptions;
   }
 
-  static get updateGravity(): boolean {
+  get updateGravity(): boolean {
     return process.env['UPDATE_GRAVITY'] !== 'false';
   }
 
-  static get verboseMode(): boolean {
+  get verboseMode(): boolean {
     return process.env['VERBOSE'] === 'true';
   }
 
-  static get notifyOnSuccess(): boolean {
+  get notifyOnSuccess(): boolean {
     return process.env['NOTIFY_ON_SUCCESS'] === 'true';
   }
 
-  static get notifyOnFailure(): boolean {
+  get notifyOnFailure(): boolean {
     return process.env['NOTIFY_ON_FAILURE'] !== 'false';
   }
 
-  static get notifyViaSmtp(): boolean {
+  get notifyViaSmtp(): boolean {
     return process.env['NOTIFY_VIA_SMTP'] === 'true';
   }
 
-  static get smtpHost(): string {
+  get smtpHost(): string {
     return this.getRequiredEnv('SMTP_HOST');
   }
 
-  static get smtpPort(): string {
+  get smtpPort(): string {
     return process.env['SMTP_PORT'] ?? '587';
   }
 
-  static get smtpTls(): boolean {
+  get smtpTls(): boolean {
     return process.env['SMTP_TLS'] === 'true';
   }
 
-  static get smtpUser(): string | undefined {
+  get smtpUser(): string | undefined {
     return process.env['SMTP_USER'];
   }
 
-  static get smtpPassword(): string | undefined {
+  get smtpPassword(): string | undefined {
     return process.env['SMTP_PASSWORD'];
   }
 
-  static get smtpFrom(): string | undefined {
+  get smtpFrom(): string | undefined {
     return process.env['SMTP_FROM'];
   }
 
-  static get smtpTo(): string {
+  get smtpTo(): string {
     return this.getRequiredEnv('SMTP_TO');
   }
 
-  static get runOnce(): boolean {
+  get runOnce(): boolean {
     return process.env['RUN_ONCE'] === 'true';
   }
 
-  static get intervalMinutes(): number {
+  get intervalMinutes(): number {
     if (this._intervalMinutes) return this._intervalMinutes;
 
     if (process.env['INTERVAL_MINUTES']) {
@@ -134,15 +135,15 @@ export class Config {
     return this._intervalMinutes;
   }
 
-  static get honeybadgerApiKey(): string | undefined {
+  get honeybadgerApiKey(): string | undefined {
     return process.env['HONEYBADGER_API_KEY'];
   }
 
-  static get sentryDsn(): string | undefined {
+  get sentryDsn(): string | undefined {
     return process.env['SENTRY_DSN'];
   }
 
-  private static getRequiredEnv(variable: string): string {
+  private getRequiredEnv(variable: string): string {
     const value = process.env[variable];
 
     if (value === undefined)
@@ -152,36 +153,5 @@ export class Config {
       });
 
     return value;
-  }
-}
-
-export class Host {
-  baseUrl: string;
-  path: string;
-  fullUrl: string;
-  password: string;
-
-  private static pathExtractor = RegExp('^(http[s]?:+//[^/s]+)([/]?[^?#]+)?');
-
-  constructor(baseUrl: string, password: string, path = '/admin') {
-    if (path && !path.startsWith('/')) {
-      path = '/' + path;
-    }
-
-    const includedPath = Host.pathExtractor.exec(baseUrl);
-
-    if (includedPath && includedPath[1] && includedPath[2]) {
-      baseUrl = includedPath[1];
-      path = (this.trimTrailingSlash(includedPath[2]) ?? '') + path;
-    }
-
-    this.baseUrl = baseUrl;
-    this.password = password;
-    this.path = this.trimTrailingSlash(path);
-    this.fullUrl = this.baseUrl + this.path;
-  }
-
-  private trimTrailingSlash(url: string): string {
-    return url.endsWith('/') ? url.slice(0, url.length - 1) : url;
   }
 }

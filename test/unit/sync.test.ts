@@ -1,12 +1,13 @@
 import { describe, expect, jest, test } from '@jest/globals';
-import chalk from 'chalk';
 import nock from 'nock';
 import { Blob } from 'node-fetch';
 import { ClientV5 } from '../../src/client/v5';
-import { Config, Host } from '../../src/config/environment';
+import { EnvironmentConfig } from '../../src/config/environment';
 import { Log } from '../../src/log';
 import { ErrorNotification, Notify } from '../../src/notify';
 import { Sync } from '../../src/sync';
+import { Host } from '../../src/config/host';
+import { SyncOptionsV5 } from '../../src/client/v5/sync-options';
 
 describe('sync', () => {
   let primaryHost: ReturnType<typeof jest.spyOn>;
@@ -50,40 +51,66 @@ describe('sync', () => {
     secondaryOneResult?: Promise<boolean | never>;
     secondaryTwoResult?: Promise<boolean | never>;
   } = {}) => {
-    jest.spyOn(Config, 'runOnce', 'get').mockReturnValue(true);
+    const config = new EnvironmentConfig();
+    const notify = new Notify(config);
+    const log = new Log(true);
+
+    jest.spyOn(config, 'runOnce', 'get').mockReturnValue(true);
     processExit = jest.spyOn(process, 'exit').mockReturnValue(undefined as never);
     primaryHost = jest
-      .spyOn(Config, 'primaryHost', 'get')
+      .spyOn(config, 'primaryHost', 'get')
       .mockReturnValue(primaryHostValue);
     secondaryHosts = jest
-      .spyOn(Config, 'secondaryHosts', 'get')
+      .spyOn(config, 'secondaryHosts', 'get')
       .mockReturnValue(secondaryHostsValue);
     primaryHostClient = {
       downloadBackup: jest.fn(() => primaryResult ?? Promise.resolve(backupData))
     } as unknown as ClientV5;
     secondaryHostClient1 = {
-      uploadBackup: jest.fn(() => secondaryOneResult ?? Promise.resolve(true))
+      uploadBackup: jest.fn(() => secondaryOneResult ?? Promise.resolve(true)),
+      updateGravity: jest.fn(() => Promise.resolve(true))
     } as unknown as ClientV5;
     secondaryHostClient2 = {
-      uploadBackup: jest.fn(() => secondaryTwoResult ?? Promise.resolve(true))
+      uploadBackup: jest.fn(() => secondaryTwoResult ?? Promise.resolve(true)),
+      updateGravity: jest.fn(() => Promise.resolve(true))
     } as unknown as ClientV5;
     clientCreate = jest
       .spyOn(ClientV5, 'create')
       .mockResolvedValueOnce(primaryHostClient)
       .mockResolvedValueOnce(secondaryHostClient1)
       .mockResolvedValueOnce(secondaryHostClient2);
-    notifyOfFailure = jest.spyOn(Notify, 'ofFailure');
-    notifyQueueError = jest.spyOn(Notify, 'queueError');
-    notifyOfSuccess = jest.spyOn(Notify, 'ofSuccess');
+    notifyOfFailure = jest.spyOn(notify, 'ofFailure');
+    notifyQueueError = jest.spyOn(notify, 'queueError');
+    notifyOfSuccess = jest.spyOn(notify, 'ofSuccess');
+
+    return { config, notify, log };
   };
 
-  const expectSyncToHaveBeenPerformed = () => {
+  const expectSyncToHaveBeenPerformed = ({
+    options,
+    log
+  }: {
+    options: SyncOptionsV5;
+    log: Log;
+  }) => {
     expect(primaryHost).toHaveBeenCalledTimes(1);
     expect(secondaryHosts).toHaveBeenCalledTimes(2);
     expect(clientCreate).toHaveBeenCalledTimes(3);
-    expect(clientCreate).toHaveBeenNthCalledWith(1, primaryHostValue);
-    expect(clientCreate).toHaveBeenNthCalledWith(2, secondaryHostsValue[0]);
-    expect(clientCreate).toHaveBeenNthCalledWith(3, secondaryHostsValue[1]);
+    expect(clientCreate).toHaveBeenNthCalledWith(1, {
+      host: primaryHostValue,
+      options,
+      log
+    });
+    expect(clientCreate).toHaveBeenNthCalledWith(2, {
+      host: secondaryHostsValue[0],
+      options,
+      log
+    });
+    expect(clientCreate).toHaveBeenNthCalledWith(3, {
+      host: secondaryHostsValue[1],
+      options,
+      log
+    });
     expect(primaryHostClient.downloadBackup).toHaveBeenCalledTimes(1);
     expect(secondaryHostClient1.uploadBackup).toHaveBeenCalledTimes(1);
     expect(secondaryHostClient1.uploadBackup).toHaveBeenCalledWith(backupData);
@@ -92,11 +119,11 @@ describe('sync', () => {
   };
 
   test('should perform sync and succeed', async () => {
-    prepare();
+    const { config, notify, log } = prepare();
 
-    await Sync.perform();
+    await Sync.perform(config, { notify, log });
 
-    expectSyncToHaveBeenPerformed();
+    expectSyncToHaveBeenPerformed({ options: config.syncOptions, log });
     expect(notifyOfFailure).not.toHaveBeenCalled();
     expect(notifyQueueError).not.toHaveBeenCalled();
     expect(notifyOfSuccess).toHaveBeenCalledTimes(1);
@@ -107,13 +134,13 @@ describe('sync', () => {
   });
 
   test('should perform sync and partially succeed', async () => {
-    prepare({
+    const { config, notify, log } = prepare({
       secondaryTwoResult: Promise.reject(new ErrorNotification({ message: 'foobar' }))
     });
 
-    await Sync.perform();
+    await Sync.perform(config, { notify, log });
 
-    expectSyncToHaveBeenPerformed();
+    expectSyncToHaveBeenPerformed({ options: config.syncOptions, log });
     expect(notifyOfSuccess).not.toHaveBeenCalled();
     expect(notifyQueueError).toHaveBeenCalledTimes(1);
     expect(notifyQueueError).toHaveBeenCalledWith(
@@ -130,16 +157,16 @@ describe('sync', () => {
   });
 
   test('should perform sync and fail', async () => {
-    prepare({
+    const { config, notify, log } = prepare({
       secondaryOneResult: Promise.reject(new ErrorNotification({ message: 'foobar' })),
       secondaryTwoResult: Promise.reject(
         new ErrorNotification({ message: 'hello world' })
       )
     });
 
-    await Sync.perform();
+    await Sync.perform(config, { notify, log });
 
-    expectSyncToHaveBeenPerformed();
+    expectSyncToHaveBeenPerformed({ options: config.syncOptions, log });
     expect(notifyOfSuccess).not.toHaveBeenCalled();
     expect(notifyQueueError).toHaveBeenCalledTimes(2);
     expect(notifyQueueError).toHaveBeenCalledWith(
@@ -160,13 +187,13 @@ describe('sync', () => {
   });
 
   test('should perform sync and fail', async () => {
-    prepare({
+    const { config, notify, log } = prepare({
       primaryResult: Promise.reject(
         new ErrorNotification({ message: 'Backup failed to download' })
       )
     });
 
-    await Sync.perform();
+    await Sync.perform(config, { notify, log });
 
     expect(notifyOfSuccess).not.toHaveBeenCalled();
     expect(notifyQueueError).not.toHaveBeenCalled();
@@ -179,28 +206,5 @@ describe('sync', () => {
     expect(secondaryHostClient1.uploadBackup).not.toHaveBeenCalled();
     expect(secondaryHostClient2.uploadBackup).not.toHaveBeenCalled();
     expect(processExit).toHaveBeenCalledTimes(1);
-  });
-
-  test('should wait if `runOnce` is false', async () => {
-    prepare();
-    jest.spyOn(Config, 'runOnce', 'get').mockReturnValue(false);
-    const logInfo = jest.spyOn(Log, 'info');
-
-    let syncCompleted = false;
-    Sync.perform().then(() => (syncCompleted = true));
-
-    while (!syncCompleted) {
-      await jest.runAllTimers();
-    }
-
-    expectSyncToHaveBeenPerformed();
-    expect(logInfo).toHaveBeenCalledWith(chalk.dim('Waiting 30 minutes...'));
-    expect(notifyOfFailure).not.toHaveBeenCalled();
-    expect(notifyQueueError).not.toHaveBeenCalled();
-    expect(notifyOfSuccess).toHaveBeenCalledTimes(1);
-    expect(notifyOfSuccess).toHaveBeenCalledWith({
-      message: '2/2 hosts synced.'
-    });
-    expect(processExit).not.toHaveBeenCalled();
   });
 });

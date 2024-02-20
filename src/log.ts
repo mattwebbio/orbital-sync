@@ -1,25 +1,26 @@
 import chalk from 'chalk';
-import { Config } from './config/environment.js';
 
 export class Log {
-  static info(message: unknown) {
+  constructor(public verboseMode: boolean) {}
+
+  info(message: unknown) {
     console.log(`${this.timestamp}: ${this.stringify(message)}`);
   }
 
-  static verbose(message: unknown) {
-    if (Config.verboseMode && message) this.info(this.stringify(message));
+  verbose(message: unknown) {
+    if (this.verboseMode && message) this.info(this.stringify(message));
   }
 
-  static error(message: unknown) {
+  error(message: unknown) {
     console.error(`${this.timestamp}: ${chalk.red(this.stringify(message))}`);
   }
 
-  private static stringify(message: unknown): string {
+  private stringify(message: unknown): string {
     if (typeof message === 'string') return message;
     else return JSON.stringify(message);
   }
 
-  private static get timestamp(): string {
+  private get timestamp(): string {
     return chalk.dim(new Date().toLocaleString('en-US'));
   }
 }

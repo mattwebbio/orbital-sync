@@ -1,27 +1,24 @@
-import { jest } from '@jest/globals';
+import { EnvironmentConfig } from '../../../src/config/environment';
 
 describe('Config', () => {
   describe('Environment', () => {
     const INITIAL_ENV = Object.assign({}, process.env);
-    let Config: typeof import('../../../src/config/environment').Config;
+    let config: EnvironmentConfig;
 
     const resetEnv = () => (process.env = Object.assign({}, INITIAL_ENV));
-    const resetImport = async () => {
-      jest.resetModules();
 
-      ({ Config } = await import('../../../src/config/environment'));
-    };
-
-    beforeEach(() => resetImport());
+    beforeEach(() => {
+      config = new EnvironmentConfig();
+    });
     afterEach(() => resetEnv());
 
     const testToHaveDefaultAndOverride = (
-      getter: keyof typeof Config,
+      getter: keyof EnvironmentConfig,
       dflt: string | boolean | undefined,
       env: string
     ) => {
       test('should return default', () => {
-        expect(Config[getter]).toStrictEqual(dflt);
+        expect(config[getter]).toStrictEqual(dflt);
       });
 
       test('should accept override', () => {
@@ -40,13 +37,13 @@ describe('Config', () => {
 
         process.env[env] = override.toString();
 
-        expect(Config[getter]).toStrictEqual(override);
+        expect(config[getter]).toStrictEqual(override);
       });
     };
 
-    const testToThrowOrReturn = (getter: keyof typeof Config, env: string) => {
+    const testToThrowOrReturn = (getter: keyof EnvironmentConfig, env: string) => {
       test('should throw', () => {
-        expect(() => Config[getter]).toThrow(
+        expect(() => config[getter]).toThrow(
           expect.objectContaining({
             message: `The environment variable ${env} is required but not defined.`,
             exit: true
@@ -57,7 +54,7 @@ describe('Config', () => {
       test('should accept override', () => {
         process.env[env] = 'mock_value';
 
-        expect(Config[getter]).toStrictEqual('mock_value');
+        expect(config[getter]).toStrictEqual('mock_value');
       });
     };
 
@@ -65,7 +62,7 @@ describe('Config', () => {
       test('should error and exit if "PRIMARY_HOST_BASE_URL" is undefined', () => {
         process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword';
 
-        expect(() => Config.primaryHost).toThrow(
+        expect(() => config.primaryHost).toThrow(
           expect.objectContaining({
             message:
               'The environment variable PRIMARY_HOST_BASE_URL is required but not defined.',
@@ -77,7 +74,7 @@ describe('Config', () => {
       test('should error and exit if "PRIMARY_HOST_PASSWORD" is undefined', () => {
         process.env['PRIMARY_HOST_BASE_URL'] = 'http://10.0.0.2';
 
-        expect(() => Config.primaryHost).toThrow(
+        expect(() => config.primaryHost).toThrow(
           expect.objectContaining({
             message:
               'The environment variable PRIMARY_HOST_PASSWORD is required but not defined.',
@@ -97,9 +94,9 @@ describe('Config', () => {
           password: 'mypassword'
         };
 
-        expect(Config.primaryHost).toEqual(expected);
+        expect(config.primaryHost).toEqual(expected);
         resetEnv();
-        expect(Config.primaryHost).toEqual(expected);
+        expect(config.primaryHost).toEqual(expected);
       });
     });
 
@@ -110,7 +107,7 @@ describe('Config', () => {
 
         const expected = 'https://10.0.0.2';
 
-        expect(Config.primaryHost.baseUrl).toStrictEqual(expected);
+        expect(config.primaryHost.baseUrl).toStrictEqual(expected);
       });
       test('should add default /admin path when not provided', () => {
         process.env['PRIMARY_HOST_BASE_URL'] = 'http://10.0.0.2';
@@ -118,7 +115,7 @@ describe('Config', () => {
 
         const expected = 'http://10.0.0.2/admin';
 
-        expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
+        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
       });
 
       test('should add user defined path', () => {
@@ -129,8 +126,8 @@ describe('Config', () => {
         const expected = 'http://10.0.0.2/mypath';
         const expectedPath = '/mypath';
 
-        expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
-        expect(Config.primaryHost.path).toStrictEqual(expectedPath);
+        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
+        expect(config.primaryHost.path).toStrictEqual(expectedPath);
       });
 
       test('should handle single slash in base url', () => {
@@ -139,7 +136,7 @@ describe('Config', () => {
 
         const expected = 'http://10.0.0.2/admin';
 
-        expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
+        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
       });
 
       test('should trim trailing slash', () => {
@@ -149,7 +146,7 @@ describe('Config', () => {
 
         const expected = 'http://10.0.0.2/mypath';
 
-        expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
+        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
       });
 
       test('should allow empty path', () => {
@@ -159,7 +156,7 @@ describe('Config', () => {
 
         const expected = 'http://10.0.0.2';
 
-        expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
+        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
       });
 
       test('should allow empty path from slash', () => {
@@ -169,7 +166,7 @@ describe('Config', () => {
 
         const expected = 'http://10.0.0.2';
 
-        expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
+        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
       });
 
       test('should add preceeding slash if ommitted', () => {
@@ -179,7 +176,7 @@ describe('Config', () => {
 
         const expected = 'http://10.0.0.2/mypath';
 
-        expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
+        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
       });
 
       test('should manage double slash', () => {
@@ -189,7 +186,7 @@ describe('Config', () => {
 
         const expected = 'http://10.0.0.2/mypath';
 
-        expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
+        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
       });
 
       test('should handle path provided in base url', () => {
@@ -201,9 +198,9 @@ describe('Config', () => {
         const expectedPath = '/mypath/admin';
         const expectedBase = 'http://10.0.0.2';
 
-        expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
-        expect(Config.primaryHost.path).toStrictEqual(expectedPath);
-        expect(Config.primaryHost.baseUrl).toStrictEqual(expectedBase);
+        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
+        expect(config.primaryHost.path).toStrictEqual(expectedPath);
+        expect(config.primaryHost.baseUrl).toStrictEqual(expectedBase);
       });
 
       test('should combine path from base url and path env', () => {
@@ -214,8 +211,8 @@ describe('Config', () => {
         const expected = 'http://10.0.0.2/mypath/admin';
         const expectedPath = '/mypath/admin';
 
-        expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
-        expect(Config.primaryHost.path).toStrictEqual(expectedPath);
+        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
+        expect(config.primaryHost.path).toStrictEqual(expectedPath);
       });
 
       test('should treat port as base url', () => {
@@ -226,8 +223,8 @@ describe('Config', () => {
         const expected = 'http://10.0.0.2:8080/mypath';
         const expectedPath = '/mypath';
 
-        expect(Config.primaryHost.fullUrl).toStrictEqual(expected);
-        expect(Config.primaryHost.path).toStrictEqual(expectedPath);
+        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
+        expect(config.primaryHost.path).toStrictEqual(expectedPath);
       });
     });
 
@@ -235,7 +232,7 @@ describe('Config', () => {
       test('should error and exit if "SECONDARY_HOST_1_BASE_URL" is undefined', () => {
         process.env['SECONDARY_HOST_1_PASSWORD'] = 'mypassword';
 
-        expect(() => Config.secondaryHosts).toThrow(
+        expect(() => config.secondaryHosts).toThrow(
           expect.objectContaining({
             message:
               'The environment variable SECONDARY_HOST_1_BASE_URL is required but not defined.',
@@ -247,7 +244,7 @@ describe('Config', () => {
       test('should error and exit if "SECONDARY_HOST_1_PASSWORD" is undefined', () => {
         process.env['SECONDARY_HOST_1_BASE_URL'] = 'http://10.0.0.3';
 
-        expect(() => Config.secondaryHosts).toThrow(
+        expect(() => config.secondaryHosts).toThrow(
           expect.objectContaining({
             message:
               'The environment variable SECONDARY_HOST_1_PASSWORD is required but not defined.',
@@ -269,9 +266,9 @@ describe('Config', () => {
           }
         ];
 
-        expect(Config.secondaryHosts).toEqual(expected);
+        expect(config.secondaryHosts).toEqual(expected);
         resetEnv();
-        expect(Config.secondaryHosts).toEqual(expected);
+        expect(config.secondaryHosts).toEqual(expected);
       });
 
       test('should return multiple secondary hosts', () => {
@@ -288,7 +285,7 @@ describe('Config', () => {
         process.env['SECONDARY_HOST_5_PASSWORD'] = 'mypassword4';
         process.env['SECONDARY_HOST_5_PATH'] = '/mypath';
 
-        expect(Config.secondaryHosts).toEqual([
+        expect(config.secondaryHosts).toEqual([
           {
             baseUrl: 'http://10.0.0.3',
             password: 'mypassword1',
@@ -320,7 +317,7 @@ describe('Config', () => {
         process.env['SECONDARY_HOST_2_BASE_URL'] = 'http://10.0.0.4';
         process.env['SECONDARY_HOST_2_PASSWORD'] = 'mypassword3';
 
-        expect(Config.allHostUrls).toStrictEqual([
+        expect(config.allHostUrls).toStrictEqual([
           'http://10.0.0.2/admin',
           'http://10.0.0.3/admin',
           'http://10.0.0.4/admin'
@@ -330,7 +327,7 @@ describe('Config', () => {
 
     describe('syncOptions', () => {
       test('should return defaults', () => {
-        expect(Config.syncOptions).toStrictEqual({
+        expect(config.syncOptions).toStrictEqual({
           whitelist: true,
           regexWhitelist: true,
           blacklist: true,
@@ -375,9 +372,9 @@ describe('Config', () => {
           flushtables: false
         };
 
-        expect(Config.syncOptions).toStrictEqual(expected);
+        expect(config.syncOptions).toStrictEqual(expected);
         resetEnv();
-        expect(Config.syncOptions).toStrictEqual(expected);
+        expect(config.syncOptions).toStrictEqual(expected);
       });
     });
 
@@ -435,28 +432,28 @@ describe('Config', () => {
 
     describe('intervalMinutes', () => {
       test('should return default value', () => {
-        expect(Config.intervalMinutes).toStrictEqual(30);
+        expect(config.intervalMinutes).toStrictEqual(30);
       });
 
       test('should disregard bad values', async () => {
         process.env['INTERVAL_MINUTES'] = '-1';
-        expect(Config.intervalMinutes).toStrictEqual(30);
+        expect(config.intervalMinutes).toStrictEqual(30);
 
-        await resetImport();
+        config = new EnvironmentConfig();
         process.env['INTERVAL_MINUTES'] = 'abc';
-        expect(Config.intervalMinutes).toStrictEqual(30);
+        expect(config.intervalMinutes).toStrictEqual(30);
 
-        await resetImport();
+        config = new EnvironmentConfig();
         process.env['INTERVAL_MINUTES'] = '0';
-        expect(Config.intervalMinutes).toStrictEqual(30);
+        expect(config.intervalMinutes).toStrictEqual(30);
       });
 
       test('should accept override and memoize', () => {
         process.env['INTERVAL_MINUTES'] = '5';
 
-        expect(Config.intervalMinutes).toStrictEqual(5);
+        expect(config.intervalMinutes).toStrictEqual(5);
         resetEnv();
-        expect(Config.intervalMinutes).toStrictEqual(5);
+        expect(config.intervalMinutes).toStrictEqual(5);
       });
     });
 

@@ -1,48 +1,58 @@
-import chalk from 'chalk';
-import sleep from 'sleep-promise';
 import { ClientV5 } from './client/v5/index.js';
-import { Config } from './config/environment.js';
+import { EnvironmentConfig } from './config/environment.js';
 import { Log } from './log.js';
 import { Notify } from './notify.js';
 
 export class Sync {
-  static async perform(): Promise<void> {
+  static async perform(
+    config: EnvironmentConfig,
+    { notify: _notify, log: _log }: { notify?: Notify; log?: Log } = {}
+  ): Promise<void> {
+    const notify = _notify ?? new Notify(config);
+    const log = _log ?? new Log(config.verboseMode);
+
     try {
-      const primaryHost = await ClientV5.create(Config.primaryHost);
+      const primaryHost = await ClientV5.create({
+        host: config.primaryHost,
+        options: config.syncOptions,
+        log
+      });
       const backup = await primaryHost.downloadBackup();
 
-      const secondaryHostCount = Config.secondaryHosts.length;
+      const secondaryHostCount = config.secondaryHosts.length;
       const successfulRestoreCount = (
         await Promise.all(
-          Config.secondaryHosts.map((host) =>
-            ClientV5.create(host)
-              .then((client) => client.uploadBackup(backup))
-              .catch((error) => Notify.ofThrow(error, true))
+          config.secondaryHosts.map((host) =>
+            ClientV5.create({ host, options: config.syncOptions, log })
+              .then(async (client) => {
+                let success = await client.uploadBackup(backup);
+
+                if (success && config.updateGravity)
+                  success = await client.updateGravity();
+
+                return success;
+              })
+              .catch((error) => notify.ofThrow(error, true))
           )
         )
       ).filter(Boolean).length;
 
       if (secondaryHostCount === successfulRestoreCount) {
-        await Notify.ofSuccess({
+        await notify.ofSuccess({
           message: `${successfulRestoreCount}/${secondaryHostCount} hosts synced.`
         });
       } else if (successfulRestoreCount > 0) {
-        await Notify.ofFailure({
-          sendNotification: Config.notifyOnSuccess || Config.notifyOnFailure,
+        await notify.ofFailure({
+          sendNotification: config.notifyOnSuccess || config.notifyOnFailure,
           message: `${successfulRestoreCount}/${secondaryHostCount} hosts synced.`
         });
       } else {
-        await Notify.ofFailure({
+        await notify.ofFailure({
           message: `${successfulRestoreCount}/${secondaryHostCount} hosts synced.`
         });
       }
     } catch (e: unknown) {
-      await Notify.ofThrow(e);
-    }
-
-    if (!Config.runOnce) {
-      Log.info(chalk.dim(`Waiting ${Config.intervalMinutes} minutes...`));
-      await sleep(Config.intervalMinutes * 60 * 1000);
+      await notify.ofThrow(e);
     }
   }
 }
