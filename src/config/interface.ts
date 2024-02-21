@@ -1,5 +1,5 @@
 import { SyncOptionsV5 } from '../client/v5/sync-options.js';
-import { Host } from '../host.js';
+import { Host } from '../client/host.js';
 import { NotifyConfig } from './notify/index.js';
 
 export interface ConfigInterface {

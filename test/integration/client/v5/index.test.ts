@@ -3,7 +3,7 @@ import { StartedTestContainer } from 'testcontainers';
 import { Blob } from 'node-fetch';
 import { createPiholeContainer } from '../../../containers';
 import { ClientV5 } from '../../../../src/client/v5';
-import { Host } from '../../../../src/host';
+import { Host } from '../../../../src/client/host';
 import { EnvironmentConfig } from '../../../../src/config/environment';
 import { Log } from '../../../../src/log';
 

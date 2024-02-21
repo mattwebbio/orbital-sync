@@ -8,7 +8,7 @@ import nodeFetch, {
   Response
 } from 'node-fetch';
 import { parse } from 'node-html-parser';
-import type { Host } from '../../host.js';
+import type { Host } from '../host.js';
 import { Log } from '../../log.js';
 import { ErrorNotification } from '../../notify.js';
 import { SyncOptionsV5 } from './sync-options.js';

@@ -1,6 +1,6 @@
 import { SyncOptionsV5 } from '../client/v5/sync-options.js';
 import { ErrorNotification } from '../notify.js';
-import { Host } from '../host.js';
+import { Host } from '../client/host.js';
 import { BaseConfig } from './base.js';
 import { NotifySmtpConfig } from './notify/smtp.js';
 import { NotifyConfig } from './notify/index.js';
