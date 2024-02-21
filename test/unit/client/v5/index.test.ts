@@ -1,7 +1,7 @@
 import nock from 'nock';
 import { Blob } from 'node-fetch';
 import { ClientV5 } from '../../../../src/client/v5';
-import { Host } from '../../../../src/config/host';
+import { Host } from '../../../../src/host';
 import { EnvironmentConfig } from '../../../../src/config/environment';
 import { ErrorNotification } from '../../../../src/notify';
 import { Log } from '../../../../src/log';
