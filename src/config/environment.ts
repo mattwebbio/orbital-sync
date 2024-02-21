@@ -2,8 +2,11 @@ import { SyncOptionsV5 } from '../client/v5/sync-options.js';
 import { ErrorNotification } from '../notify.js';
 import { Host } from '../host.js';
 import { Configuration } from './index.js';
+import { NotifySmtpConfig } from './notify/smtp.js';
+import { NotifyConfig } from './notify/index.js';
+import { NotifyExceptionsConfig } from './notify/exceptions.js';
 
-export class EnvironmentConfig implements Configuration {
+export class EnvironmentConfig extends Configuration {
   private _primaryHost?: Host;
   private _secondaryHosts?: Host[];
   private _syncOptions?: SyncOptionsV5;
@@ -49,10 +52,6 @@ export class EnvironmentConfig implements Configuration {
     return this._secondaryHosts;
   }
 
-  get allHostUrls(): string[] {
-    return [this.primaryHost, ...this.secondaryHosts].map((host) => host.fullUrl);
-  }
-
   get syncOptions(): SyncOptionsV5 {
     this._syncOptions ??= {
       whitelist: process.env['SYNC_WHITELIST'] !== 'false',
@@ -80,44 +79,37 @@ export class EnvironmentConfig implements Configuration {
     return process.env['VERBOSE'] === 'true';
   }
 
-  get notifyOnSuccess(): boolean {
-    return process.env['NOTIFY_ON_SUCCESS'] === 'true';
+  get notify(): NotifyConfig {
+    return {
+      onSuccess: process.env['NOTIFY_ON_SUCCESS'] === 'true',
+      onFailure: process.env['NOTIFY_ON_FAILURE'] !== 'false',
+      smtp: this.smtp,
+      exceptions: this.exceptions
+    };
   }
 
-  get notifyOnFailure(): boolean {
-    return process.env['NOTIFY_ON_FAILURE'] !== 'false';
+  private get smtp(): NotifySmtpConfig {
+    const enabled = process.env['NOTIFY_VIA_SMTP'] === 'true';
+
+    if (enabled)
+      return {
+        enabled,
+        host: this.getRequiredEnv('SMTP_HOST'),
+        port: process.env['SMTP_PORT'] ?? '587',
+        tls: process.env['SMTP_TLS'] === 'true',
+        user: process.env['SMTP_USER'],
+        password: process.env['SMTP_PASSWORD'],
+        from: process.env['SMTP_FROM'],
+        to: this.getRequiredEnv('SMTP_TO')
+      };
+    else return { enabled };
   }
 
-  get notifyViaSmtp(): boolean {
-    return process.env['NOTIFY_VIA_SMTP'] === 'true';
-  }
-
-  get smtpHost(): string {
-    return this.getRequiredEnv('SMTP_HOST');
-  }
-
-  get smtpPort(): string {
-    return process.env['SMTP_PORT'] ?? '587';
-  }
-
-  get smtpTls(): boolean {
-    return process.env['SMTP_TLS'] === 'true';
-  }
-
-  get smtpUser(): string | undefined {
-    return process.env['SMTP_USER'];
-  }
-
-  get smtpPassword(): string | undefined {
-    return process.env['SMTP_PASSWORD'];
-  }
-
-  get smtpFrom(): string | undefined {
-    return process.env['SMTP_FROM'];
-  }
-
-  get smtpTo(): string {
-    return this.getRequiredEnv('SMTP_TO');
+  private get exceptions(): NotifyExceptionsConfig {
+    return {
+      honeybadgerApiKey: process.env['HONEYBADGER_API_KEY'],
+      sentryDsn: process.env['SENTRY_DSN']
+    };
   }
 
   get runOnce(): boolean {
@@ -134,14 +126,6 @@ export class EnvironmentConfig implements Configuration {
 
     this._intervalMinutes ??= 30;
     return this._intervalMinutes;
-  }
-
-  get honeybadgerApiKey(): string | undefined {
-    return process.env['HONEYBADGER_API_KEY'];
-  }
-
-  get sentryDsn(): string | undefined {
-    return process.env['SENTRY_DSN'];
   }
 
   private getRequiredEnv(variable: string): string {

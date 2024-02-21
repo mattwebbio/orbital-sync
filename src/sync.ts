@@ -43,7 +43,7 @@ export class Sync {
         });
       } else if (successfulRestoreCount > 0) {
         await notify.ofFailure({
-          sendNotification: config.notifyOnSuccess || config.notifyOnFailure,
+          sendNotification: config.notify.onSuccess || config.notify.onFailure,
           message: `${successfulRestoreCount}/${secondaryHostCount} hosts synced.`
         });
       } else {

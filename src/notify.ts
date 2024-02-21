@@ -58,7 +58,7 @@ export class Notify {
     this.log.info(`✔️ Success: ${message}`);
     this.log.verbose(verbose);
 
-    if (sendNotification ?? this.config.notifyOnSuccess) {
+    if (sendNotification ?? this.config.notify.onSuccess) {
       await this.dispatch('✔️ Success', message);
     }
   }
@@ -77,7 +77,7 @@ export class Notify {
     const errors = this.errorQueue.map((notif) => notif.message);
     this.errorQueue = [];
 
-    if (sendNotification ?? this.config.notifyOnFailure) {
+    if (sendNotification ?? this.config.notify.onFailure) {
       let formatted = message;
       if (errors.length > 0) {
         formatted = formatted.concat(
@@ -100,21 +100,21 @@ export class Notify {
   }
 
   private get honeybadger(): Honeybadger | undefined {
-    if (this.config.honeybadgerApiKey === undefined) return;
+    if (this.config.notify.exceptions.honeybadgerApiKey === undefined) return;
 
     this._honeybadger ??= Honeybadger.configure({
-      apiKey: this.config.honeybadgerApiKey
+      apiKey: this.config.notify.exceptions.honeybadgerApiKey
     });
 
     return this._honeybadger;
   }
 
   private get sentry(): typeof Sentry | undefined {
-    if (this.config.sentryDsn === undefined) return;
+    if (this.config.notify.exceptions.sentryDsn === undefined) return;
 
     if (this._sentry === undefined) {
       Sentry.init({
-        dsn: this.config.sentryDsn
+        dsn: this.config.notify.exceptions.sentryDsn
       });
 
       this._sentry = Sentry;
@@ -129,14 +129,14 @@ export class Notify {
 
   private async dispatchSmtp(subject: string, contents: string): Promise<void> {
     try {
-      if (this.config.notifyViaSmtp && this.smtpClient) {
+      if (this.config.notify.smtp.enabled && this.smtpClient) {
         this.log.verbose('➡️ Dispatching notification email...');
 
         await this.smtpClient.sendMail({
-          from: this.config.smtpFrom
-            ? `"Orbital Sync" <${this.config.smtpFrom}>`
+          from: this.config.notify.smtp.from
+            ? `"Orbital Sync" <${this.config.notify.smtp.from}>`
             : undefined,
-          to: this.config.smtpTo,
+          to: this.config.notify.smtp.to,
           subject: `Orbital Sync: ${subject}`,
           text: `Orbital Sync\n${subject}\n\n${contents}`,
           html: `<p><h2>Orbital Sync</h2>${subject}</p><p>${contents.replaceAll(
@@ -159,17 +159,19 @@ export class Notify {
   }
 
   private get smtpClient(): nodemailer.Transporter | undefined {
+    if (!this.config.notify.smtp.enabled) return;
+
     if (!this._smtpClient) {
       this.log.verbose('➡️ Creating SMTP client...');
 
       this._smtpClient = nodemailer.createTransport({
-        host: this.config.smtpHost,
-        port: Number.parseInt(this.config.smtpPort),
-        secure: this.config.smtpTls,
-        auth: this.config.smtpUser
+        host: this.config.notify.smtp.host,
+        port: Number.parseInt(this.config.notify.smtp.port),
+        secure: this.config.notify.smtp.tls,
+        auth: this.config.notify.smtp.user
           ? {
-              user: this.config.smtpUser,
-              pass: this.config.smtpPassword
+              user: this.config.notify.smtp.user,
+              pass: this.config.notify.smtp.password
             }
           : undefined
       });

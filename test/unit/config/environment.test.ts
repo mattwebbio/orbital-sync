@@ -1,24 +1,21 @@
 import { EnvironmentConfig } from '../../../src/config/environment';
+import { EnabledSmtpConfig } from '../../../src/config/notify/smtp';
 
 describe('Config', () => {
   describe('Environment', () => {
     const INITIAL_ENV = Object.assign({}, process.env);
-    let config: EnvironmentConfig;
-
     const resetEnv = () => (process.env = Object.assign({}, INITIAL_ENV));
 
-    beforeEach(() => {
-      config = new EnvironmentConfig();
-    });
     afterEach(() => resetEnv());
 
-    const testToHaveDefaultAndOverride = (
-      getter: keyof EnvironmentConfig,
+    const testToHaveDefaultAndOverride = <T>(
+      obj: () => T,
+      getter: keyof T,
       dflt: string | boolean | undefined,
       env: string
     ) => {
       test('should return default', () => {
-        expect(config[getter]).toStrictEqual(dflt);
+        expect(obj()[getter]).toStrictEqual(dflt);
       });
 
       test('should accept override', () => {
@@ -37,13 +34,13 @@ describe('Config', () => {
 
         process.env[env] = override.toString();
 
-        expect(config[getter]).toStrictEqual(override);
+        expect(obj()[getter]).toStrictEqual(override);
       });
     };
 
-    const testToThrowOrReturn = (getter: keyof EnvironmentConfig, env: string) => {
+    const testToThrowOrReturn = <T>(obj: () => T, getter: keyof T, env: string) => {
       test('should throw', () => {
-        expect(() => config[getter]).toThrow(
+        expect(() => obj()[getter]).toThrow(
           expect.objectContaining({
             message: `The environment variable ${env} is required but not defined.`,
             exit: true
@@ -54,7 +51,7 @@ describe('Config', () => {
       test('should accept override', () => {
         process.env[env] = 'mock_value';
 
-        expect(config[getter]).toStrictEqual('mock_value');
+        expect(obj()[getter]).toStrictEqual('mock_value');
       });
     };
 
@@ -62,7 +59,7 @@ describe('Config', () => {
       test('should error and exit if "PRIMARY_HOST_BASE_URL" is undefined', () => {
         process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword';
 
-        expect(() => config.primaryHost).toThrow(
+        expect(() => new EnvironmentConfig().primaryHost).toThrow(
           expect.objectContaining({
             message:
               'The environment variable PRIMARY_HOST_BASE_URL is required but not defined.',
@@ -74,7 +71,7 @@ describe('Config', () => {
       test('should error and exit if "PRIMARY_HOST_PASSWORD" is undefined', () => {
         process.env['PRIMARY_HOST_BASE_URL'] = 'http://10.0.0.2';
 
-        expect(() => config.primaryHost).toThrow(
+        expect(() => new EnvironmentConfig().primaryHost).toThrow(
           expect.objectContaining({
             message:
               'The environment variable PRIMARY_HOST_PASSWORD is required but not defined.',
@@ -94,6 +91,7 @@ describe('Config', () => {
           password: 'mypassword'
         };
 
+        const config = new EnvironmentConfig();
         expect(config.primaryHost).toEqual(expected);
         resetEnv();
         expect(config.primaryHost).toEqual(expected);
@@ -101,13 +99,13 @@ describe('Config', () => {
     });
 
     describe('paths', () => {
-      test('should recognise https scheme', () => {
+      test('should recognize https scheme', () => {
         process.env['PRIMARY_HOST_BASE_URL'] = 'https://10.0.0.2';
         process.env['PRIMARY_HOST_PASSWORD'] = 'mypassword';
 
         const expected = 'https://10.0.0.2';
 
-        expect(config.primaryHost.baseUrl).toStrictEqual(expected);
+        expect(new EnvironmentConfig().primaryHost.baseUrl).toStrictEqual(expected);
       });
       test('should add default /admin path when not provided', () => {
         process.env['PRIMARY_HOST_BASE_URL'] = 'http://10.0.0.2';
@@ -115,7 +113,7 @@ describe('Config', () => {
 
         const expected = 'http://10.0.0.2/admin';
 
-        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
+        expect(new EnvironmentConfig().primaryHost.fullUrl).toStrictEqual(expected);
       });
 
       test('should add user defined path', () => {
@@ -126,8 +124,8 @@ describe('Config', () => {
         const expected = 'http://10.0.0.2/mypath';
         const expectedPath = '/mypath';
 
-        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
-        expect(config.primaryHost.path).toStrictEqual(expectedPath);
+        expect(new EnvironmentConfig().primaryHost.fullUrl).toStrictEqual(expected);
+        expect(new EnvironmentConfig().primaryHost.path).toStrictEqual(expectedPath);
       });
 
       test('should handle single slash in base url', () => {
@@ -136,7 +134,7 @@ describe('Config', () => {
 
         const expected = 'http://10.0.0.2/admin';
 
-        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
+        expect(new EnvironmentConfig().primaryHost.fullUrl).toStrictEqual(expected);
       });
 
       test('should trim trailing slash', () => {
@@ -146,7 +144,7 @@ describe('Config', () => {
 
         const expected = 'http://10.0.0.2/mypath';
 
-        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
+        expect(new EnvironmentConfig().primaryHost.fullUrl).toStrictEqual(expected);
       });
 
       test('should allow empty path', () => {
@@ -156,7 +154,7 @@ describe('Config', () => {
 
         const expected = 'http://10.0.0.2';
 
-        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
+        expect(new EnvironmentConfig().primaryHost.fullUrl).toStrictEqual(expected);
       });
 
       test('should allow empty path from slash', () => {
@@ -166,7 +164,7 @@ describe('Config', () => {
 
         const expected = 'http://10.0.0.2';
 
-        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
+        expect(new EnvironmentConfig().primaryHost.fullUrl).toStrictEqual(expected);
       });
 
       test('should add preceeding slash if ommitted', () => {
@@ -176,7 +174,7 @@ describe('Config', () => {
 
         const expected = 'http://10.0.0.2/mypath';
 
-        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
+        expect(new EnvironmentConfig().primaryHost.fullUrl).toStrictEqual(expected);
       });
 
       test('should manage double slash', () => {
@@ -186,7 +184,7 @@ describe('Config', () => {
 
         const expected = 'http://10.0.0.2/mypath';
 
-        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
+        expect(new EnvironmentConfig().primaryHost.fullUrl).toStrictEqual(expected);
       });
 
       test('should handle path provided in base url', () => {
@@ -198,9 +196,9 @@ describe('Config', () => {
         const expectedPath = '/mypath/admin';
         const expectedBase = 'http://10.0.0.2';
 
-        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
-        expect(config.primaryHost.path).toStrictEqual(expectedPath);
-        expect(config.primaryHost.baseUrl).toStrictEqual(expectedBase);
+        expect(new EnvironmentConfig().primaryHost.fullUrl).toStrictEqual(expected);
+        expect(new EnvironmentConfig().primaryHost.path).toStrictEqual(expectedPath);
+        expect(new EnvironmentConfig().primaryHost.baseUrl).toStrictEqual(expectedBase);
       });
 
       test('should combine path from base url and path env', () => {
@@ -211,8 +209,8 @@ describe('Config', () => {
         const expected = 'http://10.0.0.2/mypath/admin';
         const expectedPath = '/mypath/admin';
 
-        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
-        expect(config.primaryHost.path).toStrictEqual(expectedPath);
+        expect(new EnvironmentConfig().primaryHost.fullUrl).toStrictEqual(expected);
+        expect(new EnvironmentConfig().primaryHost.path).toStrictEqual(expectedPath);
       });
 
       test('should treat port as base url', () => {
@@ -223,8 +221,8 @@ describe('Config', () => {
         const expected = 'http://10.0.0.2:8080/mypath';
         const expectedPath = '/mypath';
 
-        expect(config.primaryHost.fullUrl).toStrictEqual(expected);
-        expect(config.primaryHost.path).toStrictEqual(expectedPath);
+        expect(new EnvironmentConfig().primaryHost.fullUrl).toStrictEqual(expected);
+        expect(new EnvironmentConfig().primaryHost.path).toStrictEqual(expectedPath);
       });
     });
 
@@ -232,7 +230,7 @@ describe('Config', () => {
       test('should error and exit if "SECONDARY_HOST_1_BASE_URL" is undefined', () => {
         process.env['SECONDARY_HOST_1_PASSWORD'] = 'mypassword';
 
-        expect(() => config.secondaryHosts).toThrow(
+        expect(() => new EnvironmentConfig().secondaryHosts).toThrow(
           expect.objectContaining({
             message:
               'The environment variable SECONDARY_HOST_1_BASE_URL is required but not defined.',
@@ -244,7 +242,7 @@ describe('Config', () => {
       test('should error and exit if "SECONDARY_HOST_1_PASSWORD" is undefined', () => {
         process.env['SECONDARY_HOST_1_BASE_URL'] = 'http://10.0.0.3';
 
-        expect(() => config.secondaryHosts).toThrow(
+        expect(() => new EnvironmentConfig().secondaryHosts).toThrow(
           expect.objectContaining({
             message:
               'The environment variable SECONDARY_HOST_1_PASSWORD is required but not defined.',
@@ -266,6 +264,7 @@ describe('Config', () => {
           }
         ];
 
+        const config = new EnvironmentConfig();
         expect(config.secondaryHosts).toEqual(expected);
         resetEnv();
         expect(config.secondaryHosts).toEqual(expected);
@@ -285,7 +284,7 @@ describe('Config', () => {
         process.env['SECONDARY_HOST_5_PASSWORD'] = 'mypassword4';
         process.env['SECONDARY_HOST_5_PATH'] = '/mypath';
 
-        expect(config.secondaryHosts).toEqual([
+        expect(new EnvironmentConfig().secondaryHosts).toEqual([
           {
             baseUrl: 'http://10.0.0.3',
             password: 'mypassword1',
@@ -317,7 +316,7 @@ describe('Config', () => {
         process.env['SECONDARY_HOST_2_BASE_URL'] = 'http://10.0.0.4';
         process.env['SECONDARY_HOST_2_PASSWORD'] = 'mypassword3';
 
-        expect(config.allHostUrls).toStrictEqual([
+        expect(new EnvironmentConfig().allHostUrls).toStrictEqual([
           'http://10.0.0.2/admin',
           'http://10.0.0.3/admin',
           'http://10.0.0.4/admin'
@@ -327,7 +326,7 @@ describe('Config', () => {
 
     describe('syncOptions', () => {
       test('should return defaults', () => {
-        expect(config.syncOptions).toStrictEqual({
+        expect(new EnvironmentConfig().syncOptions).toStrictEqual({
           whitelist: true,
           regexWhitelist: true,
           blacklist: true,
@@ -372,6 +371,7 @@ describe('Config', () => {
           flushtables: false
         };
 
+        const config = new EnvironmentConfig();
         expect(config.syncOptions).toStrictEqual(expected);
         resetEnv();
         expect(config.syncOptions).toStrictEqual(expected);
@@ -379,90 +379,180 @@ describe('Config', () => {
     });
 
     describe('updateGravity', () => {
-      testToHaveDefaultAndOverride('updateGravity', true, 'UPDATE_GRAVITY');
+      testToHaveDefaultAndOverride(
+        () => new EnvironmentConfig(),
+        'updateGravity',
+        true,
+        'UPDATE_GRAVITY'
+      );
     });
 
     describe('verboseMode', () => {
-      testToHaveDefaultAndOverride('verboseMode', false, 'VERBOSE');
+      testToHaveDefaultAndOverride(
+        () => new EnvironmentConfig(),
+        'verboseMode',
+        false,
+        'VERBOSE'
+      );
     });
 
-    describe('notifyOnSuccess', () => {
-      testToHaveDefaultAndOverride('notifyOnSuccess', false, 'NOTIFY_ON_SUCCESS');
-    });
+    describe('notify', () => {
+      describe('onSuccess', () => {
+        testToHaveDefaultAndOverride(
+          () => new EnvironmentConfig().notify,
+          'onSuccess',
+          false,
+          'NOTIFY_ON_SUCCESS'
+        );
+      });
 
-    describe('notifyOnFailure', () => {
-      testToHaveDefaultAndOverride('notifyOnFailure', true, 'NOTIFY_ON_FAILURE');
-    });
+      describe('onFailure', () => {
+        testToHaveDefaultAndOverride(
+          () => new EnvironmentConfig().notify,
+          'onFailure',
+          true,
+          'NOTIFY_ON_FAILURE'
+        );
+      });
 
-    describe('notifyViaSmtp', () => {
-      testToHaveDefaultAndOverride('notifyViaSmtp', false, 'NOTIFY_VIA_SMTP');
-    });
+      describe('smtp', () => {
+        beforeEach(() => {
+          process.env['NOTIFY_VIA_SMTP'] = 'true';
+          process.env['SMTP_HOST'] = 'smtp.example.com';
+          process.env['SMTP_TO'] = 'orbital@example.com';
+        });
 
-    describe('smtpHost', () => {
-      testToThrowOrReturn('smtpHost', 'SMTP_HOST');
-    });
+        describe('enabled', () => {
+          beforeEach(() => (process.env['NOTIFY_VIA_SMTP'] = undefined));
 
-    describe('smtpPort', () => {
-      testToHaveDefaultAndOverride('smtpPort', '587', 'SMTP_PORT');
-    });
+          testToHaveDefaultAndOverride(
+            () => new EnvironmentConfig().notify.smtp,
+            'enabled',
+            false,
+            'NOTIFY_VIA_SMTP'
+          );
+        });
 
-    describe('smtpTls', () => {
-      testToHaveDefaultAndOverride('smtpTls', false, 'SMTP_TLS');
-    });
+        describe('host', () => {
+          beforeEach(() => (process.env['SMTP_HOST'] = undefined));
 
-    describe('smtpUser', () => {
-      testToHaveDefaultAndOverride('smtpUser', undefined, 'SMTP_USER');
-    });
+          testToThrowOrReturn(
+            () => new EnvironmentConfig().notify.smtp as EnabledSmtpConfig,
+            'host',
+            'SMTP_HOST'
+          );
+        });
 
-    describe('smtpPassword', () => {
-      testToHaveDefaultAndOverride('smtpPassword', undefined, 'SMTP_PASSWORD');
-    });
+        describe('port', () => {
+          testToHaveDefaultAndOverride(
+            () => new EnvironmentConfig().notify.smtp as EnabledSmtpConfig,
+            'port',
+            '587',
+            'SMTP_PORT'
+          );
+        });
 
-    describe('smtpFrom', () => {
-      testToHaveDefaultAndOverride('smtpFrom', undefined, 'SMTP_FROM');
-    });
+        describe('tls', () => {
+          testToHaveDefaultAndOverride(
+            () => new EnvironmentConfig().notify.smtp as EnabledSmtpConfig,
+            'tls',
+            false,
+            'SMTP_TLS'
+          );
+        });
 
-    describe('smtpTo', () => {
-      testToThrowOrReturn('smtpTo', 'SMTP_TO');
+        describe('user', () => {
+          testToHaveDefaultAndOverride(
+            () => new EnvironmentConfig().notify.smtp as EnabledSmtpConfig,
+            'user',
+            undefined,
+            'SMTP_USER'
+          );
+        });
+
+        describe('password', () => {
+          testToHaveDefaultAndOverride(
+            () => new EnvironmentConfig().notify.smtp as EnabledSmtpConfig,
+            'password',
+            undefined,
+            'SMTP_PASSWORD'
+          );
+        });
+
+        describe('from', () => {
+          testToHaveDefaultAndOverride(
+            () => new EnvironmentConfig().notify.smtp as EnabledSmtpConfig,
+            'from',
+            undefined,
+            'SMTP_FROM'
+          );
+        });
+
+        describe('to', () => {
+          beforeEach(() => (process.env['SMTP_TO'] = undefined));
+
+          testToThrowOrReturn(
+            () => new EnvironmentConfig().notify.smtp as EnabledSmtpConfig,
+            'to',
+            'SMTP_TO'
+          );
+        });
+      });
+
+      describe('exceptions', () => {
+        describe('honeybadgerApiKey', () => {
+          testToHaveDefaultAndOverride(
+            () => new EnvironmentConfig().notify.exceptions,
+            'honeybadgerApiKey',
+            undefined,
+            'HONEYBADGER_API_KEY'
+          );
+        });
+
+        describe('sentryDsn', () => {
+          testToHaveDefaultAndOverride(
+            () => new EnvironmentConfig().notify.exceptions,
+            'sentryDsn',
+            undefined,
+            'SENTRY_DSN'
+          );
+        });
+      });
     });
 
     describe('runOnce', () => {
-      testToHaveDefaultAndOverride('runOnce', false, 'RUN_ONCE');
+      testToHaveDefaultAndOverride(
+        () => new EnvironmentConfig(),
+        'runOnce',
+        false,
+        'RUN_ONCE'
+      );
     });
 
     describe('intervalMinutes', () => {
       test('should return default value', () => {
-        expect(config.intervalMinutes).toStrictEqual(30);
+        expect(new EnvironmentConfig().intervalMinutes).toStrictEqual(30);
       });
 
       test('should disregard bad values', async () => {
         process.env['INTERVAL_MINUTES'] = '-1';
-        expect(config.intervalMinutes).toStrictEqual(30);
+        expect(new EnvironmentConfig().intervalMinutes).toStrictEqual(30);
 
-        config = new EnvironmentConfig();
         process.env['INTERVAL_MINUTES'] = 'abc';
-        expect(config.intervalMinutes).toStrictEqual(30);
+        expect(new EnvironmentConfig().intervalMinutes).toStrictEqual(30);
 
-        config = new EnvironmentConfig();
         process.env['INTERVAL_MINUTES'] = '0';
-        expect(config.intervalMinutes).toStrictEqual(30);
+        expect(new EnvironmentConfig().intervalMinutes).toStrictEqual(30);
       });
 
       test('should accept override and memoize', () => {
         process.env['INTERVAL_MINUTES'] = '5';
 
+        const config = new EnvironmentConfig();
         expect(config.intervalMinutes).toStrictEqual(5);
         resetEnv();
         expect(config.intervalMinutes).toStrictEqual(5);
       });
-    });
-
-    describe('honeybadgerApiKey', () => {
-      testToHaveDefaultAndOverride('honeybadgerApiKey', undefined, 'HONEYBADGER_API_KEY');
-    });
-
-    describe('sentryDsn', () => {
-      testToHaveDefaultAndOverride('sentryDsn', undefined, 'SENTRY_DSN');
     });
   });
 });
