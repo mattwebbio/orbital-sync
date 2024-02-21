@@ -1,12 +1,12 @@
 import { SyncOptionsV5 } from '../client/v5/sync-options.js';
 import { ErrorNotification } from '../notify.js';
 import { Host } from '../host.js';
-import { Configuration } from './index.js';
+import { BaseConfig } from './base.js';
 import { NotifySmtpConfig } from './notify/smtp.js';
 import { NotifyConfig } from './notify/index.js';
 import { NotifyExceptionsConfig } from './notify/exceptions.js';
 
-export class EnvironmentConfig extends Configuration {
+export class EnvironmentConfig extends BaseConfig {
   private _primaryHost?: Host;
   private _secondaryHosts?: Host[];
   private _syncOptions?: SyncOptionsV5;

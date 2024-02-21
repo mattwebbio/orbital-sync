@@ -1,11 +1,11 @@
 import { ClientV5 } from './client/v5/index.js';
-import { Configuration } from './config/index.js';
+import { BaseConfig } from './config/base.js';
 import { Log } from './log.js';
 import { Notify } from './notify.js';
 
 export class Sync {
   static async perform(
-    config: Configuration,
+    config: BaseConfig,
     { notify: _notify, log: _log }: { notify?: Notify; log?: Log } = {}
   ): Promise<void> {
     const notify = _notify ?? new Notify(config);

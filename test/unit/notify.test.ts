@@ -8,10 +8,10 @@ import type Mail from 'nodemailer/lib/mailer';
 import { Log } from '../../src/log';
 import { ErrorNotification, Notify } from '../../src/notify';
 import { EnabledSmtpConfig } from '../../src/config/notify/smtp';
-import { Configuration } from '../../src/config';
+import { BaseConfig } from '../../src/config/base';
 
 describe('Notify', () => {
-  let config: Configuration;
+  let config: BaseConfig;
 
   let log: Log;
   let logInfo: jest.SpiedFunction<typeof Log.prototype.info>;
@@ -51,7 +51,7 @@ describe('Notify', () => {
         }
       },
       allHostUrls: ['http://10.0.0.2/admin', 'http://10.0.0.3/admin']
-    } as Configuration;
+    } as BaseConfig;
 
     log = new Log(false);
     logInfo = jest.spyOn(log, 'info');

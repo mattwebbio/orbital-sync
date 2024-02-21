@@ -3,7 +3,7 @@ import Sentry from '@sentry/node';
 import { FetchError } from 'node-fetch';
 import nodemailer from 'nodemailer';
 import { Log } from './log.js';
-import { Configuration } from './config/index.js';
+import { BaseConfig } from './config/base.js';
 
 export class Notify {
   private errorQueue: NotificationInterface[] = [];
@@ -12,7 +12,7 @@ export class Notify {
   private _smtpClient?: nodemailer.Transporter;
 
   constructor(
-    private config: Configuration,
+    private config: BaseConfig,
     private log: Log = new Log(config.verboseMode)
   ) {}
 
