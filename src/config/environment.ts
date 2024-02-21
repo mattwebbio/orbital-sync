@@ -1,8 +1,9 @@
 import { SyncOptionsV5 } from '../client/v5/sync-options.js';
 import { ErrorNotification } from '../notify.js';
 import { Host } from '../host.js';
+import { Configuration } from './index.js';
 
-export class EnvironmentConfig {
+export class EnvironmentConfig implements Configuration {
   private _primaryHost?: Host;
   private _secondaryHosts?: Host[];
   private _syncOptions?: SyncOptionsV5;

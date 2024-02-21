@@ -2,8 +2,8 @@ import Honeybadger from '@honeybadger-io/js';
 import Sentry from '@sentry/node';
 import { FetchError } from 'node-fetch';
 import nodemailer from 'nodemailer';
-import { EnvironmentConfig } from './config/environment.js';
 import { Log } from './log.js';
+import { Configuration } from './config/index.js';
 
 export class Notify {
   private errorQueue: NotificationInterface[] = [];
@@ -12,7 +12,7 @@ export class Notify {
   private _smtpClient?: nodemailer.Transporter;
 
   constructor(
-    private config: EnvironmentConfig,
+    private config: Configuration,
     private log: Log = new Log(config.verboseMode)
   ) {}
 
