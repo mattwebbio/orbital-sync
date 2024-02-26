@@ -1,5 +1,6 @@
-/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
-module.exports = {
+import type { JestConfigWithTsJest } from 'ts-jest';
+
+export const jestConfig: JestConfigWithTsJest = {
   preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
   moduleNameMapper: {
@@ -16,3 +17,5 @@ module.exports = {
   },
   coveragePathIgnorePatterns: ['<rootDir>/test']
 };
+
+export default jestConfig;
