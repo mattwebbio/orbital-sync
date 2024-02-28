@@ -46,6 +46,7 @@
     "@sentry/node": "^7.107.0",
     "chalk": "^4.1.2",
     "fetch-cookie": "^3.0.1",
+    "json-schema-to-ts": "^3.0.0",
     "mustache": "^4.2.0",
     "node-fetch": "^3.3.2",
     "node-html-parser": "^6.1.12",
