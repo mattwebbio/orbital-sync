@@ -911,44 +911,44 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@sentry-internal/tracing@7.102.1":
-  version "7.102.1"
-  resolved "https://registry.yarnpkg.com/@sentry-internal/tracing/-/tracing-7.102.1.tgz#5c39c8f04a4a1a665fb6d368e1cd13605152f18b"
-  integrity sha512-RkFlFyAC0fQOvBbBqnq0CLmFW5m3JJz9pKbZd5vXPraWAlniKSb1bC/4DF9SlNx0FN1LWG+IU3ISdpzwwTeAGg==
+"@sentry-internal/tracing@7.105.0":
+  version "7.105.0"
+  resolved "https://registry.yarnpkg.com/@sentry-internal/tracing/-/tracing-7.105.0.tgz#9cb06f8281454343215cfe4b119c8198f032ec72"
+  integrity sha512-b+AFYB7Bc9vmyxl2jbmuT4esX5G0oPfpz35A0sxFzmJIhvMg1YMDNio2c81BtKN+VSPORCnKMLhfk3kyKKvWMQ==
   dependencies:
-    "@sentry/core" "7.102.1"
-    "@sentry/types" "7.102.1"
-    "@sentry/utils" "7.102.1"
+    "@sentry/core" "7.105.0"
+    "@sentry/types" "7.105.0"
+    "@sentry/utils" "7.105.0"
 
-"@sentry/core@7.102.1":
-  version "7.102.1"
-  resolved "https://registry.yarnpkg.com/@sentry/core/-/core-7.102.1.tgz#855d37b6bba9986a9380864c823e696d3fc5aa01"
-  integrity sha512-QjY+LSP3du3J/C8x/FfEbRxgZgsWd0jfTJ4P7s9f219I1csK4OeBMC3UA1HwEa0pY/9OF6H/egW2CjOcMM5Pdg==
+"@sentry/core@7.105.0":
+  version "7.105.0"
+  resolved "https://registry.yarnpkg.com/@sentry/core/-/core-7.105.0.tgz#89db519dd9aa7326de63a7eaccf861de3769ab1c"
+  integrity sha512-5xsaTG6jZincTeJUmZomlv20mVRZUEF1U/g89lmrSOybyk2+opEnB1JeBn4ODwnvmSik8r2QLr6/RiYlaxRJCg==
   dependencies:
-    "@sentry/types" "7.102.1"
-    "@sentry/utils" "7.102.1"
+    "@sentry/types" "7.105.0"
+    "@sentry/utils" "7.105.0"
 
-"@sentry/node@^7.102.1":
-  version "7.102.1"
-  resolved "https://registry.yarnpkg.com/@sentry/node/-/node-7.102.1.tgz#3e787ab2628c5950916f25c335a4eb6c0ea93ea5"
-  integrity sha512-mb3vmM3SGuCruckPiv/Vafeh89UQavTfpPFoU6Jwe6dSpQ39BO8fO8k8Zev+/nP6r/FKLtX17mJobErHECXsYw==
+"@sentry/node@^7.105.0":
+  version "7.105.0"
+  resolved "https://registry.yarnpkg.com/@sentry/node/-/node-7.105.0.tgz#cfe8e5602dff2cc754a95412f44c9ca8156422ff"
+  integrity sha512-b0QwZ7vT4hcJi6LmNRh3dcaYpLtXnkYXkL0rfhMb8hN8sUx8zuOWFMI7j0cfAloVThUeJVwGyv9dERfzGS2r2w==
   dependencies:
-    "@sentry-internal/tracing" "7.102.1"
-    "@sentry/core" "7.102.1"
-    "@sentry/types" "7.102.1"
-    "@sentry/utils" "7.102.1"
+    "@sentry-internal/tracing" "7.105.0"
+    "@sentry/core" "7.105.0"
+    "@sentry/types" "7.105.0"
+    "@sentry/utils" "7.105.0"
 
-"@sentry/types@7.102.1":
-  version "7.102.1"
-  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-7.102.1.tgz#18c35f32ecbd12afb9860ca2de7bfff542d10b27"
-  integrity sha512-htKorf3t/D0XYtM7foTcmG+rM47rDP6XdbvCcX5gBCuCYlzpM1vqCt2rl3FLktZC6TaIpFRJw1TLfx6m+x5jdA==
+"@sentry/types@7.105.0":
+  version "7.105.0"
+  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-7.105.0.tgz#51dadb7ad650e883459acf18df2ecbb5b4b6e5c2"
+  integrity sha512-80o0KMVM+X2Ym9hoQxvJetkJJwkpCg7o6tHHFXI+Rp7fawc2iCMTa0IRQMUiSkFvntQLYIdDoNNuKdzz2PbQGA==
 
-"@sentry/utils@7.102.1":
-  version "7.102.1"
-  resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-7.102.1.tgz#45ddcdf2e700d40160347bbdf4233aff3179d398"
-  integrity sha512-+8WcFjHVV/HROXSAwMuUzveElBFC43EiTG7SNEBNgOUeQzQVTmbUZXyTVgLrUmtoWqvnIxCacoLxtZo1o67kdg==
+"@sentry/utils@7.105.0":
+  version "7.105.0"
+  resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-7.105.0.tgz#727187d252b97cb9e6c78bcdd0e9a1d14e60f313"
+  integrity sha512-YVAV0c2KLM8+VZCicQ/E/P2+J9Vs0hGhrXwV7w6ZEAtvxrg4oF270toL1WRhvcaf8JO4J1v4V+LuU6Txs4uEeQ==
   dependencies:
-    "@sentry/types" "7.102.1"
+    "@sentry/types" "7.105.0"
 
 "@sinclair/typebox@^0.27.8":
   version "0.27.8"
