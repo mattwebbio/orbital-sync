@@ -20,7 +20,7 @@
   },
   "bin": "./dist/index.js",
   "devDependencies": {
-    "@commitlint/config-conventional": "^18.6.2",
+    "@commitlint/config-conventional": "^19.0.3",
     "@tsconfig/node18": "^18.2.2",
     "@types/jest": "^29.5.12",
     "@types/luxon": "^3.4.2",
