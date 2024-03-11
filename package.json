@@ -47,7 +47,7 @@
     "fetch-cookie": "^2.2.0",
     "node-fetch": "^3.3.2",
     "node-html-parser": "^6.1.12",
-    "nodemailer": "^6.9.11",
+    "nodemailer": "^6.9.12",
     "sleep-promise": "^9.1.0"
   }
 }
