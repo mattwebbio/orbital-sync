@@ -2,14 +2,21 @@ import nock from 'nock';
 import { Blob } from 'node-fetch';
 import { ClientV5 } from '../../../../src/client/v5';
 import { Host } from '../../../../src/client/host';
-import { EnvironmentConfig } from '../../../../src/config/environment';
+import { Config } from '../../../../src/config/index';
 import { ErrorNotification } from '../../../../src/notify';
 import { Log } from '../../../../src/log';
 
 describe('Client', () => {
   describe('V5', () => {
-    const host = new Host('http://10.0.0.2', 'mypassword');
-    const config = new EnvironmentConfig();
+    const host = new Host({
+      baseUrl: 'http://10.0.0.2',
+      password: 'mypassword',
+      path: '/admin'
+    });
+    const config = Config({
+      primaryHost: { baseUrl: host.baseUrl, password: host.password },
+      secondaryHosts: [{ baseUrl: host.baseUrl, password: host.password }]
+    });
     const log = new Log(false);
 
     const createClient = async () => {
@@ -23,7 +30,7 @@ describe('Client', () => {
 
       return {
         teleporter: nock(host.fullUrl),
-        client: await ClientV5.create({ host, log, options: config.syncOptions })
+        client: await ClientV5.create({ host, log, options: config.sync.v5 })
       };
     };
 
@@ -37,7 +44,7 @@ describe('Client', () => {
         const loginRequest = nock(host.fullUrl).post('/index.php?login').reply(500);
 
         const expectError = expect(
-          ClientV5.create({ host, log, options: config.syncOptions })
+          ClientV5.create({ host, log, options: config.sync.v5 })
         ).rejects;
 
         await expectError.toBeInstanceOf(ErrorNotification);
@@ -60,7 +67,7 @@ describe('Client', () => {
         const loginRequest = nock(host.fullUrl).post('/index.php?login').reply(200);
 
         const expectError = expect(
-          ClientV5.create({ host, log, options: config.syncOptions })
+          ClientV5.create({ host, log, options: config.sync.v5 })
         ).rejects;
 
         await expectError.toBeInstanceOf(ErrorNotification);
@@ -84,7 +91,7 @@ describe('Client', () => {
           .reply(200, '<html><body><div id="token">abcdef</div></body></html>');
 
         const expectError = expect(
-          ClientV5.create({ host, log, options: config.syncOptions })
+          ClientV5.create({ host, log, options: config.sync.v5 })
         ).rejects;
 
         await expectError.toBeInstanceOf(ErrorNotification);
@@ -111,7 +118,7 @@ describe('Client', () => {
           );
 
         await expect(
-          ClientV5.create({ host, log, options: config.syncOptions })
+          ClientV5.create({ host, log, options: config.sync.v5 })
         ).resolves.toBeInstanceOf(ClientV5);
 
         initialRequest.done();

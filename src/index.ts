@@ -4,10 +4,10 @@ import chalk from 'chalk';
 import sleep from 'sleep-promise';
 import { Log } from './log.js';
 import { Sync } from './sync.js';
-import { EnvironmentConfig } from './config/environment.js';
+import { Config } from './config/index.js';
 
-const config = new EnvironmentConfig();
-const log = new Log(config.verboseMode);
+const config = Config();
+const log = new Log(config.verbose);
 
 do {
   await Sync.perform(config, { log });

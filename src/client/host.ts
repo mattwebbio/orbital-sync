@@ -6,7 +6,16 @@ export class Host {
 
   private static pathExtractor = RegExp('^(http[s]?:+//[^/s]+)([/]?[^?#]+)?');
 
-  constructor(baseUrl: string, password: string, path = '/admin') {
+  constructor({
+    baseUrl,
+    password,
+    path
+  }: {
+    baseUrl: string;
+    password: string;
+    path?: string;
+  }) {
+    path ??= '/admin';
     if (path && !path.startsWith('/')) {
       path = '/' + path;
     }

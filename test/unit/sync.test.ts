@@ -2,16 +2,14 @@ import { describe, expect, jest, test } from '@jest/globals';
 import nock from 'nock';
 import { Blob } from 'node-fetch';
 import { ClientV5 } from '../../src/client/v5';
-import { EnvironmentConfig } from '../../src/config/environment';
+import { Config } from '../../src/config/index';
 import { Log } from '../../src/log';
 import { ErrorNotification, Notify } from '../../src/notify';
 import { Sync } from '../../src/sync';
 import { Host } from '../../src/client/host';
-import { SyncOptionsV5 } from '../../src/client/v5/sync-options';
+import { SyncOptionsV5 } from '../../src/config/index';
 
 describe('sync', () => {
-  let primaryHost: ReturnType<typeof jest.spyOn>;
-  let secondaryHosts: ReturnType<typeof jest.spyOn>;
   let clientCreate: ReturnType<typeof jest.spyOn>;
   let notifyOfFailure: ReturnType<typeof jest.spyOn>;
   let notifyQueueError: ReturnType<typeof jest.spyOn>;
@@ -21,10 +19,10 @@ describe('sync', () => {
   let secondaryHostClient1: ClientV5;
   let secondaryHostClient2: ClientV5;
 
-  const primaryHostValue = new Host('http://10.0.0.2', 'password1');
+  const primaryHostValue = { baseUrl: 'http://10.0.0.2', password: 'password1' };
   const secondaryHostsValue = [
-    new Host('http://10.0.0.3', 'password2'),
-    new Host('http://10.0.0.4', 'password3')
+    { baseUrl: 'http://10.0.0.3', password: 'password2' },
+    { baseUrl: 'http://10.0.0.4', password: 'password3' }
   ];
   const backupData = new Blob([]);
 
@@ -51,18 +49,15 @@ describe('sync', () => {
     secondaryOneResult?: Promise<boolean | never>;
     secondaryTwoResult?: Promise<boolean | never>;
   } = {}) => {
-    const config = new EnvironmentConfig();
+    const config = Config({
+      primaryHost: primaryHostValue,
+      secondaryHosts: secondaryHostsValue,
+      runOnce: true
+    });
     const notify = new Notify(config);
-    const log = new Log(true);
+    const log = new Log(config.verbose);
 
-    jest.spyOn(config, 'runOnce', 'get').mockReturnValue(true);
     processExit = jest.spyOn(process, 'exit').mockReturnValue(undefined as never);
-    primaryHost = jest
-      .spyOn(config, 'primaryHost', 'get')
-      .mockReturnValue(primaryHostValue);
-    secondaryHosts = jest
-      .spyOn(config, 'secondaryHosts', 'get')
-      .mockReturnValue(secondaryHostsValue);
     primaryHostClient = {
       downloadBackup: jest.fn(() => primaryResult ?? Promise.resolve(backupData))
     } as unknown as ClientV5;
@@ -93,21 +88,19 @@ describe('sync', () => {
     options: SyncOptionsV5;
     log: Log;
   }) => {
-    expect(primaryHost).toHaveBeenCalledTimes(1);
-    expect(secondaryHosts).toHaveBeenCalledTimes(2);
     expect(clientCreate).toHaveBeenCalledTimes(3);
     expect(clientCreate).toHaveBeenNthCalledWith(1, {
-      host: primaryHostValue,
+      host: expect.objectContaining(primaryHostValue),
       options,
       log
     });
     expect(clientCreate).toHaveBeenNthCalledWith(2, {
-      host: secondaryHostsValue[0],
+      host: expect.objectContaining(secondaryHostsValue[0]),
       options,
       log
     });
     expect(clientCreate).toHaveBeenNthCalledWith(3, {
-      host: secondaryHostsValue[1],
+      host: expect.objectContaining(secondaryHostsValue[1]),
       options,
       log
     });
@@ -123,7 +116,7 @@ describe('sync', () => {
 
     await Sync.perform(config, { notify, log });
 
-    expectSyncToHaveBeenPerformed({ options: config.syncOptions, log });
+    expectSyncToHaveBeenPerformed({ options: config.sync.v5, log });
     expect(notifyOfFailure).not.toHaveBeenCalled();
     expect(notifyQueueError).not.toHaveBeenCalled();
     expect(notifyOfSuccess).toHaveBeenCalledTimes(1);
@@ -140,7 +133,7 @@ describe('sync', () => {
 
     await Sync.perform(config, { notify, log });
 
-    expectSyncToHaveBeenPerformed({ options: config.syncOptions, log });
+    expectSyncToHaveBeenPerformed({ options: config.sync.v5, log });
     expect(notifyOfSuccess).not.toHaveBeenCalled();
     expect(notifyQueueError).toHaveBeenCalledTimes(1);
     expect(notifyQueueError).toHaveBeenCalledWith(
@@ -166,7 +159,7 @@ describe('sync', () => {
 
     await Sync.perform(config, { notify, log });
 
-    expectSyncToHaveBeenPerformed({ options: config.syncOptions, log });
+    expectSyncToHaveBeenPerformed({ options: config.sync.v5, log });
     expect(notifyOfSuccess).not.toHaveBeenCalled();
     expect(notifyQueueError).toHaveBeenCalledTimes(2);
     expect(notifyQueueError).toHaveBeenCalledWith(

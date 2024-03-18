@@ -7,11 +7,10 @@ import nodemailer from 'nodemailer';
 import type Mail from 'nodemailer/lib/mailer';
 import { Log } from '../../src/log';
 import { ErrorNotification, Notify } from '../../src/notify';
-import { EnabledSmtpConfig } from '../../src/config/notify/smtp';
-import { BaseConfig } from '../../src/config/base';
+import { Config, ConfigInterface } from '../../src/config/index';
 
 describe('Notify', () => {
-  let config: BaseConfig;
+  let config: ConfigInterface;
 
   let log: Log;
   let logInfo: jest.SpiedFunction<typeof Log.prototype.info>;
@@ -27,10 +26,10 @@ describe('Notify', () => {
   let notifyOfFailure: ReturnType<typeof jest.spyOn>;
   let verboseMode: ReturnType<typeof jest.spyOn>;
 
-  const smtpConfig: EnabledSmtpConfig = {
+  const smtpConfig: ConfigInterface['notify']['smtp'] = {
     enabled: true,
     host: 'notify.example.com',
-    port: '587',
+    port: 587,
     user: 'user@example.com',
     from: 'from@example.com',
     to: 'to@example.com',
@@ -39,8 +38,18 @@ describe('Notify', () => {
   };
 
   beforeEach(() => {
-    config = {
-      verboseMode: false,
+    config = Config({
+      primaryHost: {
+        baseUrl: 'http://10.0.0.2',
+        password: 'password'
+      },
+      secondaryHosts: [
+        {
+          baseUrl: 'http://10.0.0.3',
+          password: 'password2'
+        }
+      ],
+      verbose: false,
       notify: {
         onSuccess: true,
         onFailure: true,
@@ -49,9 +58,8 @@ describe('Notify', () => {
           honeybadgerApiKey: undefined,
           sentryDsn: undefined
         }
-      },
-      allHostUrls: ['http://10.0.0.2/admin', 'http://10.0.0.3/admin']
-    } as BaseConfig;
+      }
+    });
 
     log = new Log(false);
     logInfo = jest.spyOn(log, 'info');
@@ -167,7 +175,7 @@ describe('Notify', () => {
 
     test('should log verbose context', async () => {
       const notify = new Notify(config, log);
-      Object.assign(config.verboseMode, { verboseMode: true });
+      config.verbose = true;
 
       await notify.ofFailure({
         message: 'Example failure message',
@@ -272,7 +280,7 @@ describe('Notify', () => {
 
     test('should send unexpected error to Honeybadger if configured', async () => {
       const notify = new Notify(config, log);
-      config.notify.exceptions.honeybadgerApiKey = 'foobar';
+      config.notify.exceptions!.honeybadgerApiKey = 'foobar';
       const honeybadgerNotify = jest
         .spyOn(Honeybadger, 'notify')
         .mockImplementation(jest.fn<typeof Honeybadger.notify>());
@@ -295,7 +303,7 @@ describe('Notify', () => {
 
     test('should send unexpected error to Sentry if configured', async () => {
       const notify = new Notify(config, log);
-      config.notify.exceptions.sentryDsn = 'foobar';
+      config.notify.exceptions!.sentryDsn = 'foobar';
       const sentryCapture = jest
         .spyOn(Sentry, 'captureException')
         .mockImplementation(jest.fn<typeof Sentry.captureException>());

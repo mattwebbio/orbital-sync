@@ -3,18 +3,24 @@ import Sentry from '@sentry/node';
 import { FetchError } from 'node-fetch';
 import nodemailer from 'nodemailer';
 import { Log } from './log.js';
-import { BaseConfig } from './config/base.js';
+import { ConfigInterface } from './config/index.js';
+import { Host } from './client/host.js';
 
 export class Notify {
   private errorQueue: NotificationInterface[] = [];
   private _honeybadger?: Honeybadger;
   private _sentry?: typeof Sentry;
   private _smtpClient?: nodemailer.Transporter;
+  private allHostUrls: string[];
 
   constructor(
-    private config: BaseConfig,
-    private log: Log = new Log(config.verboseMode)
-  ) {}
+    private config: ConfigInterface,
+    private log: Log = new Log(config.verbose)
+  ) {
+    this.allHostUrls = [config.primaryHost, ...config.secondaryHosts].map(
+      (host) => new Host(host).fullUrl
+    );
+  }
 
   async ofThrow(error: unknown, queue = false): Promise<void> {
     if (error instanceof ErrorNotification) {
@@ -22,7 +28,7 @@ export class Notify {
       else this.queueError(error);
     } else if (error instanceof FetchError && error.code === 'ECONNREFUSED') {
       const messageSubstring = error.message.split('ECONNREFUSED')[0];
-      const url = this.config.allHostUrls.find((url) => messageSubstring.includes(url));
+      const url = this.allHostUrls.find((url) => messageSubstring.includes(url));
 
       await this.ofThrow(
         new ErrorNotification({
@@ -100,7 +106,7 @@ export class Notify {
   }
 
   private get honeybadger(): Honeybadger | undefined {
-    if (this.config.notify.exceptions.honeybadgerApiKey === undefined) return;
+    if (this.config.notify.exceptions?.honeybadgerApiKey === undefined) return;
 
     this._honeybadger ??= Honeybadger.configure({
       apiKey: this.config.notify.exceptions.honeybadgerApiKey
@@ -110,7 +116,7 @@ export class Notify {
   }
 
   private get sentry(): typeof Sentry | undefined {
-    if (this.config.notify.exceptions.sentryDsn === undefined) return;
+    if (this.config.notify.exceptions?.sentryDsn === undefined) return;
 
     if (this._sentry === undefined) {
       Sentry.init({
@@ -129,7 +135,7 @@ export class Notify {
 
   private async dispatchSmtp(subject: string, contents: string): Promise<void> {
     try {
-      if (this.config.notify.smtp.enabled && this.smtpClient) {
+      if (this.config.notify.smtp?.enabled && this.smtpClient) {
         this.log.verbose('➡️ Dispatching notification email...');
 
         await this.smtpClient.sendMail({
@@ -159,14 +165,16 @@ export class Notify {
   }
 
   private get smtpClient(): nodemailer.Transporter | undefined {
-    if (!this.config.notify.smtp.enabled) return;
+    if (!this.config.notify.smtp?.enabled) return;
+    if (!this.config.notify.smtp?.host)
+      throw new Error('SMTP is enabled but no host is provided.');
 
     if (!this._smtpClient) {
       this.log.verbose('➡️ Creating SMTP client...');
 
       this._smtpClient = nodemailer.createTransport({
         host: this.config.notify.smtp.host,
-        port: Number.parseInt(this.config.notify.smtp.port),
+        port: this.config.notify.smtp.port,
         secure: this.config.notify.smtp.tls,
         auth: this.config.notify.smtp.user
           ? {
@@ -184,6 +192,8 @@ export class Notify {
 }
 
 export class ErrorNotification extends Error implements NotificationInterface {
+  verbose?: string | Record<string, unknown> | undefined;
+
   constructor(args: NotificationInterface) {
     super(args.message);
     Object.assign(this, args);

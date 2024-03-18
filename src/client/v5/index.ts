@@ -11,7 +11,7 @@ import { parse } from 'node-html-parser';
 import type { Host } from '../host.js';
 import { Log } from '../../log.js';
 import { ErrorNotification } from '../../notify.js';
-import { SyncOptionsV5 } from './sync-options.js';
+import type { SyncOptionsV5 } from '../../config/index.js';
 
 export class ClientV5 {
   private constructor(
@@ -189,15 +189,15 @@ export class ClientV5 {
     if (this.options.whitelist) form.append('whitelist', true);
     if (this.options.regexWhitelist) form.append('regex_whitelist', true);
     if (this.options.blacklist) form.append('blacklist', true);
-    if (this.options.regexlist) form.append('regexlist', true);
-    if (this.options.adlist) form.append('adlist', true);
+    if (this.options.regexList) form.append('regexlist', true);
+    if (this.options.adList) form.append('adlist', true);
     if (this.options.client) form.append('client', true);
     if (this.options.group) form.append('group', true);
-    if (this.options.auditlog) form.append('auditlog', true);
-    if (this.options.staticdhcpleases) form.append('staticdhcpleases', true);
-    if (this.options.localdnsrecords) form.append('localdnsrecords', true);
-    if (this.options.localcnamerecords) form.append('localcnamerecords', true);
-    if (this.options.flushtables) form.append('flushtables', true);
+    if (this.options.auditLog) form.append('auditlog', true);
+    if (this.options.staticDhcpLeases) form.append('staticdhcpleases', true);
+    if (this.options.localDnsRecords) form.append('localdnsrecords', true);
+    if (this.options.localCnameRecords) form.append('localcnamerecords', true);
+    if (this.options.flushTables) form.append('flushtables', true);
 
     return form;
   }

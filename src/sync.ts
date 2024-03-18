@@ -1,29 +1,30 @@
+import { Host } from './client/host.js';
 import { ClientV5 } from './client/v5/index.js';
-import { BaseConfig } from './config/base.js';
+import { ConfigInterface } from './config/index.js';
 import { Log } from './log.js';
 import { Notify } from './notify.js';
 
 export class Sync {
   static async perform(
-    config: BaseConfig,
+    config: ConfigInterface,
     { notify: _notify, log: _log }: { notify?: Notify; log?: Log } = {}
   ): Promise<void> {
     const notify = _notify ?? new Notify(config);
-    const log = _log ?? new Log(config.verboseMode);
+    const log = _log ?? new Log(config.verbose);
 
     try {
       const primaryHost = await ClientV5.create({
-        host: config.primaryHost,
-        options: config.syncOptions,
+        host: new Host(config.primaryHost),
+        options: config.sync.v5,
         log
       });
       const backup = await primaryHost.downloadBackup();
 
-      const secondaryHostCount = config.secondaryHosts.length;
+      const secondaryHostCount = config.secondaryHosts?.length ?? 0;
       const successfulRestoreCount = (
         await Promise.all(
           config.secondaryHosts.map((host) =>
-            ClientV5.create({ host, options: config.syncOptions, log })
+            ClientV5.create({ host: new Host(host), options: config.sync.v5, log })
               .then(async (client) => {
                 let success = await client.uploadBackup(backup);
 
