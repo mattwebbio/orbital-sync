@@ -2,11 +2,13 @@ name: Prerelease
 
 on:
   pull_request_target:
+  push:
+    branches: [master]
 
 jobs:
   docker:
     runs-on: ubuntu-latest
-    if: ${{ github.actor != 'dependabot[bot]' }}
+    if: ${{ github.actor != 'dependabot[bot]' && github.actor != 'tiltcamp-bot' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
