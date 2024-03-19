@@ -8,20 +8,30 @@ import nodeFetch, {
   Response
 } from 'node-fetch';
 import { parse } from 'node-html-parser';
-import type { Host } from './config.js';
-import { Config } from './config.js';
-import { Log } from './log.js';
-import { ErrorNotification } from './notify.js';
+import type { Host } from '../host.js';
+import { Log } from '../../log.js';
+import { ErrorNotification } from '../../notify.js';
+import type { SyncOptionsV5 } from '../../config/index.js';
 
-export class Client {
+export class ClientV5 {
   private constructor(
     private fetch: NodeFetchCookie,
     private host: Host,
-    private token: string
+    private token: string,
+    private options: SyncOptionsV5,
+    private log: Log
   ) {}
 
-  public static async create(host: Host): Promise<Client> {
-    Log.info(chalk.yellow(`➡️ Signing in to ${host.fullUrl}...`));
+  public static async create({
+    host,
+    options,
+    log
+  }: {
+    host: Host;
+    options: SyncOptionsV5;
+    log: Log;
+  }): Promise<ClientV5> {
+    log.info(chalk.yellow(`➡️ Signing in to ${host.fullUrl}...`));
     const fetch = fetchCookie(nodeFetch);
 
     await fetch(`${host.fullUrl}/index.php?login`, { method: 'GET' });
@@ -45,8 +55,8 @@ export class Client {
 
     const token = this.parseResponseForToken(host, await response.text());
 
-    Log.info(chalk.green(`✔️ Successfully signed in to ${host.fullUrl}!`));
-    return new this(fetch, host, token);
+    log.info(chalk.green(`✔️ Successfully signed in to ${host.fullUrl}!`));
+    return new this(fetch, host, token, options, log);
   }
 
   private static parseResponseForToken(host: Host, responseBody: string): string {
@@ -77,7 +87,7 @@ export class Client {
   }
 
   public async downloadBackup(): Promise<Blob> {
-    Log.info(chalk.yellow(`➡️ Downloading backup from ${this.host.fullUrl}...`));
+    this.log.info(chalk.yellow(`➡️ Downloading backup from ${this.host.fullUrl}...`));
     const form = this.generateForm();
 
     const response = await this.fetch(
@@ -103,12 +113,12 @@ export class Client {
 
     const data = await response.arrayBuffer();
 
-    Log.info(chalk.green(`✔️ Backup from ${this.host.fullUrl} completed!`));
+    this.log.info(chalk.green(`✔️ Backup from ${this.host.fullUrl} completed!`));
     return new Blob([data]);
   }
 
   public async uploadBackup(backup: Blob): Promise<true | never> {
-    Log.info(chalk.yellow(`➡️ Uploading backup to ${this.host.fullUrl}...`));
+    this.log.info(chalk.yellow(`➡️ Uploading backup to ${this.host.fullUrl}...`));
 
     const form = this.generateForm();
     form.append('action', 'in');
@@ -136,36 +146,38 @@ export class Client {
         }
       });
 
-    Log.info(chalk.green(`✔️ Backup uploaded to ${this.host.fullUrl}!`));
-    Log.verbose(`Result:\n${chalk.blue(uploadText)}`);
+    this.log.info(chalk.green(`✔️ Backup uploaded to ${this.host.fullUrl}!`));
+    this.log.verbose(`Result:\n${chalk.blue(uploadText)}`);
 
-    if (Config.updateGravity) {
-      Log.info(chalk.yellow(`➡️ Updating gravity on ${this.host.fullUrl}...`));
-      const gravityUpdateResponse = await this.fetch(
-        `${this.host.fullUrl}/scripts/pi-hole/php/gravity.sh.php`,
-        { method: 'GET' }
-      );
+    return true;
+  }
 
-      const updateText = (await gravityUpdateResponse.text())
-        .replaceAll('\ndata:', '')
-        .trim();
-      if (
-        gravityUpdateResponse.status !== 200 ||
-        !updateText.endsWith('Pi-hole blocking is enabled')
-      )
-        throw new ErrorNotification({
-          message: `Failed updating gravity on "${this.host.fullUrl}".`,
-          verbose: {
-            host: this.host.baseUrl,
-            path: this.host.path,
-            status: gravityUpdateResponse.status,
-            eventStream: updateText
-          }
-        });
+  public async updateGravity(): Promise<true | never> {
+    this.log.info(chalk.yellow(`➡️ Updating gravity on ${this.host.fullUrl}...`));
+    const gravityUpdateResponse = await this.fetch(
+      `${this.host.fullUrl}/scripts/pi-hole/php/gravity.sh.php`,
+      { method: 'GET' }
+    );
 
-      Log.info(chalk.green(`✔️ Gravity updated on ${this.host.fullUrl}!`));
-      Log.verbose(`Result:\n${chalk.blue(updateText)}`);
-    }
+    const updateText = (await gravityUpdateResponse.text())
+      .replaceAll('\ndata:', '')
+      .trim();
+    if (
+      gravityUpdateResponse.status !== 200 ||
+      !updateText.endsWith('Pi-hole blocking is enabled')
+    )
+      throw new ErrorNotification({
+        message: `Failed updating gravity on "${this.host.fullUrl}".`,
+        verbose: {
+          host: this.host.baseUrl,
+          path: this.host.path,
+          status: gravityUpdateResponse.status,
+          eventStream: updateText
+        }
+      });
+
+    this.log.info(chalk.green(`✔️ Gravity updated on ${this.host.fullUrl}!`));
+    this.log.verbose(`Result:\n${chalk.blue(updateText)}`);
 
     return true;
   }
@@ -174,18 +186,18 @@ export class Client {
     const form = new FormData();
     form.append('token', this.token);
 
-    if (Config.syncOptions.whitelist) form.append('whitelist', true);
-    if (Config.syncOptions.regexWhitelist) form.append('regex_whitelist', true);
-    if (Config.syncOptions.blacklist) form.append('blacklist', true);
-    if (Config.syncOptions.regexlist) form.append('regexlist', true);
-    if (Config.syncOptions.adlist) form.append('adlist', true);
-    if (Config.syncOptions.client) form.append('client', true);
-    if (Config.syncOptions.group) form.append('group', true);
-    if (Config.syncOptions.auditlog) form.append('auditlog', true);
-    if (Config.syncOptions.staticdhcpleases) form.append('staticdhcpleases', true);
-    if (Config.syncOptions.localdnsrecords) form.append('localdnsrecords', true);
-    if (Config.syncOptions.localcnamerecords) form.append('localcnamerecords', true);
-    if (Config.syncOptions.flushtables) form.append('flushtables', true);
+    if (this.options.whitelist) form.append('whitelist', true);
+    if (this.options.regexWhitelist) form.append('regex_whitelist', true);
+    if (this.options.blacklist) form.append('blacklist', true);
+    if (this.options.regexList) form.append('regexlist', true);
+    if (this.options.adList) form.append('adlist', true);
+    if (this.options.client) form.append('client', true);
+    if (this.options.group) form.append('group', true);
+    if (this.options.auditLog) form.append('auditlog', true);
+    if (this.options.staticDhcpLeases) form.append('staticdhcpleases', true);
+    if (this.options.localDnsRecords) form.append('localdnsrecords', true);
+    if (this.options.localCnameRecords) form.append('localcnamerecords', true);
+    if (this.options.flushTables) form.append('flushtables', true);
 
     return form;
   }

@@ -1,6 +1,5 @@
 import { jest } from '@jest/globals';
 import chalk from 'chalk';
-import { Config } from '../../src/config';
 import { Log } from '../../src/log';
 
 describe('Log', () => {
@@ -19,9 +18,10 @@ describe('Log', () => {
 
   describe('info', () => {
     test('should log with dimmed date', () => {
+      const log = new Log(false);
       const consoleLog = jest.spyOn(console, 'log');
 
-      Log.info('Hello world');
+      log.info('Hello world');
 
       expect(consoleLog).toHaveBeenCalledTimes(1);
       expect(consoleLog).toHaveBeenCalledWith(
@@ -30,9 +30,10 @@ describe('Log', () => {
     });
 
     test('should log stringified', () => {
+      const log = new Log(false);
       const consoleLog = jest.spyOn(console, 'log');
 
-      Log.info({ foo: 'bar' });
+      log.info({ foo: 'bar' });
 
       expect(consoleLog).toHaveBeenCalledTimes(1);
       expect(consoleLog).toHaveBeenCalledWith(
@@ -44,27 +45,28 @@ describe('Log', () => {
 
   describe('verbose', () => {
     test('should not log if not verboseMode', () => {
-      const logInfo = jest.spyOn(Log, 'info');
+      const log = new Log(false);
+      const logInfo = jest.spyOn(log, 'info');
 
-      Log.verbose('Hello world');
+      log.verbose('Hello world');
 
       expect(logInfo).not.toHaveBeenCalled();
     });
 
     test('should not log if empty', () => {
-      jest.spyOn(Config, 'verboseMode', 'get').mockReturnValue(true);
-      const logInfo = jest.spyOn(Log, 'info');
+      const log = new Log(true);
+      const logInfo = jest.spyOn(log, 'info');
 
-      Log.verbose(undefined);
+      log.verbose(undefined);
 
       expect(logInfo).not.toHaveBeenCalled();
     });
 
     test('should log if verboseMode', () => {
-      jest.spyOn(Config, 'verboseMode', 'get').mockReturnValue(true);
-      const logInfo = jest.spyOn(Log, 'info');
+      const log = new Log(true);
+      const logInfo = jest.spyOn(log, 'info');
 
-      Log.verbose('Hello world');
+      log.verbose('Hello world');
 
       expect(logInfo).toHaveBeenCalledTimes(1);
       expect(logInfo).toHaveBeenCalledWith('Hello world');
@@ -73,9 +75,10 @@ describe('Log', () => {
 
   describe('logError', () => {
     test('should log with dimmed date', () => {
+      const log = new Log(true);
       const consoleError = jest.spyOn(console, 'error');
 
-      Log.error('Hello world');
+      log.error('Hello world');
 
       expect(consoleError).toHaveBeenCalledTimes(1);
       expect(consoleError).toHaveBeenCalledWith(

@@ -5,41 +5,72 @@ import nock from 'nock';
 import { FetchError } from 'node-fetch';
 import nodemailer from 'nodemailer';
 import type Mail from 'nodemailer/lib/mailer';
-import { Config } from '../../src/config';
 import { Log } from '../../src/log';
 import { ErrorNotification, Notify } from '../../src/notify';
+import { Config, ConfigInterface } from '../../src/config/index';
 
 describe('Notify', () => {
-  const logInfo = jest.spyOn(Log, 'info');
-  const logError = jest.spyOn(Log, 'error');
-  const logVerbose = jest.spyOn(Log, 'verbose');
+  let config: ConfigInterface;
+
+  let log: Log;
+  let logInfo: jest.SpiedFunction<typeof Log.prototype.info>;
+  let logError: jest.SpiedFunction<typeof Log.prototype.error>;
+  let logVerbose: jest.SpiedFunction<typeof Log.prototype.verbose>;
   const sendMail = jest.fn();
   const createTransport = jest
     .spyOn(nodemailer, 'createTransport')
     .mockReturnValue({ sendMail } as unknown as Mail);
-  const notifyViaSmtp = jest.spyOn(Config, 'notifyViaSmtp', 'get');
   const processExit = jest
     .spyOn(process, 'exit')
     .mockImplementation(jest.fn<typeof process.exit>());
   let notifyOfFailure: ReturnType<typeof jest.spyOn>;
   let verboseMode: ReturnType<typeof jest.spyOn>;
 
-  beforeAll(() => {
-    jest.spyOn(Config, 'smtpHost', 'get').mockReturnValue('smtp.example.com');
-    jest.spyOn(Config, 'smtpUser', 'get').mockReturnValue('user@example.com');
-    jest.spyOn(Config, 'smtpFrom', 'get').mockReturnValue('from@example.com');
-    jest.spyOn(Config, 'smtpTo', 'get').mockReturnValue('to@example.com');
-    jest.spyOn(Config, 'smtpPassword', 'get').mockReturnValue('pass');
-  });
+  const smtpConfig: ConfigInterface['notify']['smtp'] = {
+    enabled: true,
+    host: 'notify.example.com',
+    port: 587,
+    user: 'user@example.com',
+    from: 'from@example.com',
+    to: 'to@example.com',
+    tls: false,
+    password: 'pass'
+  };
 
   beforeEach(() => {
+    config = Config({
+      primaryHost: {
+        baseUrl: 'http://10.0.0.2',
+        password: 'password'
+      },
+      secondaryHosts: [
+        {
+          baseUrl: 'http://10.0.0.3',
+          password: 'password2'
+        }
+      ],
+      verbose: false,
+      notify: {
+        onSuccess: true,
+        onFailure: true,
+        smtp: { enabled: false },
+        exceptions: {
+          honeybadgerApiKey: undefined,
+          sentryDsn: undefined
+        }
+      }
+    });
+
+    log = new Log(false);
+    logInfo = jest.spyOn(log, 'info');
+    logError = jest.spyOn(log, 'error');
+    logVerbose = jest.spyOn(log, 'verbose');
+
     nock.disableNetConnect();
-    logInfo.mockClear();
-    logError.mockClear();
     logVerbose.mockClear();
     sendMail.mockClear();
     processExit.mockClear();
-    notifyViaSmtp.mockReset();
+    createTransport.mockClear();
     notifyOfFailure?.mockRestore();
     verboseMode?.mockRestore();
   });
@@ -47,7 +78,7 @@ describe('Notify', () => {
   afterAll(() => {
     expect(createTransport).toHaveBeenCalledTimes(1);
     expect(createTransport).toHaveBeenCalledWith({
-      host: 'smtp.example.com',
+      host: 'notify.example.com',
       port: 587,
       secure: false,
       auth: {
@@ -59,9 +90,10 @@ describe('Notify', () => {
 
   describe('ofSuccess', () => {
     test('should log success', async () => {
-      notifyOfFailure = jest.spyOn(Notify, 'ofFailure');
+      const notify = new Notify(config, log);
+      notifyOfFailure = jest.spyOn(notify, 'ofFailure');
 
-      await Notify.ofSuccess({
+      await notify.ofSuccess({
         message: '3/3 hosts synced.',
         verbose: 'Example verbose context'
       });
@@ -73,9 +105,10 @@ describe('Notify', () => {
     });
 
     test('should log verbose context', async () => {
-      verboseMode = jest.spyOn(Config, 'verboseMode', 'get').mockReturnValue(true);
+      log.verboseMode = true;
+      const notify = new Notify(config, log);
 
-      await Notify.ofSuccess({
+      await notify.ofSuccess({
         message: '3/3 hosts synced.',
         verbose: 'Example verbose context'
       });
@@ -86,10 +119,11 @@ describe('Notify', () => {
     });
 
     test('should notify as failure if errors present', async () => {
-      notifyOfFailure = jest.spyOn(Notify, 'ofFailure');
-      Notify.queueError({ message: 'Example error' });
+      const notify = new Notify(config, log);
+      notifyOfFailure = jest.spyOn(notify, 'ofFailure');
+      notify.queueError({ message: 'Example error' });
 
-      await Notify.ofSuccess({
+      await notify.ofSuccess({
         message: '3/3 hosts synced.',
         verbose: 'Example verbose context'
       });
@@ -104,18 +138,16 @@ describe('Notify', () => {
     });
 
     test('should dispatch email', async () => {
-      jest.spyOn(Config, 'notifyViaSmtp', 'get').mockReturnValue(true);
-      const notifyOnSuccess = jest
-        .spyOn(Config, 'notifyOnSuccess', 'get')
-        .mockReturnValue(true);
+      const notify = new Notify(config, log);
+      config.notify.onSuccess = true;
+      config.notify.smtp = smtpConfig;
       sendMail.mockReturnValue(Promise.resolve());
 
-      await Notify.ofSuccess({
+      await notify.ofSuccess({
         message: '3/3 hosts synced.',
         verbose: 'Example verbose context'
       });
 
-      expect(notifyOnSuccess).toHaveBeenCalledTimes(1);
       expect(sendMail).toHaveBeenCalledTimes(1);
       expect(sendMail).toHaveBeenCalledWith({
         from: '"Orbital Sync" <from@example.com>',
@@ -130,7 +162,8 @@ describe('Notify', () => {
 
   describe('ofFailure', () => {
     test('should log error', async () => {
-      await Notify.ofFailure({
+      const notify = new Notify(config, log);
+      await notify.ofFailure({
         message: 'Example failure message',
         verbose: 'Example verbose context'
       });
@@ -141,9 +174,10 @@ describe('Notify', () => {
     });
 
     test('should log verbose context', async () => {
-      verboseMode = jest.spyOn(Config, 'verboseMode', 'get').mockReturnValue(true);
+      const notify = new Notify(config, log);
+      config.verbose = true;
 
-      await Notify.ofFailure({
+      await notify.ofFailure({
         message: 'Example failure message',
         verbose: 'Example verbose context'
       });
@@ -155,7 +189,8 @@ describe('Notify', () => {
     });
 
     test('should notify and exit', async () => {
-      await Notify.ofFailure({
+      const notify = new Notify(config, log);
+      await notify.ofFailure({
         message: 'Example catastrophic failure',
         exit: true
       });
@@ -165,10 +200,11 @@ describe('Notify', () => {
     });
 
     test('should dispatch email', async () => {
-      jest.spyOn(Config, 'notifyViaSmtp', 'get').mockReturnValue(true);
+      const notify = new Notify(config, log);
+      config.notify.smtp = smtpConfig;
       sendMail.mockReturnValue(Promise.resolve());
 
-      await Notify.ofFailure({
+      await notify.ofFailure({
         message: 'Example failure message',
         verbose: 'Example verbose context'
       });
@@ -187,9 +223,10 @@ describe('Notify', () => {
 
   describe('ofThrow', () => {
     test('should prepend Notify of unexpected error', async () => {
-      notifyOfFailure = jest.spyOn(Notify, 'ofFailure');
+      const notify = new Notify(config, log);
+      notifyOfFailure = jest.spyOn(notify, 'ofFailure');
 
-      await Notify.ofThrow(new Error('Example thrown error'));
+      await notify.ofThrow(new Error('Example thrown error'));
 
       expect(notifyOfFailure).toHaveBeenCalledTimes(1);
       expect(notifyOfFailure).toHaveBeenCalledWith({
@@ -198,9 +235,10 @@ describe('Notify', () => {
     });
 
     test('should Notify on throw', async () => {
-      notifyOfFailure = jest.spyOn(Notify, 'ofFailure');
+      const notify = new Notify(config, log);
+      notifyOfFailure = jest.spyOn(notify, 'ofFailure');
 
-      await Notify.ofThrow(
+      await notify.ofThrow(
         new ErrorNotification({
           message: 'Example thrown error',
           exit: true,
@@ -219,12 +257,10 @@ describe('Notify', () => {
     });
 
     test('should Notify on throw of connection refused FetchError', async () => {
-      notifyOfFailure = jest.spyOn(Notify, 'ofFailure');
-      const allHostBaseUrls = jest
-        .spyOn(Config, 'allHostUrls', 'get')
-        .mockReturnValue(['http://10.0.0.2/admin', 'http://10.0.0.3/admin']);
+      const notify = new Notify(config, log);
+      notifyOfFailure = jest.spyOn(notify, 'ofFailure');
 
-      await Notify.ofThrow(
+      await notify.ofThrow(
         new FetchError(
           'request to http://10.0.0.3/admin/index.php?login failed, reason: connect ECONNREFUSED 10.0.0.2:443',
           'system',
@@ -232,7 +268,6 @@ describe('Notify', () => {
         )
       );
 
-      expect(allHostBaseUrls).toHaveBeenCalledTimes(1);
       expect(notifyOfFailure).toHaveBeenCalledTimes(1);
       expect(notifyOfFailure).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -244,9 +279,8 @@ describe('Notify', () => {
     });
 
     test('should send unexpected error to Honeybadger if configured', async () => {
-      const honeybadgerApiKey = jest
-        .spyOn(Config, 'honeybadgerApiKey', 'get')
-        .mockReturnValue('foobar');
+      const notify = new Notify(config, log);
+      config.notify.exceptions!.honeybadgerApiKey = 'foobar';
       const honeybadgerNotify = jest
         .spyOn(Honeybadger, 'notify')
         .mockImplementation(jest.fn<typeof Honeybadger.notify>());
@@ -257,19 +291,19 @@ describe('Notify', () => {
         code: 'ECONNRESET'
       });
 
-      await Notify.ofThrow(mockError);
-      await Notify.ofThrow('Example thrown string');
+      await notify.ofThrow(mockError);
+      await notify.ofThrow('Example thrown string');
 
       expect(honeybadgerNotify).toHaveBeenCalledTimes(2);
       expect(honeybadgerNotify).toHaveBeenCalledWith(mockError);
       expect(honeybadgerNotify).toHaveBeenCalledWith('Example thrown string');
-      expect(honeybadgerApiKey).toHaveBeenCalledTimes(3);
       expect(honeybadgerConfigure).toHaveBeenCalledTimes(1);
       expect(honeybadgerConfigure).toHaveBeenCalledWith({ apiKey: 'foobar' });
     });
 
     test('should send unexpected error to Sentry if configured', async () => {
-      const sentryDsn = jest.spyOn(Config, 'sentryDsn', 'get').mockReturnValue('foobar');
+      const notify = new Notify(config, log);
+      config.notify.exceptions!.sentryDsn = 'foobar';
       const sentryCapture = jest
         .spyOn(Sentry, 'captureException')
         .mockImplementation(jest.fn<typeof Sentry.captureException>());
@@ -280,13 +314,12 @@ describe('Notify', () => {
         code: 'ECONNRESET'
       });
 
-      await Notify.ofThrow(mockError);
-      await Notify.ofThrow('Example thrown string');
+      await notify.ofThrow(mockError);
+      await notify.ofThrow('Example thrown string');
 
       expect(sentryCapture).toHaveBeenCalledTimes(2);
       expect(sentryCapture).toHaveBeenCalledWith(mockError);
       expect(sentryCapture).toHaveBeenCalledWith('Example thrown string');
-      expect(sentryDsn).toHaveBeenCalledTimes(3);
       expect(sentryInit).toHaveBeenCalledTimes(1);
       expect(sentryInit).toHaveBeenCalledWith({ dsn: 'foobar' });
     });
@@ -294,12 +327,14 @@ describe('Notify', () => {
 
   describe('dispatchSmtp', () => {
     test('should queue configuration error', async () => {
-      const queueError = jest.spyOn(Notify, 'queueError');
-      jest.spyOn(Config, 'notifyViaSmtp', 'get').mockImplementation(() => {
+      const notify = new Notify(config, log);
+      const queueError = jest.spyOn(notify, 'queueError');
+      config.notify.smtp = smtpConfig;
+      jest.spyOn(nodemailer, 'createTransport').mockImplementation(() => {
         throw new Error('Example configuration error');
       });
 
-      await Notify.ofFailure({
+      await notify.ofFailure({
         message: 'Example failure message',
         verbose: 'Example verbose context'
       });
@@ -315,12 +350,14 @@ describe('Notify', () => {
     });
 
     test('should stringify non-error objects', async () => {
-      const queueError = jest.spyOn(Notify, 'queueError');
-      jest.spyOn(Config, 'notifyViaSmtp', 'get').mockImplementation(() => {
+      const notify = new Notify(config, log);
+      const queueError = jest.spyOn(notify, 'queueError');
+      config.notify.smtp = smtpConfig;
+      jest.spyOn(nodemailer, 'createTransport').mockImplementation(() => {
         throw 'Example configuration error';
       });
 
-      await Notify.ofFailure({
+      await notify.ofFailure({
         message: 'Example failure message',
         verbose: 'Example verbose context'
       });
