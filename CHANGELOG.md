@@ -1,6 +1,30 @@
 ### Changelog
 
 
+## [1.6.0](https://github.com/mattwebbio/orbital-sync/compare/v1.5.7...v1.6.0) (2024-03-19)
+
+
+### Features
+
+* add support for Sentry ([659bc58](https://github.com/mattwebbio/orbital-sync/commit/659bc58d76314ec90afb39d4562206aa8f236f70))
+
+
+### Bug Fixes
+
+* bump @honeybadger-io/js from 6.1.1 to 6.8.3 ([d9050f0](https://github.com/mattwebbio/orbital-sync/commit/d9050f0a71862e5e89d2779ea095baa683588a72))
+* bump @sentry/node from 7.100.1 to 7.101.1 ([46a8919](https://github.com/mattwebbio/orbital-sync/commit/46a8919434fd3f33441b66b0623da0d4b45e0f8a))
+* bump @sentry/node from 7.101.1 to 7.102.1 ([a12d853](https://github.com/mattwebbio/orbital-sync/commit/a12d853dc5cd379368f974c2b35f28a857879bdf))
+* bump @sentry/node from 7.102.1 to 7.105.0 ([23e9dee](https://github.com/mattwebbio/orbital-sync/commit/23e9dee2bd457b362c82684217c05d75c387d336))
+* bump @sentry/node from 7.105.0 to 7.107.0 ([1989529](https://github.com/mattwebbio/orbital-sync/commit/19895295892f21ef183d573c0b007442990473db))
+* bump @sentry/node from 7.99.0 to 7.100.1 ([579c1c7](https://github.com/mattwebbio/orbital-sync/commit/579c1c7ce47311e4686961720132599a6e85b9d3))
+* bump fetch-cookie from 2.1.0 to 2.2.0 ([387b626](https://github.com/mattwebbio/orbital-sync/commit/387b6266518a598f0b0fb0fda10d0694d95de7ef))
+* bump fetch-cookie from 2.2.0 to 3.0.1 ([56fa414](https://github.com/mattwebbio/orbital-sync/commit/56fa414fa117d80bb49311831abaebc951fe2e31))
+* bump fetch-cookie from 2.2.0 to 3.0.1 ([5d5a5cb](https://github.com/mattwebbio/orbital-sync/commit/5d5a5cb9b28f916508c2a4f0c2e353ce14c59116))
+* bump fetch-cookie from 2.2.0 to 3.0.1 ([0a4cf5b](https://github.com/mattwebbio/orbital-sync/commit/0a4cf5b7ff647993bb3ebb8abb827b32b53a54c9))
+* bump nodemailer from 6.9.10 to 6.9.11 ([d6bd0e0](https://github.com/mattwebbio/orbital-sync/commit/d6bd0e0e275d9c34da42a45e17202d0b7367ea7e))
+* bump nodemailer from 6.9.11 to 6.9.12 ([78e7590](https://github.com/mattwebbio/orbital-sync/commit/78e7590d09570068b413bec26f4d41ab44dfd1a1))
+* bump nodemailer from 6.9.9 to 6.9.10 ([eb2d2fc](https://github.com/mattwebbio/orbital-sync/commit/eb2d2fc3453e72b1fcf2469c60cb097520321c4f))
+
 ## [1.5.7](https://github.com/mattwebbio/orbital-sync/compare/v1.5.6...v1.5.7) (2024-02-01)
 
 
