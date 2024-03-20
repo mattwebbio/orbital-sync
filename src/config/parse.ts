@@ -18,7 +18,7 @@ import { camelToSnakeCase } from '../util/string-case.js';
   - @mattwebbio
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export function parseSchema<T extends JSONSchema & { envVar?: string }>(
+export function parseSchema<T extends SchemaType>(
   schema: T,
   {
     path,
@@ -131,3 +131,5 @@ export type RecursivePartial<T> = {
       ? RecursivePartial<T[P]>
       : T[P];
 };
+
+export type SchemaType = JSONSchema & { envVar?: string };
