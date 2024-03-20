@@ -1,5 +1,7 @@
-import { parseSchema } from '../../../src/config/parse';
 import { asConst } from 'json-schema-to-ts';
+import { writeFile } from 'node:fs/promises';
+import { temporaryFile } from 'tempy';
+import { parseSchema } from '../../../src/config/parse';
 
 describe('Config', () => {
   describe('parseSchema', () => {
@@ -325,6 +327,37 @@ describe('Config', () => {
             })
           )
         ).toThrow('Undefined object properties for root');
+      });
+    });
+
+    describe('string', () => {
+      test('should read config values from a file', async () => {
+        const file = temporaryFile();
+        await writeFile(file, 'mock_value_from_file', 'utf-8');
+
+        process.env['VAR_ONE_FILE'] = file;
+        process.env['VAR_ONE'] = 'mock_value_1';
+        process.env['VAR_TWO'] = 'mock_value_2';
+
+        const parsed = parseSchema(
+          asConst({
+            type: 'object',
+            properties: {
+              varOne: {
+                type: 'string'
+              },
+              varTwo: {
+                type: 'string'
+              }
+            },
+            required: ['varOne']
+          })
+        );
+
+        expect(parsed).toEqual({
+          varOne: 'mock_value_from_file',
+          varTwo: 'mock_value_2'
+        });
       });
     });
 
