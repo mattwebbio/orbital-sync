@@ -72,3 +72,22 @@ jobs:
       - run: yarn publish --registry https://npm.pkg.github.com
       - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
       - run: yarn publish --registry https://registry.npmjs.org
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
+          ref: master
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+      - run: yarn
+      - run: yarn ci:generate-config-docs
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "hello@tiltcamp.com"
+          git config --local user.name "TiltCamp"
+          git add .
+          git commit -m "docs: generate config docs"
+          git push
