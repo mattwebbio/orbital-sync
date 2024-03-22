@@ -1,0 +1,31 @@
+name: Test Automated Documentation Generation
+
+on:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
+          ref: testDocs
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+      - run: yarn
+      - run: yarn ci:generate-config-docs
+      - name: Commit and push changes
+        run: |
+          if [[ `git status --porcelain` ]]; then
+            git config --local user.email "hello@tiltcamp.com"
+            git config --local user.name "TiltCamp"
+            git add CONFIG.md
+            git commit -m "docs: generate config docs"
+            git push
+          else
+            echo "No changes to commit"
+          fi
