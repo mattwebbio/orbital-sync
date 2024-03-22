@@ -5,6 +5,10 @@ on:
     branches:
       - 'release-please--*'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   config:
     runs-on: ubuntu-latest
