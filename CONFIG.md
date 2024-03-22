@@ -8,6 +8,8 @@
 
 # Orbital Sync: Configuration
 
+See [additional notes](#additional-notes) at the bottom for information such as how to use [Docker secrets](#docker-secrets).
+
 <!-- START CONFIG DOCS -->
 
 | Environment Variable | Required | Default | Example                                                         | Description                                                                                                                                                          |
@@ -96,3 +98,30 @@ Log exceptions to [Honeybadger](https://www.honeybadger.io) or [Sentry](http://s
 | `NOTIFY_EXCEPTIONS_SENTRY_DSN`          | No       | N/A     | `https://key@o0.ingest.sentry.io/0` | Set to use Sentry for proper exception recording; mostly useful for development or debugging.      |
 
 <!-- END CONFIG DOCS -->
+
+# Additional Notes
+
+## Docker Secrets
+
+All above configuration options can be set with Docker secrets. In other words, by appending any environment variable with the `_FILE` suffix, you can provide the path to a file that contains the value. For example, `PRIMARY_HOST_PASSWORD_FILE=/run/secrets/pihole_password` would read the primary host password from the file `/run/secrets/pihole_password`. In practice, a `docker-compose.yml` for this configuration might look like:
+
+```yaml
+services:
+  orbital-sync:
+    image: mattwebbio/orbital-sync:latest
+    secrets:
+      - pihole1_password
+      - pihole2_password
+    environment:
+      - PRIMARY_HOST_BASE_URL=https://pihole1.mydomain.com
+      - PRIMARY_HOST_PASSWORD_FILE=/run/secrets/pihole1_password
+      - SECONDARY_HOSTS_1_BASE_URL=https://pihole2.mydomain.com
+      - SECONDARY_HOSTS_1_PASSWORD_FILE=/run/secrets/pihole2_password
+secrets:
+  pihole1_password:
+    external: true
+  pihole2_password:
+    external: true
+```
+
+If both the `_FILE` and non-`_FILE` versions of an environment variable are set, the `_FILE` version will take precedence.
