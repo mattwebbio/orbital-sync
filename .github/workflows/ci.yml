@@ -84,3 +84,14 @@ jobs:
           flags: integration
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
+  docs:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request_target'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+      - run: yarn
+      - run: yarn ci:generate-config-docs
+      - run: cat CONFIG.md
