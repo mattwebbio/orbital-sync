@@ -2,7 +2,7 @@
 [![GitHub](https://img.shields.io/badge/-GitHub-lightgrey.svg?longCache=true&style=for-the-badge&logo=github)](https://github.com/mattwebbio/orbital-sync)
 [![GitHub Stars](https://img.shields.io/github/stars/mattwebbio/orbital-sync?style=for-the-badge&logo=github&labelColor=lightgrey&color=lightgrey)](https://github.com/mattwebbio/orbital-sync)
 
-[Installation](https://orbitalsync.com/#getting-started) | [Configuration](https://orbitalsync.com/CONFIGURATION.html) | [Changelog](CHANGELOG.md)
+[Installation](https://orbitalsync.com/#getting-started) | [Configuration](https://orbitalsync.com/CONFIG.html) | [Changelog](CHANGELOG.md)
 
 <img src="https://user-images.githubusercontent.com/420820/187585158-331400c3-18f3-4673-857e-44efd73c6104.svg" width="200" alt="Logo" />
 
@@ -16,7 +16,7 @@ Orbital Sync synchronizes multiple Pi-hole instances for high availability (HA) 
 other words, it performs a "backup" in the Pi-hole admin interface of your primary Pi-hole instance, and then "restores"
 that backup to any number of "secondary" Pi-holes also via their admin interface. As a result, it supports the
 synchronization of anything currently supported by Pi-hole's "teleporter". See
-"[Configuration](https://orbitalsync.com/CONFIGURATION.html)" for the defaults.
+"[Configuration](https://orbitalsync.com/CONFIG.html)" for the defaults.
 
 ### Alternatives
 
@@ -41,7 +41,7 @@ Set up your secondary Pi-hole instance(s) just like you did your primary. Once t
 [![Docker Image Size](https://img.shields.io/docker/image-size/mattwebbio/orbital-sync/latest?logo=docker&style=for-the-badge)](https://hub.docker.com/r/mattwebbio/orbital-sync)
 
 The following is an example Docker Compose file for running this project. See the
-[configuration](https://orbitalsync.com/CONFIGURATION.html) section for more environment variables.
+[configuration](https://orbitalsync.com/CONFIG.html) section for more environment variables.
 
 ```yaml
 version: '3'
@@ -70,7 +70,7 @@ The Orbital Sync Docker image is published to both DockerHub and the GitHub Pack
 [![NPM Downloads](https://img.shields.io/npm/dt/orbital-sync?logo=npm&style=for-the-badge)](https://www.npmjs.com/package/orbital-sync)
 
 As with Docker, running with Node requires you export any required environment variables before running Orbital Sync. See the
-[configuration](https://orbitalsync.com/CONFIGURATION.html) section for more information.
+[configuration](https://orbitalsync.com/CONFIG.html) section for more information.
 
 ```shell
 npm install -g orbital-sync
