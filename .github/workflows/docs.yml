@@ -1,0 +1,35 @@
+name: Generate Docs
+
+on:
+  push:
+    branches:
+      - 'release-please--*'
+
+jobs:
+  config:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
+          ref: ${{ steps.extract_branch.outputs.branch }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+      - run: yarn
+      - run: yarn ci:generate-config-docs
+      - name: Commit and push changes
+        run: |
+          if [[ `git status --porcelain` ]]; then
+            git config --local user.email "hello@tiltcamp.com"
+            git config --local user.name "TiltCamp"
+            git add CONFIG.md
+            git commit -m "docs: generate config docs"
+            git push
+          else
+            echo "No changes to commit"
+          fi
