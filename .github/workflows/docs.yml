@@ -22,6 +22,7 @@ jobs:
           node-version: '18.x'
       - run: yarn
       - run: yarn ci:generate-config-docs
+      - run: yarn prettier:fix
       - name: Commit and push changes
         run: |
           if [[ `git status --porcelain` ]]; then
