@@ -15,6 +15,7 @@ describe('Config', () => {
         process.env['1_VAR_TWO'] = 'mock_value_2';
         process.env['2_VAR_ONE'] = 'mock_value_3';
 
+        // @ts-expect-error type instantiation is excessively deep and possibly infinite
         const parsed = parseSchema(
           asConst({
             type: 'array',
@@ -436,6 +437,7 @@ describe('Config', () => {
     });
 
     test('throws if schema is not an object', () => {
+      // @ts-expect-error testing invalid input
       expect(() => parseSchema(false)).toThrow('Invalid schema for root');
     });
   });

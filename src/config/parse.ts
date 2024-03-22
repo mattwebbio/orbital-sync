@@ -132,4 +132,7 @@ export type RecursivePartial<T> = {
       : T[P];
 };
 
-export type SchemaType = JSONSchema & { envVar?: string };
+export type SchemaType = Exclude<JSONSchema, boolean> & {
+  envVar?: string;
+  example?: string;
+};

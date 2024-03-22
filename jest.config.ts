@@ -15,7 +15,7 @@ export const jestConfig: JestConfigWithTsJest = {
       statements: -10
     }
   },
-  coveragePathIgnorePatterns: ['<rootDir>/test']
+  coveragePathIgnorePatterns: ['<rootDir>/test', '<rootDir>/ci']
 };
 
 export default jestConfig;
