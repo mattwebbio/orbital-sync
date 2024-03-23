@@ -51,13 +51,13 @@ services:
     environment:
       PRIMARY_HOST_BASE_URL: 'https://pihole1.example.com'
       PRIMARY_HOST_PASSWORD: 'your_password1'
-      SECONDARY_HOSTS_BASE_URL_1: 'https://pihole2.example.com'
-      SECONDARY_HOSTS_PASSWORD_1: 'your_password2'
-      SECONDARY_HOSTS_BASE_URL_2: 'http://192.168.1.3'
-      SECONDARY_HOSTS_PASSWORD_2: 'your_password3'
-      SECONDARY_HOSTS_BASE_URL_3: 'http://server:8080'
-      SECONDARY_HOSTS_PASSWORD_3: 'your_password4'
-      SECONDARY_HOSTS_PATH_3: '/apps/pi-hole'
+      SECONDARY_HOSTS_1_BASE_URL: 'https://pihole2.example.com'
+      SECONDARY_HOSTS_1_PASSWORD: 'your_password2'
+      SECONDARY_HOSTS_2_BASE_URL: 'http://192.168.1.3'
+      SECONDARY_HOSTS_2_PASSWORD: 'your_password3'
+      SECONDARY_HOSTS_3_BASE_URL: 'http://server:8080'
+      SECONDARY_HOSTS_3_PASSWORD: 'your_password4'
+      SECONDARY_HOSTS_3_PATH: '/apps/pi-hole'
       INTERVAL_MINUTES: 60
 ```
 

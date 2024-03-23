@@ -4,23 +4,22 @@ import { SchemaType, pathToEnvVar } from '../src/config/parse.js';
 import { camelToTitleCase } from '../src/util/string-case.js';
 import { readFile, writeFile } from 'node:fs/promises';
 
-function generateDocs(
-  schema: SchemaType,
-  path: string[] = [],
-  { array }: { array?: boolean } = {}
-): string {
+function generateDocs(schema: SchemaType, path: string[] = []): string {
   if (schema.type === 'object') {
     const doc: string[] = [];
-    if (path.length > 0)
-      doc.push(`#${'#'.repeat(path.length)} ${camelToTitleCase(path[path.length - 1])}`);
+    const withoutArray = path.filter((p) => p !== '(#)');
+    const lastKey = withoutArray[withoutArray.length - 1];
+    if (lastKey)
+      doc.push(`#${'#'.repeat(withoutArray.length)} ${camelToTitleCase(lastKey)}`);
 
-    if (array) {
+    if (path[path.length - 1] === '(#)') {
       const example = pathToEnvVar([...path, Object.keys(schema.properties!)[0]]);
 
       doc.push(
         'Replace `(#)` with a number, starting at 1, to add multiple. Each must be sequential, (i.e. ' +
-          `\`${example}_1\`, \`${example}_2\`, \`${example}_3\`, and so on) and start at number 1. Any ` +
-          'gaps (for example, 3 to 5 skipping 4) will result in configuration after the gap being skipped.'
+          `\`${example.replace('(#)', '1')}\`, \`${example.replace('(#)', '2')}\`, ` +
+          `\`${example.replace('(#)', '3')}\`, and so on) and start at number 1. Any gaps (for ` +
+          'example, 3 to 5 skipping 4) will result in configuration after the gap being skipped.'
       );
     }
 
@@ -40,9 +39,7 @@ function generateDocs(
             'Description'
           ],
           ...values.map(([key, value]) => {
-            let envVar = pathToEnvVar([...path, key]);
-            if (array) envVar += '_(#)';
-
+            const envVar = pathToEnvVar([...path, key]);
             const isRequired =
               schema.required?.includes(key) && value.default === undefined
                 ? 'Yes'
@@ -74,11 +71,8 @@ function generateDocs(
       doc.push(
         ...objects.map(([key, value]) => {
           if (value.type === 'object') return generateDocs(value, [...path, key]);
-          else if (value.type === 'array') {
-            return generateDocs(value.items as SchemaType, [...path, key], {
-              array: true
-            });
-          }
+          else if (value.type === 'array')
+            return generateDocs(value.items as SchemaType, [...path, key, '(#)']);
 
           throw new Error(
             `Invalid schema type: ${value.type}. Nested schema must be an object or array.`

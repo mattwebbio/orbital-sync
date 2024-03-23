@@ -27,13 +27,13 @@
 
 ## Secondary Hosts
 
-Replace (#) with a number, starting at 1, to add multiple. Each must be sequential, (i.e. `SECONDARY_HOSTS_BASE_URL_1`, `SECONDARY_HOSTS_BASE_URL_2`, `SECONDARY_HOSTS_BASE_URL_3`, and so on) and start at number 1. Any gaps (for example, 3 to 5 skipping 4) will result in configuration after the gap being skipped.
+Replace `(#)` with a number, starting at 1, to add multiple. Each must be sequential, (i.e. `SECONDARY_HOSTS_1_BASE_URL`, `SECONDARY_HOSTS_2_BASE_URL`, `SECONDARY_HOSTS_3_BASE_URL`, and so on) and start at number 1. Any gaps (for example, 3 to 5 skipping 4) will result in configuration after the gap being skipped.
 
 | Environment Variable           | Required | Default | Example                                               | Description                                                                                                                |
 | ------------------------------ | -------- | ------- | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `SECONDARY_HOSTS_BASE_URL_(#)` | Yes      | N/A     | `http://192.168.1.3` or `https://pihole2.example.com` | The base URL of your secondary Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash. |
-| `SECONDARY_HOSTS_PASSWORD_(#)` | Yes      | N/A     | `mypassword2`                                         | The password used to log in to the admin interface.                                                                        |
-| `SECONDARY_HOSTS_PATH_(#)`     | No       | N/A     | `/` or `/apps/pi-hole`                                | The path to be appended to your secondary base URL. The default Pi-hole path is `/admin`, which is added automatically.    |
+| `SECONDARY_HOSTS_(#)_BASE_URL` | Yes      | N/A     | `http://192.168.1.3` or `https://pihole2.example.com` | The base URL of your secondary Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash. |
+| `SECONDARY_HOSTS_(#)_PASSWORD` | Yes      | N/A     | `mypassword2`                                         | The password used to log in to the admin interface.                                                                        |
+| `SECONDARY_HOSTS_(#)_PATH`     | No       | N/A     | `/` or `/apps/pi-hole`                                | The path to be appended to your secondary base URL. The default Pi-hole path is `/admin`, which is added automatically.    |
 
 ## Sync
 
