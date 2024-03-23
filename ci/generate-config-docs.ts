@@ -12,6 +12,8 @@ function generateDocs(schema: SchemaType, path: string[] = []): string {
     if (lastKey)
       doc.push(`#${'#'.repeat(withoutArray.length)} ${camelToTitleCase(lastKey)}`);
 
+    if (schema.description) doc.push(schema.description);
+
     if (path[path.length - 1] === '(#)') {
       const example = pathToEnvVar([...path, Object.keys(schema.properties!)[0]]);
 

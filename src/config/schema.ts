@@ -5,6 +5,7 @@ export const Schema = asConst({
   properties: {
     primaryHost: {
       type: 'object',
+      description: 'The primary Pi-hole that data will be copied from.',
       properties: {
         baseUrl: {
           type: 'string',
@@ -33,6 +34,7 @@ export const Schema = asConst({
       type: 'array',
       items: {
         type: 'object',
+        description: 'Secondary Pi-holes that data will be copied to.',
         properties: {
           baseUrl: {
             type: 'string',
@@ -61,9 +63,12 @@ export const Schema = asConst({
     },
     sync: {
       type: 'object',
+      description:
+        'What data to copy from the primary Pi-hole to the secondary Pi-holes.',
       properties: {
         v5: {
           type: 'object',
+          description: 'Sync options for Pi-hole v5.x.',
           properties: {
             whitelist: {
               type: 'boolean',
@@ -170,6 +175,7 @@ export const Schema = asConst({
     },
     notify: {
       type: 'object',
+      description: 'When to send notifications and how to send them.',
       properties: {
         onSuccess: {
           type: 'boolean',
@@ -187,6 +193,7 @@ export const Schema = asConst({
         },
         smtp: {
           type: 'object',
+          description: 'Send notifications via email using SMTP',
           properties: {
             enabled: {
               type: 'boolean',
@@ -244,6 +251,8 @@ export const Schema = asConst({
         },
         exceptions: {
           type: 'object',
+          description:
+            'Log exceptions to [Honeybadger](https://www.honeybadger.io) or [Sentry](http://sentry.io/). Used mostly for development or debugging.',
           properties: {
             honeybadgerApiKey: {
               type: 'string',

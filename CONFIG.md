@@ -19,6 +19,8 @@
 
 ## Primary Host
 
+The primary Pi-hole that data will be copied from.
+
 | Environment Variable    | Required | Default | Example                                              | Description                                                                                                      |
 | ----------------------- | -------- | ------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `PRIMARY_HOST_BASE_URL` | Yes      | N/A     | `http://192.168.1.2` or `https://pihole.example.com` | The base URL of your Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash. |
@@ -26,6 +28,8 @@
 | `PRIMARY_HOST_PATH`     | No       | N/A     | `/` or `/apps/pi-hole`                               | The path to be appended to your base URL. The default Pi-hole path is `/admin`, which is added automatically.    |
 
 ## Secondary Hosts
+
+Secondary Pi-holes that data will be copied to.
 
 Replace `(#)` with a number, starting at 1, to add multiple. Each must be sequential, (i.e. `SECONDARY_HOSTS_1_BASE_URL`, `SECONDARY_HOSTS_2_BASE_URL`, `SECONDARY_HOSTS_3_BASE_URL`, and so on) and start at number 1. Any gaps (for example, 3 to 5 skipping 4) will result in configuration after the gap being skipped.
 
@@ -37,7 +41,11 @@ Replace `(#)` with a number, starting at 1, to add multiple. Each must be sequen
 
 ## Sync
 
+What data to copy from the primary Pi-hole to the secondary Pi-holes.
+
 ### V5
+
+Sync options for Pi-hole v5.x.
 
 | Environment Variable          | Required | Default | Example        | Description                                                 |
 | ----------------------------- | -------- | ------- | -------------- | ----------------------------------------------------------- |
@@ -56,12 +64,16 @@ Replace `(#)` with a number, starting at 1, to add multiple. Each must be sequen
 
 ## Notify
 
+When to send notifications and how to send them.
+
 | Environment Variable | Required | Default | Example        | Description                                           |
 | -------------------- | -------- | ------- | -------------- | ----------------------------------------------------- |
 | `NOTIFY_ON_SUCCESS`  | No       | `false` | `true`/`false` | Send a notification if a sync completes successfully. |
 | `NOTIFY_ON_FAILURE`  | No       | `true`  | `true`/`false` | Send a notification if a sync fails for any reason.   |
 
 ### Smtp
+
+Send notifications via email using SMTP
 
 | Environment Variable   | Required | Default | Example                   | Description                                                                |
 | ---------------------- | -------- | ------- | ------------------------- | -------------------------------------------------------------------------- |
@@ -75,6 +87,8 @@ Replace `(#)` with a number, starting at 1, to add multiple. Each must be sequen
 | `NOTIFY_SMTP_PASSWORD` | No       | N/A     | `yourpasswordhere`        | The SMTP account password.                                                 |
 
 ### Exceptions
+
+Log exceptions to [Honeybadger](https://www.honeybadger.io) or [Sentry](http://sentry.io/). Used mostly for development or debugging.
 
 | Environment Variable                    | Required | Default | Example                             | Description                                                                                        |
 | --------------------------------------- | -------- | ------- | ----------------------------------- | -------------------------------------------------------------------------------------------------- |
