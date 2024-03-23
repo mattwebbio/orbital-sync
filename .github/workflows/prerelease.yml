@@ -1,13 +1,16 @@
 name: Prerelease
 
 on:
-  pull_request_target:
+  pull_request:
   push:
     branches: [master]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
+
+permissions:
+  packages: write
 
 jobs:
   docker:
