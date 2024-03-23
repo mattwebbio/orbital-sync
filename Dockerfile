@@ -1,7 +1,7 @@
 ARG BASE_IMAGE
 
 
-FROM node:18-alpine as install
+FROM node:20-alpine as install
 ENV NODE_ENV=production
 
 WORKDIR /usr/src/app

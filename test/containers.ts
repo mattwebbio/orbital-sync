@@ -30,6 +30,6 @@ export function createOrbitalSyncContainer(
 }
 
 export enum OrbitalBaseImage {
-  Alpine = 'node:18-alpine',
-  Distroless = 'gcr.io/distroless/nodejs18:latest'
+  Alpine = 'node:20-alpine',
+  Distroless = 'gcr.io/distroless/nodejs20:latest'
 }
