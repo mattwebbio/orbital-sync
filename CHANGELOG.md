@@ -1,6 +1,13 @@
 ### Changelog
 
 
+## [1.7.0](https://github.com/mattwebbio/orbital-sync/compare/v1.6.0...v1.7.0) (2024-03-24)
+
+
+### Features
+
+* read config values from files ([9febf7b](https://github.com/mattwebbio/orbital-sync/commit/9febf7bf93639fcd259f18d7d094066dca959655))
+
 ## [1.6.0](https://github.com/mattwebbio/orbital-sync/compare/v1.5.7...v1.6.0) (2024-03-19)
 
 
