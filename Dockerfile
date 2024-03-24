@@ -5,8 +5,9 @@ FROM node:18-alpine as install
 ENV NODE_ENV=production
 
 WORKDIR /usr/src/app
-COPY package.json yarn.lock ./
-RUN yarn install --production
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY .yarn/releases/ .yarn/releases/
+RUN yarn workspaces focus --all --production
 
 
 FROM ${BASE_IMAGE}

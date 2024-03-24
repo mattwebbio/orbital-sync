@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: '18.x'
           cache: 'yarn'
-      - run: yarn
+      - run: yarn install --immutable
       - run: yarn build
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -113,7 +113,7 @@ jobs:
         with:
           node-version: '18.x'
           cache: 'yarn'
-      - run: yarn
+      - run: yarn install --immutable
       - run: yarn tsc
       - run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
       - run: yarn publish --registry https://npm.pkg.github.com

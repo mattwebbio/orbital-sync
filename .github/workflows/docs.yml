@@ -25,7 +25,7 @@ jobs:
         with:
           node-version: '18.x'
           cache: 'yarn'
-      - run: yarn
+      - run: yarn install --immutable
       - run: yarn ci:generate-config-docs
       - run: yarn prettier:fix
       - name: Commit and push changes

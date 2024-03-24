@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: '18.x'
           cache: 'yarn'
-      - run: yarn
+      - run: yarn install --immutable
       - uses: reviewdog/action-setup@v1
       - run: yarn lint
   prettier:
@@ -32,7 +32,7 @@ jobs:
         with:
           node-version: '18.x'
           cache: 'yarn'
-      - run: yarn
+      - run: yarn install --immutable
       - run: yarn prettier
   codeql:
     runs-on: ubuntu-latest
@@ -51,7 +51,7 @@ jobs:
         with:
           node-version: '18.x'
           cache: 'yarn'
-      - run: yarn
+      - run: yarn install --immutable
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
   test:
@@ -62,7 +62,7 @@ jobs:
         with:
           node-version: '18.x'
           cache: 'yarn'
-      - run: yarn
+      - run: yarn install --immutable
       - run: yarn test:unit
       - uses: codecov/codecov-action@v4
         with:
@@ -77,7 +77,7 @@ jobs:
         with:
           node-version: '18.x'
           cache: 'yarn'
-      - run: yarn
+      - run: yarn install --immutable
       - run: yarn test:e2e
   integration:
     runs-on: ubuntu-latest
@@ -87,7 +87,7 @@ jobs:
         with:
           node-version: '18.x'
           cache: 'yarn'
-      - run: yarn
+      - run: yarn install --immutable
       - run: yarn test:integration
       - uses: codecov/codecov-action@v4
         with:
@@ -103,7 +103,7 @@ jobs:
         with:
           node-version: '18.x'
           cache: 'yarn'
-      - run: yarn
+      - run: yarn install --immutable
       - run: yarn ci:generate-config-docs
       - run: cat CONFIG.md
   lint-commits:
@@ -118,5 +118,5 @@ jobs:
         with:
           node-version: '18.x'
           cache: 'yarn'
-      - run: yarn
+      - run: yarn install --immutable
       - run: yarn commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose

@@ -4,6 +4,7 @@
   "type": "module",
   "main": "dist/index.js",
   "license": "MIT",
+  "packageManager": "yarn@4.1.1",
   "scripts": {
     "build": "yarn tsc",
     "ci:generate-config-docs": "node --loader ts-node/esm ci/generate-config-docs.ts",
