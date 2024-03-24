@@ -6,7 +6,6 @@ import { Config } from '../../src/config/index';
 import { Log } from '../../src/log';
 import { ErrorNotification, Notify } from '../../src/notify';
 import { Sync } from '../../src/sync';
-import { Host } from '../../src/client/host';
 import { SyncOptionsV5 } from '../../src/config/index';
 
 describe('sync', () => {

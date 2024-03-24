@@ -212,6 +212,7 @@ describe('Config', () => {
               required: ['varOne']
             }
           }),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           { overrides: [{ varTwo: 'override_value' }] as any }
         );
 
