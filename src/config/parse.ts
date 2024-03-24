@@ -3,6 +3,7 @@
 import mustache from 'mustache';
 import { FromSchema } from 'json-schema-to-ts';
 import type { JSONSchema } from 'json-schema-to-ts';
+import { readFileSync } from 'fs';
 import { camelToSnakeCase } from '../util/string-case.js';
 
 /*
@@ -82,7 +83,12 @@ export function parseSchema<T extends SchemaType>(
 
     return object;
   } else {
-    let value: any = overrides;
+    let value: any;
+    const secretFile = process.env[`${pathToEnvVar(path)}_FILE`];
+
+    if (secretFile)
+      value ??= readFileSync(process.env[`${pathToEnvVar(path)}_FILE`], 'utf8').trim();
+    value ??= overrides;
     value ??= process.env[pathToEnvVar(path)];
     if (schema.envVar) value ??= process.env[schema.envVar];
     value ??= schema.default;
