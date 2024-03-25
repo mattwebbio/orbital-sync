@@ -1,5 +1,6 @@
 {
   "name": "orbital-sync",
+  "description": "Synchronize multiple Pi-hole instances",
   "version": "1.8.0",
   "type": "module",
   "main": "dist/index.js",
@@ -22,6 +23,9 @@
     "url": "git+https://github.com/mattwebbio/orbital-sync.git"
   },
   "bin": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
     "@commitlint/config-conventional": "^19.1.0",
     "@tsconfig/node18": "^18.2.3",
