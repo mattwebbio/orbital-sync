@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: '18.x'
           cache: 'yarn'
-      - run: yarn
+      - run: yarn install --immutable
       - run: yarn build
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
