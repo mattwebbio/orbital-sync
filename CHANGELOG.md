@@ -1,6 +1,13 @@
 ### Changelog
 
 
+## [1.8.1](https://github.com/mattwebbio/orbital-sync/compare/v1.8.0...v1.8.1) (2024-03-25)
+
+
+### Bug Fixes
+
+* include all `dist` output in NPM release ([fbc9b05](https://github.com/mattwebbio/orbital-sync/commit/fbc9b059da03b33f02cbe84007958bad3efbd930))
+
 ## [1.8.0](https://github.com/mattwebbio/orbital-sync/compare/v1.7.0...v1.8.0) (2024-03-25)
 
 
