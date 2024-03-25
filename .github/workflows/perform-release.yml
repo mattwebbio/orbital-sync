@@ -114,8 +114,9 @@ jobs:
           node-version: '18.x'
           cache: 'yarn'
       - run: yarn install --immutable
-      - run: yarn tsc
-      - run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
-      - run: yarn publish --registry https://npm.pkg.github.com
+      - run: yarn build
       - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-      - run: yarn publish --registry https://registry.npmjs.org
+      - run: npm publish --registry https://registry.npmjs.org
+      - run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
+      - run: npm pkg set 'name'='@mattwebbio/orbital-sync'
+      - run: npm publish --registry https://npm.pkg.github.com --scope=@mattwebbio
