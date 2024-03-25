@@ -19,6 +19,17 @@ export function createPiholeContainer({
     .withWaitStrategy(Wait.forHealthCheck());
 }
 
-export function createOrbitalSyncContainer(): Promise<GenericContainer> {
-  return GenericContainer.fromDockerfile('./', 'Dockerfile').build();
+export function createOrbitalSyncContainer(
+  baseImage: OrbitalBaseImage = OrbitalBaseImage.Alpine
+): Promise<GenericContainer> {
+  return GenericContainer.fromDockerfile('./', 'Dockerfile')
+    .withBuildArgs({
+      BASE_IMAGE: baseImage
+    })
+    .build();
+}
+
+export enum OrbitalBaseImage {
+  Alpine = 'node:18-alpine',
+  Distroless = 'gcr.io/distroless/nodejs18:latest'
 }
