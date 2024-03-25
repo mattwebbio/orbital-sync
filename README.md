@@ -65,6 +65,8 @@ The Orbital Sync Docker image is published to both DockerHub and the GitHub Pack
 [mattwebbio/orbital-sync](https://hub.docker.com/r/mattwebbio/orbital-sync)<br />
 [ghcr.io/mattwebbio/orbital-sync](https://github.com/mattwebbio/orbital-sync/pkgs/container/orbital-sync)
 
+[Distroless images](https://github.com/GoogleContainerTools/distroless/blob/main/README.md) are also available with `*-distroless` tags; for example, v1 is available as `mattwebbio/orbital-sync:1-distroless`. These images are smaller and more secure than the default Alpine-based images, because they contain only the Orbital Sync code and its direct dependencies. They do not include a shell, package manager, or other tools that are typically present in a Linux distribution. These will be the default images in a future major version release.
+
 ### Node
 
 [![NPM Downloads](https://img.shields.io/npm/dt/orbital-sync?logo=npm&style=for-the-badge)](https://www.npmjs.com/package/orbital-sync)

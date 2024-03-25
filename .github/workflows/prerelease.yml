@@ -19,6 +19,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'yarn'
+      - run: yarn
+      - run: yarn build
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
@@ -31,8 +37,8 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Generate tags
-        id: docker_tags
+      - name: Generate tags (alpine)
+        id: alpine_docker_tags
         uses: docker/metadata-action@v5
         with:
           images: |
@@ -41,13 +47,44 @@ jobs:
             type=ref,event=branch
             type=ref,event=pr
             type=sha
-      - name: Build and push
+      - name: Build and push (alpine)
         uses: docker/build-push-action@v5
         with:
           context: .
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BASE_IMAGE=node:18-alpine
           push: true
-          tags: ${{ steps.docker_tags.outputs.tags }}
-          labels: ${{ steps.docker_tags.outputs.labels }}
+          tags: ${{ steps.alpine_docker_tags.outputs.tags }}
+          labels: ${{ steps.alpine_docker_tags.outputs.labels }}
+          platforms: |
+            linux/amd64
+            linux/arm64
+            linux/arm
+      - name: Generate tags (distroless)
+        id: distroless_docker_tags
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ghcr.io/mattwebbio/orbital-sync
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha
+          flavor: |
+            suffix=-distroless,onlatest=true
+      - name: Build and push (distroless)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BASE_IMAGE=gcr.io/distroless/nodejs18:latest
+          push: true
+          tags: ${{ steps.distroless_docker_tags.outputs.tags }}
+          labels: ${{ steps.distroless_docker_tags.outputs.labels }}
           platforms: |
             linux/amd64
             linux/arm64

@@ -24,6 +24,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '18.x'
+          cache: 'yarn'
       - run: yarn
       - run: yarn ci:generate-config-docs
       - run: yarn prettier:fix
