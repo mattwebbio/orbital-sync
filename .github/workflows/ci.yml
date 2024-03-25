@@ -20,6 +20,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '18.x'
+          cache: 'yarn'
       - run: yarn
       - uses: reviewdog/action-setup@v1
       - run: yarn lint
@@ -30,6 +31,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '18.x'
+          cache: 'yarn'
       - run: yarn
       - run: yarn prettier
   codeql:
@@ -48,6 +50,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '18.x'
+          cache: 'yarn'
       - run: yarn
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
@@ -58,6 +61,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '18.x'
+          cache: 'yarn'
       - run: yarn
       - run: yarn test:unit
       - uses: codecov/codecov-action@v4
@@ -72,6 +76,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '18.x'
+          cache: 'yarn'
       - run: yarn
       - run: yarn test:e2e
   integration:
@@ -81,6 +86,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '18.x'
+          cache: 'yarn'
       - run: yarn
       - run: yarn test:integration
       - uses: codecov/codecov-action@v4
@@ -96,6 +102,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '18.x'
+          cache: 'yarn'
       - run: yarn
       - run: yarn ci:generate-config-docs
       - run: cat CONFIG.md
@@ -110,5 +117,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '18.x'
+          cache: 'yarn'
       - run: yarn
       - run: yarn commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose

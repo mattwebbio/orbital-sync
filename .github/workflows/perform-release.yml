@@ -18,6 +18,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '18.x'
+          cache: 'yarn'
       - run: yarn
       - run: yarn build
       - name: Set up QEMU
@@ -111,6 +112,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '18.x'
+          cache: 'yarn'
       - run: yarn
       - run: yarn tsc
       - run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
