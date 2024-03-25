@@ -45,6 +45,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           build-args: |
             BASE_IMAGE=node:18-alpine
           push: true
@@ -70,6 +72,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           build-args: |
             BASE_IMAGE=gcr.io/distroless/nodejs18:latest
           push: true

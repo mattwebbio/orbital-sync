@@ -5,8 +5,11 @@ FROM node:18-alpine as builder
 ENV NODE_ENV=development
 
 WORKDIR /usr/src/app
-COPY . .
+COPY package.json yarn.lock .
 RUN yarn install
+
+COPY src/ src/
+COPY tsconfig.json .
 RUN yarn tsc
 
 
@@ -14,7 +17,7 @@ FROM node:18-alpine as install
 ENV NODE_ENV=production
 
 WORKDIR /usr/src/app
-COPY . .
+COPY package.json yarn.lock .
 RUN yarn install --production
 
 
