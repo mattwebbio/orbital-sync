@@ -1,6 +1,20 @@
 ### Changelog
 
 
+## [1.8.0](https://github.com/mattwebbio/orbital-sync/compare/v1.7.0...v1.8.0) (2024-03-25)
+
+
+### Features
+
+* add distroless image ([a93c38e](https://github.com/mattwebbio/orbital-sync/commit/a93c38e9b0f71033e5ad6bedf00a4bb67c3c2478))
+
+
+### Bug Fixes
+
+* bump @sentry/node from 7.107.0 to 7.108.0 ([97eeec6](https://github.com/mattwebbio/orbital-sync/commit/97eeec6bcbbce4a235186518b9b38e7b60d5efbc))
+* bump json-schema-to-ts from 3.0.0 to 3.0.1 ([9f87443](https://github.com/mattwebbio/orbital-sync/commit/9f874439dd329a7914cda7f5616386de131ff58e))
+* bump nodemailer from 6.9.12 to 6.9.13 ([897e9b6](https://github.com/mattwebbio/orbital-sync/commit/897e9b6f53c535aea8c12c8dd8db01776b6b342c))
+
 ## [1.7.0](https://github.com/mattwebbio/orbital-sync/compare/v1.6.0...v1.7.0) (2024-03-24)
 
 
