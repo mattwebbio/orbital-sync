@@ -15,6 +15,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+      - run: yarn
+      - run: yarn build
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
