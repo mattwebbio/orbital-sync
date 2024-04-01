@@ -34,7 +34,7 @@
     "@types/mustache": "^4.2.5",
     "@types/node": "^18.8.0",
     "@types/nodemailer": "^6.4.14",
-    "@typescript-eslint/eslint-plugin": "^5.55.0",
+    "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^5.62.0",
     "commitlint": "^19.2.1",
     "eslint": "^8.57.0",
