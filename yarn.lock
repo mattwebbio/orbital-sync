@@ -1346,10 +1346,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tsconfig/node18@npm:^18.2.3":
-  version: 18.2.3
-  resolution: "@tsconfig/node18@npm:18.2.3"
-  checksum: 10c0/e067bd91625e00fec1bedb8faed44cdd1889e91839b86acbef2db2b942fdf9253001b511a41774bb2207c3ed3321bcfae07e563cecddf489dcaf769da9f27c14
+"@tsconfig/node20@npm:^20.1.2":
+  version: 20.1.3
+  resolution: "@tsconfig/node20@npm:20.1.3"
+  checksum: 10c0/619b35b5100fd7e7000aa0ba530c1ac95d1ce89f5cc94590c04a4fc7fcebb72e52cbc2ebd1300b6ba23ac33d74fe5fb559c5f191af45adc2dfbff09c8f0da7ee
   languageName: node
   linkType: hard
 
@@ -1560,12 +1560,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.8.0":
-  version: 18.19.26
-  resolution: "@types/node@npm:18.19.26"
+"@types/node@npm:^20.11.30":
+  version: 20.11.30
+  resolution: "@types/node@npm:20.11.30"
   dependencies:
     undici-types: "npm:~5.26.4"
-  checksum: 10c0/34b9ceb3366fc616f35a3f3a1467478182cc265ff142c02000503161a679d3036d8bbc410d343ae4012a868e879941d64d656bd509674b055c8735aba24d98e2
+  checksum: 10c0/867cfaf969c6d8850d8d7304e7ab739898a50ecb1395b61ff2335644f5f48d7a46fbc4a14cee967aed65ec134b61a746edae70d1f32f11321ccf29165e3bc4e6
   languageName: node
   linkType: hard
 
@@ -5288,11 +5288,11 @@ __metadata:
     "@commitlint/config-conventional": "npm:^19.1.0"
     "@honeybadger-io/js": "npm:^6.8.3"
     "@sentry/node": "npm:^7.108.0"
-    "@tsconfig/node18": "npm:^18.2.3"
+    "@tsconfig/node20": "npm:^20.1.2"
     "@types/jest": "npm:^29.5.12"
     "@types/luxon": "npm:^3.4.2"
     "@types/mustache": "npm:^4.2.5"
-    "@types/node": "npm:^18.8.0"
+    "@types/node": "npm:^20.11.30"
     "@types/nodemailer": "npm:^6.4.14"
     "@typescript-eslint/eslint-plugin": "npm:^7.4.0"
     "@typescript-eslint/parser": "npm:^5.62.0"
