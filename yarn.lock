@@ -6291,8 +6291,8 @@ __metadata:
   linkType: hard
 
 "testcontainers@npm:^10.7.2":
-  version: 10.7.2
-  resolution: "testcontainers@npm:10.7.2"
+  version: 10.8.2
+  resolution: "testcontainers@npm:10.8.2"
   dependencies:
     "@balena/dockerignore": "npm:^1.0.2"
     "@types/dockerode": "npm:^3.3.24"
@@ -6309,7 +6309,7 @@ __metadata:
     ssh-remote-port-forward: "npm:^1.0.4"
     tar-fs: "npm:^3.0.5"
     tmp: "npm:^0.2.1"
-  checksum: 10c0/c16977b33ccdc731a1f453aa4bf027115885cab4b847d7bbb711dda2784f32f611c907382ddf411b77ba264d1e5068d3e07caa20d0cde7b0aa3602cbb7ed93b5
+  checksum: 10c0/ce63e305d8c4ccfc58ae022f83f8d31e677e248df1dd88b9be47e653c6e8162dc0c11a13d100f646e37a4d093f92795989d55f71aea727b4956a077fa02a4a25
   languageName: node
   linkType: hard
 
