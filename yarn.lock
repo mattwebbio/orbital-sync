@@ -1452,13 +1452,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/dockerode@npm:^3.3.24":
-  version: 3.3.26
-  resolution: "@types/dockerode@npm:3.3.26"
+"@types/dockerode@npm:^3.3.29":
+  version: 3.3.29
+  resolution: "@types/dockerode@npm:3.3.29"
   dependencies:
     "@types/docker-modem": "npm:*"
     "@types/node": "npm:*"
-  checksum: 10c0/6128508349c2ccd1344eb1b77a54eb0a87b8646321e55521d44e5e0dbebadce8d38c66c5e87c11ee029c38e5d265bd74ffe60e788f949825ebd1b0f46b29f1c0
+    "@types/ssh2": "npm:*"
+  checksum: 10c0/1c51a9f7d9a2ab81ecdf9e56b9a8e25400a97ed5f0701c583ed030b4518dee4b3d2ecc7d927fe1ff618c06747f3b285168adac5293aa3cdafafa1914db595cc2
   languageName: node
   linkType: hard
 
@@ -2736,6 +2737,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"debug@npm:^4.3.5":
+  version: 4.3.5
+  resolution: "debug@npm:4.3.5"
+  dependencies:
+    ms: "npm:2.1.2"
+  peerDependenciesMeta:
+    supports-color:
+      optional: true
+  checksum: 10c0/082c375a2bdc4f4469c99f325ff458adad62a3fc2c482d59923c260cb08152f34e2659f72b3767db8bb2f21ca81a60a42d1019605a412132d7b9f59363a005cc
+  languageName: node
+  linkType: hard
+
 "dedent@npm:^1.0.0":
   version: 1.5.1
   resolution: "dedent@npm:1.5.1"
@@ -2792,12 +2805,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"docker-compose@npm:^0.24.6":
-  version: 0.24.6
-  resolution: "docker-compose@npm:0.24.6"
+"docker-compose@npm:^0.24.8":
+  version: 0.24.8
+  resolution: "docker-compose@npm:0.24.8"
   dependencies:
     yaml: "npm:^2.2.2"
-  checksum: 10c0/5668ee29700561a15fcbd4ddc5a47e4434ce2f29be94bf472a6d1632d13fe33598ef446c75c5cda301ac78f9f9ee97c2d4b299f9094c224740d81a10d0ef7177
+  checksum: 10c0/1494389e554fed8aabf9fef24210a641cd2442028b1462d7f68186919f5e75045f7bfb4ccaf47c94ed879dcb63e4d82885c389399f531550c4b244920740b2b3
   languageName: node
   linkType: hard
 
@@ -5766,7 +5779,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rimraf@npm:^3.0.0, rimraf@npm:^3.0.2":
+"rimraf@npm:^3.0.2":
   version: 3.0.2
   resolution: "rimraf@npm:3.0.2"
   dependencies:
@@ -6166,9 +6179,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar-fs@npm:^3.0.5":
-  version: 3.0.5
-  resolution: "tar-fs@npm:3.0.5"
+"tar-fs@npm:^3.0.6":
+  version: 3.0.6
+  resolution: "tar-fs@npm:3.0.6"
   dependencies:
     bare-fs: "npm:^2.1.1"
     bare-path: "npm:^2.1.0"
@@ -6179,7 +6192,7 @@ __metadata:
       optional: true
     bare-path:
       optional: true
-  checksum: 10c0/02ad60ab9e7ab4fe2e819a3abc8b8acd8bed49f7eba8ef652f124c1444f2b21da7505af41a4778f0c7c3c60afbe53591b7b6148f6ab12f5d17100a93c8182676
+  checksum: 10c0/207b7c0f193495668bd9dbad09a0108ce4ffcfec5bce2133f90988cdda5c81fad83c99f963d01e47b565196594f7a17dbd063ae55b97b36268fcc843975278ee
   languageName: node
   linkType: hard
 
@@ -6264,25 +6277,25 @@ __metadata:
   linkType: hard
 
 "testcontainers@npm:^10.7.2":
-  version: 10.9.0
-  resolution: "testcontainers@npm:10.9.0"
+  version: 10.10.0
+  resolution: "testcontainers@npm:10.10.0"
   dependencies:
     "@balena/dockerignore": "npm:^1.0.2"
-    "@types/dockerode": "npm:^3.3.24"
+    "@types/dockerode": "npm:^3.3.29"
     archiver: "npm:^5.3.2"
     async-lock: "npm:^1.4.1"
     byline: "npm:^5.0.0"
-    debug: "npm:^4.3.4"
-    docker-compose: "npm:^0.24.6"
+    debug: "npm:^4.3.5"
+    docker-compose: "npm:^0.24.8"
     dockerode: "npm:^3.3.5"
     get-port: "npm:^5.1.1"
     node-fetch: "npm:^2.7.0"
     proper-lockfile: "npm:^4.1.2"
     properties-reader: "npm:^2.3.0"
     ssh-remote-port-forward: "npm:^1.0.4"
-    tar-fs: "npm:^3.0.5"
-    tmp: "npm:^0.2.1"
-  checksum: 10c0/ee81048012ba5c18936e87b87ebc14df01d4bcdc0e01bfa33334212e45acb3b01670ecab3cb7b7b7f8f118f98d955a08ec2a5024b3eb8ad05f917fecbc5fed82
+    tar-fs: "npm:^3.0.6"
+    tmp: "npm:^0.2.3"
+  checksum: 10c0/5cf4ae3001430cd5e8ad0a81bf00956274efe3be987e970ebe47403c31dec8daea2b292f889a5d0778297d56a70d807a8cd50504e9f06778ffe0ab2ed9c6eea1
   languageName: node
   linkType: hard
 
@@ -6307,12 +6320,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tmp@npm:^0.2.1":
-  version: 0.2.1
-  resolution: "tmp@npm:0.2.1"
-  dependencies:
-    rimraf: "npm:^3.0.0"
-  checksum: 10c0/67607aa012059c9ce697bee820ee51bc0f39b29a8766def4f92d3f764d67c7cf9205d537d24e0cb1ce9685c40d4c628ead010910118ea18348666b5c46ed9123
+"tmp@npm:^0.2.3":
+  version: 0.2.3
+  resolution: "tmp@npm:0.2.3"
+  checksum: 10c0/3e809d9c2f46817475b452725c2aaa5d11985cf18d32a7a970ff25b568438e2c076c2e8609224feef3b7923fa9749b74428e3e634f6b8e520c534eef2fd24125
   languageName: node
   linkType: hard
 
