@@ -54,7 +54,7 @@ jobs:
             type=semver,pattern={{major}}
             type=sha
       - name: Build and push (alpine)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           cache-from: type=gha
@@ -86,7 +86,7 @@ jobs:
           flavor: |
             suffix=-distroless,onlatest=true
       - name: Build and push (distroless)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           cache-from: type=gha
