@@ -1,6 +1,25 @@
 ### Changelog
 
 
+## [1.8.2](https://github.com/mattwebbio/orbital-sync/compare/v1.8.1...v1.8.2) (2024-08-05)
+
+
+### Bug Fixes
+
+* bump @honeybadger-io/js from 6.8.3 to 6.9.1 ([0565088](https://github.com/mattwebbio/orbital-sync/commit/056508818cf312e3b4a0cef1912f4671be954a71))
+* bump @honeybadger-io/js from 6.9.1 to 6.9.2 ([a070ba1](https://github.com/mattwebbio/orbital-sync/commit/a070ba13a5cef05ee55a219549d73302d3a4aea3))
+* bump @honeybadger-io/js from 6.9.2 to 6.9.3 ([3be6d95](https://github.com/mattwebbio/orbital-sync/commit/3be6d959c9e2fa2260f5861f1a780c7dc2e74ed7))
+* bump @sentry/node from 7.108.0 to 7.109.0 ([b8263a9](https://github.com/mattwebbio/orbital-sync/commit/b8263a9e7b1dbac60e15c44b5e9c650719dac7b5))
+* bump @sentry/node from 7.109.0 to 7.111.0 ([ace2dbb](https://github.com/mattwebbio/orbital-sync/commit/ace2dbb286939853cdd6ca99fccd798a1171fa9e))
+* bump @sentry/node from 7.111.0 to 7.112.2 ([6642c76](https://github.com/mattwebbio/orbital-sync/commit/6642c76295126cbc25e00a7acc5e68285b235f52))
+* bump @sentry/node from 7.112.2 to 7.113.0 ([25cecbf](https://github.com/mattwebbio/orbital-sync/commit/25cecbf584a428926efc2cd29a3b871ce80e8804))
+* bump @sentry/node from 7.113.0 to 7.114.0 ([c1d3692](https://github.com/mattwebbio/orbital-sync/commit/c1d3692d14680e20b769e21486e7b183a03ca746))
+* bump braces from 3.0.2 to 3.0.3 ([cacc15f](https://github.com/mattwebbio/orbital-sync/commit/cacc15fd617073ea3ddbaa86f31407f1861f0e3d))
+* bump json-schema-to-ts from 3.0.1 to 3.1.0 ([f76d861](https://github.com/mattwebbio/orbital-sync/commit/f76d861232da4bda67fb25702225133711d2d98d))
+* bump node-html-parser from 6.1.12 to 6.1.13 ([aa4c6ae](https://github.com/mattwebbio/orbital-sync/commit/aa4c6aed19cb65ff09adc229342eea5a467b1590))
+* bump nodemailer from 6.9.13 to 6.9.14 ([17ea56a](https://github.com/mattwebbio/orbital-sync/commit/17ea56ab6fb8d08b1576166d027508b6e60b129f))
+* error "Not authorized" when uploading archives ([c9eea45](https://github.com/mattwebbio/orbital-sync/commit/c9eea45e6b2a806443375d35a5acad3fa53785d3))
+
 ## [1.8.1](https://github.com/mattwebbio/orbital-sync/compare/v1.8.0...v1.8.1) (2024-03-25)
 
 
