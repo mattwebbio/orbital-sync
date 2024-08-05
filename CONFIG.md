@@ -2,7 +2,7 @@
 [![GitHub](https://img.shields.io/badge/-GitHub-lightgrey.svg?longCache=true&style=for-the-badge&logo=github)](https://github.com/mattwebbio/orbital-sync)
 [![GitHub Stars](https://img.shields.io/github/stars/mattwebbio/orbital-sync?style=for-the-badge&logo=github&labelColor=lightgrey&color=lightgrey)](https://github.com/mattwebbio/orbital-sync)
 
-[Installation](https://orbitalsync.com/#getting-started) | [Configuration](https://orbitalsync.com/CONFIGURATION.html) | [Changelog](CHANGELOG.md)
+[Installation](https://orbitalsync.com/#getting-started) | [Configuration](https://orbitalsync.com/CONFIG.html) | [Changelog](CHANGELOG.md)
 
 <img src="https://user-images.githubusercontent.com/420820/187585158-331400c3-18f3-4673-857e-44efd73c6104.svg" width="200" alt="Logo" />
 
