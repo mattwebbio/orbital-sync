@@ -39,7 +39,7 @@ export class ClientV5 {
       headers: {
         'content-type': 'application/x-www-form-urlencoded'
       },
-      body: `pw=${encodeURIComponent(host.password)}&persistentlogin=off`,
+      body: `pw=${encodeURIComponent(host.password)}`,
       method: 'POST'
     });
     if (response.status !== 200)
