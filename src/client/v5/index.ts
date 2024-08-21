@@ -136,6 +136,10 @@ export class ClientV5 extends Client {
     this.log.info(chalk.green(`✔️ Backup uploaded to ${this.host.fullUrl}!`));
     this.log.verbose(`Result:\n${chalk.blue(uploadText)}`);
 
+    if (this.config.sync.updateGravity) {
+      await this.updateGravity();
+    }
+
     return true;
   }
 

@@ -194,110 +194,89 @@ export const SchemaV5 = asConst({
           },
           minItems: 1
         },
-        sync: {
-          type: 'object',
-          description:
-            'What data to copy from the primary Pi-hole to the secondary Pi-holes.',
-          properties: {
-            whitelist: {
-              type: 'boolean',
-              default: true,
-              envVar: 'SYNC_WHITELIST',
-              example: '`true`/`false`',
-              description: 'Copies the whitelist'
-            },
-            regexWhitelist: {
-              type: 'boolean',
-              default: true,
-              envVar: 'SYNC_REGEX_WHITELIST',
-              example: '`true`/`false`',
-              description: 'Copies the regex whitelist'
-            },
-            blacklist: {
-              type: 'boolean',
-              default: true,
-              envVar: 'SYNC_BLACKLIST',
-              example: '`true`/`false`',
-              description: 'Copies the blacklist'
-            },
-            regexList: {
-              type: 'boolean',
-              default: true,
-              envVar: 'SYNC_REGEXLIST',
-              example: '`true`/`false`',
-              description: 'Copies the regex blacklist'
-            },
-            adList: {
-              type: 'boolean',
-              default: true,
-              envVar: 'SYNC_ADLIST',
-              example: '`true`/`false`',
-              description: 'Copies adlists'
-            },
-            client: {
-              type: 'boolean',
-              default: true,
-              envVar: 'SYNC_CLIENT',
-              example: '`true`/`false`',
-              description: 'Copies clients'
-            },
-            group: {
-              type: 'boolean',
-              default: true,
-              envVar: 'SYNC_GROUP',
-              example: '`true`/`false`',
-              description: 'Copies groups'
-            },
-            auditLog: {
-              type: 'boolean',
-              default: false,
-              envVar: 'SYNC_AUDITLOG',
-              example: '`true`/`false`',
-              description: 'Copies the audit log'
-            },
-            staticDhcpLeases: {
-              type: 'boolean',
-              default: false,
-              envVar: 'SYNC_STATICDHCPLEASES',
-              example: '`true`/`false`',
-              description: 'Copies static DHCP leases'
-            },
-            localDnsRecords: {
-              type: 'boolean',
-              default: true,
-              envVar: 'SYNC_LOCALDNSRECORDS',
-              example: '`true`/`false`',
-              description: 'Copies local DNS records'
-            },
-            localCnameRecords: {
-              type: 'boolean',
-              default: true,
-              envVar: 'SYNC_LOCALCNAMERECORDS',
-              example: '`true`/`false`',
-              description: 'Copies local CNAME records'
-            },
-            flushTables: {
-              type: 'boolean',
-              default: true,
-              envVar: 'SYNC_FLUSHTABLES',
-              example: '`true`/`false`',
-              description: 'Clears existing data on the secondary (copy target) Pi-hole'
-            }
-          },
-          required: [
-            'whitelist',
-            'regexWhitelist',
-            'blacklist',
-            'regexList',
-            'adList',
-            'client',
-            'group',
-            'auditLog',
-            'staticDhcpLeases',
-            'localDnsRecords',
-            'localCnameRecords',
-            'flushTables'
-          ]
+        whitelist: {
+          type: 'boolean',
+          default: true,
+          envVar: 'SYNC_WHITELIST',
+          example: '`true`/`false`',
+          description: 'Copies the whitelist'
+        },
+        regexWhitelist: {
+          type: 'boolean',
+          default: true,
+          envVar: 'SYNC_REGEX_WHITELIST',
+          example: '`true`/`false`',
+          description: 'Copies the regex whitelist'
+        },
+        blacklist: {
+          type: 'boolean',
+          default: true,
+          envVar: 'SYNC_BLACKLIST',
+          example: '`true`/`false`',
+          description: 'Copies the blacklist'
+        },
+        regexList: {
+          type: 'boolean',
+          default: true,
+          envVar: 'SYNC_REGEXLIST',
+          example: '`true`/`false`',
+          description: 'Copies the regex blacklist'
+        },
+        adList: {
+          type: 'boolean',
+          default: true,
+          envVar: 'SYNC_ADLIST',
+          example: '`true`/`false`',
+          description: 'Copies adlists'
+        },
+        client: {
+          type: 'boolean',
+          default: true,
+          envVar: 'SYNC_CLIENT',
+          example: '`true`/`false`',
+          description: 'Copies clients'
+        },
+        group: {
+          type: 'boolean',
+          default: true,
+          envVar: 'SYNC_GROUP',
+          example: '`true`/`false`',
+          description: 'Copies groups'
+        },
+        auditLog: {
+          type: 'boolean',
+          default: false,
+          envVar: 'SYNC_AUDITLOG',
+          example: '`true`/`false`',
+          description: 'Copies the audit log'
+        },
+        staticDhcpLeases: {
+          type: 'boolean',
+          default: false,
+          envVar: 'SYNC_STATICDHCPLEASES',
+          example: '`true`/`false`',
+          description: 'Copies static DHCP leases'
+        },
+        localDnsRecords: {
+          type: 'boolean',
+          default: true,
+          envVar: 'SYNC_LOCALDNSRECORDS',
+          example: '`true`/`false`',
+          description: 'Copies local DNS records'
+        },
+        localCnameRecords: {
+          type: 'boolean',
+          default: true,
+          envVar: 'SYNC_LOCALCNAMERECORDS',
+          example: '`true`/`false`',
+          description: 'Copies local CNAME records'
+        },
+        flushTables: {
+          type: 'boolean',
+          default: true,
+          envVar: 'SYNC_FLUSHTABLES',
+          example: '`true`/`false`',
+          description: 'Clears existing data on the secondary (copy target) Pi-hole'
         },
         updateGravity: {
           type: 'boolean',
@@ -308,7 +287,23 @@ export const SchemaV5 = asConst({
             'Triggers a gravity update after a backup has been uploaded to a secondary Pi-hole. This updates adlists and restarts gravity.'
         }
       },
-      required: ['primaryHost', 'secondaryHosts', 'sync', 'updateGravity']
+      required: [
+        'primaryHost',
+        'secondaryHosts',
+        'updateGravity',
+        'whitelist',
+        'regexWhitelist',
+        'blacklist',
+        'regexList',
+        'adList',
+        'client',
+        'group',
+        'auditLog',
+        'staticDhcpLeases',
+        'localDnsRecords',
+        'localCnameRecords',
+        'flushTables'
+      ]
     }
   },
   required: ['version', 'verbose', 'runOnce', 'intervalMinutes', 'notify', 'sync']

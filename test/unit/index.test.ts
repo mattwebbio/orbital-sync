@@ -7,10 +7,11 @@ describe('entrypoint', () => {
 
   beforeEach(() => {
     nock.disableNetConnect();
+    process.env['VERSION'] = 'v5';
     process.env['PRIMARY_HOST_BASE_URL'] = 'http://localhost:3000';
     process.env['PRIMARY_HOST_PASSWORD'] = 'password';
-    process.env['SECONDARY_HOSTS_1_BASE_URL'] = 'http://localhost:3001';
-    process.env['SECONDARY_HOSTS_1_PASSWORD'] = 'password';
+    process.env['SECONDARY_HOST_1_BASE_URL'] = 'http://localhost:3001';
+    process.env['SECONDARY_HOST_1_PASSWORD'] = 'password';
     process.env['RUN_ONCE'] = 'true';
   });
 
