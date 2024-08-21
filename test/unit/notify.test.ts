@@ -52,7 +52,7 @@ describe('Notify', () => {
             baseUrl: 'http://10.0.0.3',
             password: 'password2'
           }
-        ],
+        ]
       },
       verbose: false,
       notify: {

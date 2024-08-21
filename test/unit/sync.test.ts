@@ -8,7 +8,6 @@ import { ErrorNotification } from '../../src/notify';
 import { Sync } from '../../src/sync';
 import { Version } from '../../src/config/version';
 import { NotifyV5 } from '../../src/notify/v5';
-// import { SyncOptionsV5 } from '../../src/config/index';
 
 describe('sync', () => {
   let clientCreate: ReturnType<typeof jest.spyOn>;
@@ -65,10 +64,10 @@ describe('sync', () => {
       makeBackup: jest.fn(() => primaryResult ?? Promise.resolve(backupData))
     } as unknown as ClientV5;
     secondaryHostClient1 = {
-      restoreBackup: jest.fn(() => secondaryOneResult ?? Promise.resolve(true)),
+      restoreBackup: jest.fn(() => secondaryOneResult ?? Promise.resolve(true))
     } as unknown as ClientV5;
     secondaryHostClient2 = {
-      restoreBackup: jest.fn(() => secondaryTwoResult ?? Promise.resolve(true)),
+      restoreBackup: jest.fn(() => secondaryTwoResult ?? Promise.resolve(true))
     } as unknown as ClientV5;
     clientCreate = jest
       .spyOn(ClientV5, 'create')

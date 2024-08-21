@@ -25,13 +25,13 @@ describe('Config', () => {
         primaryHost: {
           baseUrl: 'http://localhost:3000',
           password: 'password',
-          path: undefined,
+          path: undefined
         },
         secondaryHosts: [
           {
             baseUrl: 'http://localhost:3001',
             password: 'password',
-            path: undefined,
+            path: undefined
           }
         ],
         adList: true,
@@ -46,7 +46,7 @@ describe('Config', () => {
         regexWhitelist: true,
         staticDhcpLeases: false,
         whitelist: true,
-        updateGravity: true,
+        updateGravity: true
       },
       notify: {
         exceptions: {
@@ -93,13 +93,13 @@ describe('Config', () => {
         primaryHost: {
           baseUrl: 'http://localhost:3000',
           password: 'password_from_file_1',
-          path: undefined,
+          path: undefined
         },
         secondaryHosts: [
           {
             baseUrl: 'http://localhost:3001',
             password: 'password_from_file_2',
-            path: undefined,
+            path: undefined
           }
         ],
         adList: true,
@@ -114,7 +114,7 @@ describe('Config', () => {
         regexWhitelist: true,
         staticDhcpLeases: false,
         whitelist: true,
-        updateGravity: true,
+        updateGravity: true
       },
       notify: {
         exceptions: {

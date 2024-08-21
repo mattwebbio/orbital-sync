@@ -46,9 +46,7 @@ describe('Client', () => {
         const initialRequest = nock(host.fullUrl).get('/index.php?login').reply(200);
         const loginRequest = nock(host.fullUrl).post('/index.php?login').reply(500);
 
-        const expectError = expect(
-          ClientV5.create({ host, config, log })
-        ).rejects;
+        const expectError = expect(ClientV5.create({ host, config, log })).rejects;
 
         await expectError.toBeInstanceOf(ErrorNotification);
         await expectError.toMatchObject({
@@ -69,9 +67,7 @@ describe('Client', () => {
         const initialRequest = nock(host.fullUrl).get('/index.php?login').reply(200);
         const loginRequest = nock(host.fullUrl).post('/index.php?login').reply(200);
 
-        const expectError = expect(
-          ClientV5.create({ host, config, log })
-        ).rejects;
+        const expectError = expect(ClientV5.create({ host, config, log })).rejects;
 
         await expectError.toBeInstanceOf(ErrorNotification);
         await expectError.toMatchObject({
@@ -93,9 +89,7 @@ describe('Client', () => {
           .post('/index.php?login')
           .reply(200, '<html><body><div id="token">abcdef</div></body></html>');
 
-        const expectError = expect(
-          ClientV5.create({ host, config, log })
-        ).rejects;
+        const expectError = expect(ClientV5.create({ host, config, log })).rejects;
 
         await expectError.toBeInstanceOf(ErrorNotification);
         await expectError.toMatchObject({
@@ -120,9 +114,9 @@ describe('Client', () => {
             '<html><body><div id="token">abcdefgijklmnopqrstuvwxyzabcdefgijklmnopqrst</div></body></html>'
           );
 
-        await expect(
-          ClientV5.create({ host, config, log })
-        ).resolves.toBeInstanceOf(ClientV5);
+        await expect(ClientV5.create({ host, config, log })).resolves.toBeInstanceOf(
+          ClientV5
+        );
 
         initialRequest.done();
         loginRequest.done();
