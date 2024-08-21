@@ -1,177 +1,37 @@
 import { asConst } from 'json-schema-to-ts';
+import { Version } from '../config/version.js';
 
-export const Schema = asConst({
+export const SchemaV5 = asConst({
   type: 'object',
   properties: {
-    primaryHost: {
-      type: 'object',
-      description: 'The primary Pi-hole that data will be copied from.',
-      properties: {
-        baseUrl: {
-          type: 'string',
-          envVar: 'PRIMARY_HOST_BASE_URL',
-          example: '`http://192.168.1.2` or `https://pihole.example.com`',
-          description:
-            'The base URL of your Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash.'
-        },
-        password: {
-          type: 'string',
-          envVar: 'PRIMARY_HOST_PASSWORD',
-          example: '`mypassword`',
-          description: 'The password used to log in to the admin interface.'
-        },
-        path: {
-          type: 'string',
-          envVar: 'PRIMARY_HOST_PATH',
-          example: '`/` or `/apps/pi-hole`',
-          description:
-            'The path to be appended to your base URL. The default Pi-hole path is `/admin`, which is added automatically.'
-        }
-      },
-      required: ['baseUrl', 'password']
+    version: {
+      type: 'string',
+      default: 'v5',
+      envVar: 'VERSION',
+      enum: ['v5'],
     },
-    secondaryHosts: {
-      type: 'array',
-      items: {
-        type: 'object',
-        description: 'Secondary Pi-holes that data will be copied to.',
-        properties: {
-          baseUrl: {
-            type: 'string',
-            envVar: 'SECONDARY_HOST_{{i}}_BASE_URL',
-            example: '`http://192.168.1.3` or `https://pihole2.example.com`',
-            description:
-              'The base URL of your secondary Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash.'
-          },
-          password: {
-            type: 'string',
-            envVar: 'SECONDARY_HOST_{{i}}_PASSWORD',
-            example: '`mypassword2`',
-            description: 'The password used to log in to the admin interface.'
-          },
-          path: {
-            type: 'string',
-            envVar: 'SECONDARY_HOST_{{i}}_PATH',
-            example: '`/` or `/apps/pi-hole`',
-            description:
-              'The path to be appended to your secondary base URL. The default Pi-hole path is `/admin`, which is added automatically.'
-          }
-        },
-        required: ['baseUrl', 'password']
-      },
-      minItems: 1
+    verbose: {
+      type: 'boolean',
+      default: false,
+      envVar: 'VERBOSE',
+      example: '`true`/`false`',
+      description: 'Increases the verbosity of log output. Useful for debugging.'
     },
-    sync: {
-      type: 'object',
+    runOnce: {
+      type: 'boolean',
+      default: false,
+      envVar: 'RUN_ONCE',
+      example: '`true`/`false`',
       description:
-        'What data to copy from the primary Pi-hole to the secondary Pi-holes.',
-      properties: {
-        v5: {
-          type: 'object',
-          description: 'Sync options for Pi-hole v5.x.',
-          properties: {
-            whitelist: {
-              type: 'boolean',
-              default: true,
-              envVar: 'SYNC_WHITELIST',
-              example: '`true`/`false`',
-              description: 'Copies the whitelist'
-            },
-            regexWhitelist: {
-              type: 'boolean',
-              default: true,
-              envVar: 'SYNC_REGEX_WHITELIST',
-              example: '`true`/`false`',
-              description: 'Copies the regex whitelist'
-            },
-            blacklist: {
-              type: 'boolean',
-              default: true,
-              envVar: 'SYNC_BLACKLIST',
-              example: '`true`/`false`',
-              description: 'Copies the blacklist'
-            },
-            regexList: {
-              type: 'boolean',
-              default: true,
-              envVar: 'SYNC_REGEXLIST',
-              example: '`true`/`false`',
-              description: 'Copies the regex blacklist'
-            },
-            adList: {
-              type: 'boolean',
-              default: true,
-              envVar: 'SYNC_ADLIST',
-              example: '`true`/`false`',
-              description: 'Copies adlists'
-            },
-            client: {
-              type: 'boolean',
-              default: true,
-              envVar: 'SYNC_CLIENT',
-              example: '`true`/`false`',
-              description: 'Copies clients'
-            },
-            group: {
-              type: 'boolean',
-              default: true,
-              envVar: 'SYNC_GROUP',
-              example: '`true`/`false`',
-              description: 'Copies groups'
-            },
-            auditLog: {
-              type: 'boolean',
-              default: false,
-              envVar: 'SYNC_AUDITLOG',
-              example: '`true`/`false`',
-              description: 'Copies the audit log'
-            },
-            staticDhcpLeases: {
-              type: 'boolean',
-              default: false,
-              envVar: 'SYNC_STATICDHCPLEASES',
-              example: '`true`/`false`',
-              description: 'Copies static DHCP leases'
-            },
-            localDnsRecords: {
-              type: 'boolean',
-              default: true,
-              envVar: 'SYNC_LOCALDNSRECORDS',
-              example: '`true`/`false`',
-              description: 'Copies local DNS records'
-            },
-            localCnameRecords: {
-              type: 'boolean',
-              default: true,
-              envVar: 'SYNC_LOCALCNAMERECORDS',
-              example: '`true`/`false`',
-              description: 'Copies local CNAME records'
-            },
-            flushTables: {
-              type: 'boolean',
-              default: true,
-              envVar: 'SYNC_FLUSHTABLES',
-              example: '`true`/`false`',
-              description: 'Clears existing data on the secondary (copy target) Pi-hole'
-            }
-          },
-          required: [
-            'whitelist',
-            'regexWhitelist',
-            'blacklist',
-            'regexList',
-            'adList',
-            'client',
-            'group',
-            'auditLog',
-            'staticDhcpLeases',
-            'localDnsRecords',
-            'localCnameRecords',
-            'flushTables'
-          ]
-        }
-      },
-      required: ['v5']
+        'By default, Orbital Sync runs indefinitely until stopped. Setting this to `true` forces it to exit immediately after the first sync.'
+    },
+    intervalMinutes: {
+      type: 'number',
+      default: 60,
+      envVar: 'INTERVAL_MINUTES',
+      example: 'Any non-zero positive integer, for example `5`, `30`, or `1440`',
+      description:
+        'How long to wait between synchronizations. Defaults to five minutes. Remember that the DNS server on your secondary servers restarts every time a sync is performed.'
     },
     notify: {
       type: 'object',
@@ -272,46 +132,200 @@ export const Schema = asConst({
         }
       }
     },
-    updateGravity: {
-      type: 'boolean',
-      default: true,
-      envVar: 'UPDATE_GRAVITY',
-      example: '`true`/`false`',
-      description:
-        'Triggers a gravity update after a backup has been uploaded to a secondary Pi-hole. This updates adlists and restarts gravity.'
+    sync: {
+      type: 'object',
+      description: 'The primary Pi-hole that data will be copied from.',
+      properties: {
+        primaryHost: {
+          type: 'object',
+          description: 'The primary Pi-hole that data will be copied from.',
+          properties: {
+            baseUrl: {
+              type: 'string',
+              envVar: 'PRIMARY_HOST_BASE_URL',
+              example: '`http://192.168.1.2` or `https://pihole.example.com`',
+              description:
+                'The base URL of your Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash.'
+            },
+            password: {
+              type: 'string',
+              envVar: 'PRIMARY_HOST_PASSWORD',
+              example: '`mypassword`',
+              description: 'The password used to log in to the admin interface.'
+            },
+            path: {
+              type: 'string',
+              envVar: 'PRIMARY_HOST_PATH',
+              example: '`/` or `/apps/pi-hole`',
+              description:
+                'The path to be appended to your base URL. The default Pi-hole path is `/admin`, which is added automatically.'
+            }
+          },
+          required: ['baseUrl', 'password']
+        },
+        secondaryHosts: {
+          type: 'array',
+          items: {
+            type: 'object',
+            description: 'Secondary Pi-holes that data will be copied to.',
+            properties: {
+              baseUrl: {
+                type: 'string',
+                envVar: 'SECONDARY_HOST_{{i}}_BASE_URL',
+                example: '`http://192.168.1.3` or `https://pihole2.example.com`',
+                description:
+                  'The base URL of your secondary Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash.'
+              },
+              password: {
+                type: 'string',
+                envVar: 'SECONDARY_HOST_{{i}}_PASSWORD',
+                example: '`mypassword2`',
+                description: 'The password used to log in to the admin interface.'
+              },
+              path: {
+                type: 'string',
+                envVar: 'SECONDARY_HOST_{{i}}_PATH',
+                example: '`/` or `/apps/pi-hole`',
+                description:
+                  'The path to be appended to your secondary base URL. The default Pi-hole path is `/admin`, which is added automatically.'
+              }
+            },
+            required: ['baseUrl', 'password']
+          },
+          minItems: 1
+        },
+        sync: {
+          type: 'object',
+          description:
+            'What data to copy from the primary Pi-hole to the secondary Pi-holes.',
+          properties: {
+            whitelist: {
+              type: 'boolean',
+              default: true,
+              envVar: 'SYNC_WHITELIST',
+              example: '`true`/`false`',
+              description: 'Copies the whitelist'
+            },
+            regexWhitelist: {
+              type: 'boolean',
+              default: true,
+              envVar: 'SYNC_REGEX_WHITELIST',
+              example: '`true`/`false`',
+              description: 'Copies the regex whitelist'
+            },
+            blacklist: {
+              type: 'boolean',
+              default: true,
+              envVar: 'SYNC_BLACKLIST',
+              example: '`true`/`false`',
+              description: 'Copies the blacklist'
+            },
+            regexList: {
+              type: 'boolean',
+              default: true,
+              envVar: 'SYNC_REGEXLIST',
+              example: '`true`/`false`',
+              description: 'Copies the regex blacklist'
+            },
+            adList: {
+              type: 'boolean',
+              default: true,
+              envVar: 'SYNC_ADLIST',
+              example: '`true`/`false`',
+              description: 'Copies adlists'
+            },
+            client: {
+              type: 'boolean',
+              default: true,
+              envVar: 'SYNC_CLIENT',
+              example: '`true`/`false`',
+              description: 'Copies clients'
+            },
+            group: {
+              type: 'boolean',
+              default: true,
+              envVar: 'SYNC_GROUP',
+              example: '`true`/`false`',
+              description: 'Copies groups'
+            },
+            auditLog: {
+              type: 'boolean',
+              default: false,
+              envVar: 'SYNC_AUDITLOG',
+              example: '`true`/`false`',
+              description: 'Copies the audit log'
+            },
+            staticDhcpLeases: {
+              type: 'boolean',
+              default: false,
+              envVar: 'SYNC_STATICDHCPLEASES',
+              example: '`true`/`false`',
+              description: 'Copies static DHCP leases'
+            },
+            localDnsRecords: {
+              type: 'boolean',
+              default: true,
+              envVar: 'SYNC_LOCALDNSRECORDS',
+              example: '`true`/`false`',
+              description: 'Copies local DNS records'
+            },
+            localCnameRecords: {
+              type: 'boolean',
+              default: true,
+              envVar: 'SYNC_LOCALCNAMERECORDS',
+              example: '`true`/`false`',
+              description: 'Copies local CNAME records'
+            },
+            flushTables: {
+              type: 'boolean',
+              default: true,
+              envVar: 'SYNC_FLUSHTABLES',
+              example: '`true`/`false`',
+              description: 'Clears existing data on the secondary (copy target) Pi-hole'
+            }
+          },
+          required: [
+            'whitelist',
+            'regexWhitelist',
+            'blacklist',
+            'regexList',
+            'adList',
+            'client',
+            'group',
+            'auditLog',
+            'staticDhcpLeases',
+            'localDnsRecords',
+            'localCnameRecords',
+            'flushTables'
+          ]
+        },
+        updateGravity: {
+          type: 'boolean',
+          default: true,
+          envVar: 'UPDATE_GRAVITY',
+          example: '`true`/`false`',
+          description:
+            'Triggers a gravity update after a backup has been uploaded to a secondary Pi-hole. This updates adlists and restarts gravity.'
+        },
+      },
+      required: [
+        'primaryHost',
+        'secondaryHosts',
+        'sync',
+        'updateGravity',
+      ]
     },
-    verbose: {
-      type: 'boolean',
-      default: false,
-      envVar: 'VERBOSE',
-      example: '`true`/`false`',
-      description: 'Increases the verbosity of log output. Useful for debugging.'
-    },
-    runOnce: {
-      type: 'boolean',
-      default: false,
-      envVar: 'RUN_ONCE',
-      example: '`true`/`false`',
-      description:
-        'By default, Orbital Sync runs indefinitely until stopped. Setting this to `true` forces it to exit immediately after the first sync.'
-    },
-    intervalMinutes: {
-      type: 'number',
-      default: 60,
-      envVar: 'INTERVAL_MINUTES',
-      example: 'Any non-zero positive integer, for example `5`, `30`, or `1440`',
-      description:
-        'How long to wait between synchronizations. Defaults to five minutes. Remember that the DNS server on your secondary servers restarts every time a sync is performed.'
-    }
   },
   required: [
-    'primaryHost',
-    'secondaryHosts',
-    'sync',
-    'notify',
-    'updateGravity',
+    'version',
     'verbose',
     'runOnce',
-    'intervalMinutes'
-  ]
+    'intervalMinutes',
+    'notify',
+    'sync',
+  ],
 });
+
+export const Schemas: Record<Version, typeof SchemaV5 | typeof SchemaV5> = {
+  [Version.v5]: SchemaV5,
+};

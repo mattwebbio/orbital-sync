@@ -2,25 +2,22 @@ import Honeybadger from '@honeybadger-io/js';
 import Sentry from '@sentry/node';
 import { FetchError } from 'node-fetch';
 import nodemailer from 'nodemailer';
-import { Log } from './log.js';
-import { ConfigInterface } from './config/index.js';
-import { Host } from './client/host.js';
+import { Log } from '../log.js';
+import { ConfigInterface } from '../config/index.js';
 
-export class Notify {
+export abstract class Notify {
   private errorQueue: NotificationInterface[] = [];
   private _honeybadger?: Honeybadger;
   private _sentry?: typeof Sentry;
   private _smtpClient?: nodemailer.Transporter;
-  private allHostUrls: string[];
+  protected allHostUrls: string[];
 
   constructor(
     private config: ConfigInterface,
     private log: Log = new Log(config.verbose)
   ) {
-    this.allHostUrls = [config.primaryHost, ...config.secondaryHosts].map(
-      (host) => new Host(host).fullUrl
-    );
-  }
+    this.allHostUrls = [];
+  };
 
   async ofThrow(error: unknown, queue = false): Promise<void> {
     if (error instanceof ErrorNotification) {

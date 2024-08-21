@@ -1,10 +1,8 @@
-export class Host {
+export abstract class Host {
   baseUrl: string;
   path: string;
   fullUrl: string;
   password: string;
-
-  private static pathExtractor = RegExp('^(http[s]?:+//[^/s]+)([/]?[^?#]+)?');
 
   constructor({
     baseUrl,
@@ -20,7 +18,8 @@ export class Host {
       path = '/' + path;
     }
 
-    const includedPath = Host.pathExtractor.exec(baseUrl);
+    const pathExtractor = RegExp('^(http[s]?:+//[^/s]+)([/]?[^?#]+)?');
+    const includedPath = pathExtractor.exec(baseUrl);
 
     if (includedPath && includedPath[1] && includedPath[2]) {
       baseUrl = includedPath[1];
@@ -35,5 +34,9 @@ export class Host {
 
   private trimTrailingSlash(url: string): string {
     return url.endsWith('/') ? url.slice(0, url.length - 1) : url;
+  }
+
+  public getId(): string {
+    return this.baseUrl;
   }
 }

@@ -3,32 +3,18 @@ import fetchCookie from 'fetch-cookie';
 import nodeFetch, {
   Blob,
   FormData,
-  RequestInfo,
-  RequestInit,
-  Response
 } from 'node-fetch';
 import { parse } from 'node-html-parser';
-import type { Host } from '../host.js';
 import { Log } from '../../log.js';
-import { ErrorNotification } from '../../notify.js';
-import type { SyncOptionsV5 } from '../../config/index.js';
+import { ErrorNotification } from '../../notify/index.js';
+import type { ConfigInterfaceV5 } from '../../config/index.js';
+import { HostV5 } from '../../host/v5/index.js';
+import { Client } from '../index.js';
 
-export class ClientV5 {
-  private constructor(
-    private fetch: NodeFetchCookie,
-    private host: Host,
-    private token: string,
-    private options: SyncOptionsV5,
-    private log: Log
-  ) {}
-
-  public static async create({
-    host,
-    options,
-    log
-  }: {
-    host: Host;
-    options: SyncOptionsV5;
+export class ClientV5 extends Client {
+  public static async create({ host, config, log }: {
+    host: HostV5;
+    config: ConfigInterfaceV5;
     log: Log;
   }): Promise<ClientV5> {
     log.info(chalk.yellow(`➡️ Signing in to ${host.fullUrl}...`));
@@ -56,10 +42,10 @@ export class ClientV5 {
     const token = this.parseResponseForToken(host, await response.text());
 
     log.info(chalk.green(`✔️ Successfully signed in to ${host.fullUrl}!`));
-    return new this(fetch, host, token, options, log);
+    return new this(fetch, host, token, config, log);
   }
 
-  private static parseResponseForToken(host: Host, responseBody: string): string {
+  private static parseResponseForToken(host: HostV5, responseBody: string): string {
     const root = parse(responseBody);
     const tokenDiv = root.querySelector('#token');
     if (!tokenDiv)
@@ -86,7 +72,7 @@ export class ClientV5 {
     return token;
   }
 
-  public async downloadBackup(): Promise<Blob> {
+  public async makeBackup(): Promise<Blob> {
     this.log.info(chalk.yellow(`➡️ Downloading backup from ${this.host.fullUrl}...`));
     const form = this.generateForm();
 
@@ -117,7 +103,7 @@ export class ClientV5 {
     return new Blob([data]);
   }
 
-  public async uploadBackup(backup: Blob): Promise<true | never> {
+  public async restoreBackup(backup: Blob): Promise<true | never> {
     this.log.info(chalk.yellow(`➡️ Uploading backup to ${this.host.fullUrl}...`));
 
     const form = this.generateForm();
@@ -152,7 +138,7 @@ export class ClientV5 {
     return true;
   }
 
-  public async updateGravity(): Promise<true | never> {
+  private async updateGravity(): Promise<true | never> {
     this.log.info(chalk.yellow(`➡️ Updating gravity on ${this.host.fullUrl}...`));
     const gravityUpdateResponse = await this.fetch(
       `${this.host.fullUrl}/scripts/pi-hole/php/gravity.sh.php`,
@@ -186,21 +172,19 @@ export class ClientV5 {
     const form = new FormData();
     form.append('token', this.token);
 
-    if (this.options.whitelist) form.append('whitelist', true);
-    if (this.options.regexWhitelist) form.append('regex_whitelist', true);
-    if (this.options.blacklist) form.append('blacklist', true);
-    if (this.options.regexList) form.append('regexlist', true);
-    if (this.options.adList) form.append('adlist', true);
-    if (this.options.client) form.append('client', true);
-    if (this.options.group) form.append('group', true);
-    if (this.options.auditLog) form.append('auditlog', true);
-    if (this.options.staticDhcpLeases) form.append('staticdhcpleases', true);
-    if (this.options.localDnsRecords) form.append('localdnsrecords', true);
-    if (this.options.localCnameRecords) form.append('localcnamerecords', true);
-    if (this.options.flushTables) form.append('flushtables', true);
+    if (this.config.sync.whitelist) form.append('whitelist', true);
+    if (this.config.sync.regexWhitelist) form.append('regex_whitelist', true);
+    if (this.config.sync.blacklist) form.append('blacklist', true);
+    if (this.config.sync.regexList) form.append('regexlist', true);
+    if (this.config.sync.adList) form.append('adlist', true);
+    if (this.config.sync.client) form.append('client', true);
+    if (this.config.sync.group) form.append('group', true);
+    if (this.config.sync.auditLog) form.append('auditlog', true);
+    if (this.config.sync.staticDhcpLeases) form.append('staticdhcpleases', true);
+    if (this.config.sync.localDnsRecords) form.append('localdnsrecords', true);
+    if (this.config.sync.localCnameRecords) form.append('localcnamerecords', true);
+    if (this.config.sync.flushTables) form.append('flushtables', true);
 
     return form;
   }
 }
-
-type NodeFetchCookie = ReturnType<typeof fetchCookie<RequestInfo, RequestInit, Response>>;

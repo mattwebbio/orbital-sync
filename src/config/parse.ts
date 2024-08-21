@@ -8,7 +8,7 @@ import { camelToSnakeCase } from '../util/string-case.js';
 
 /*
   While the return type of this function should be accurate, the internal type checking
-  of the values being returned are not (particularly, there are a few `unknown`s and 
+  of the values being returned are not (particularly, there are a few `unknown`s and
   `any`s in here). TypeScript seems to be unable to properly infer the types of the values
   encased in the JSONSchema, and any attempts to correct this seem to cause the classic
   `type instantiation is excessively deep and possibly infinite`:
