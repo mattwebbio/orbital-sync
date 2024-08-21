@@ -1,7 +1,7 @@
-import { ConfigInterface } from "../config/index.js";
-import { Host } from "../host/index.js";
-import { Log } from "../log.js";
-import { NodeFetchCookie } from "./nodefetchcookie.js";
+import { ConfigInterface } from '../config/index.js';
+import { Host } from '../host/index.js';
+import { Log } from '../log.js';
+import { NodeFetchCookie } from './nodefetchcookie.js';
 
 export abstract class Client {
   protected constructor(
@@ -14,5 +14,5 @@ export abstract class Client {
 
   public abstract makeBackup(): Promise<Blob>;
   public abstract restoreBackup(backup: Blob): Promise<true | never>;
-  public getId = (): string => this.host.getId()
+  public getId = (): string => this.host.getId();
 }

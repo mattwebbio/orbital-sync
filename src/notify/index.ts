@@ -17,7 +17,7 @@ export abstract class Notify {
     private log: Log = new Log(config.verbose)
   ) {
     this.allHostUrls = [];
-  };
+  }
 
   async ofThrow(error: unknown, queue = false): Promise<void> {
     if (error instanceof ErrorNotification) {

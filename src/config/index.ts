@@ -4,7 +4,7 @@ import { Schemas } from './schema.js';
 import { Version } from './version.js';
 
 export type ConfigInterface = FromSchema<(typeof Schemas)[keyof typeof Schemas]>;
-export type ConfigInterfaceV5 = FromSchema<typeof Schemas[Version.v5]>;
+export type ConfigInterfaceV5 = FromSchema<(typeof Schemas)[Version.v5]>;
 
 export function Config(
   version: Version = Version.v5,

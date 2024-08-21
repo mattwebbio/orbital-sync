@@ -10,7 +10,7 @@ export class Sync {
     config: ConfigInterface,
     { log: _log }: { log?: Log } = {}
   ): Promise<void> {
-    const version: Version =config.version as unknown as Version;
+    const version: Version = config.version as unknown as Version;
     const log = _log ?? new Log(config.verbose);
     const notify = NotifyFactory.create(version, config, log);
 
@@ -19,7 +19,7 @@ export class Sync {
       const backup = await primaryClient.makeBackup();
 
       const restores = await Promise.all(
-        ClientFacory.createDestinations(version, config, log).map(async client => {
+        ClientFacory.createDestinations(version, config, log).map(async (client) => {
           log.info(chalk.dim(`Restoring to client ${(await client).getId()}`));
           return client
             .then(async (client) => await client.restoreBackup(backup))

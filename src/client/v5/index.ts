@@ -1,9 +1,6 @@
 import chalk from 'chalk';
 import fetchCookie from 'fetch-cookie';
-import nodeFetch, {
-  Blob,
-  FormData,
-} from 'node-fetch';
+import nodeFetch, { Blob, FormData } from 'node-fetch';
 import { parse } from 'node-html-parser';
 import { Log } from '../../log.js';
 import { ErrorNotification } from '../../notify/index.js';
@@ -12,7 +9,11 @@ import { HostV5 } from '../../host/v5/index.js';
 import { Client } from '../index.js';
 
 export class ClientV5 extends Client {
-  public static async create({ host, config, log }: {
+  public static async create({
+    host,
+    config,
+    log
+  }: {
     host: HostV5;
     config: ConfigInterfaceV5;
     log: Log;

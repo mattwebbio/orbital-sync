@@ -8,7 +8,7 @@ export const SchemaV5 = asConst({
       type: 'string',
       default: 'v5',
       envVar: 'VERSION',
-      enum: ['v5'],
+      enum: ['v5']
     },
     verbose: {
       type: 'boolean',
@@ -306,26 +306,14 @@ export const SchemaV5 = asConst({
           example: '`true`/`false`',
           description:
             'Triggers a gravity update after a backup has been uploaded to a secondary Pi-hole. This updates adlists and restarts gravity.'
-        },
+        }
       },
-      required: [
-        'primaryHost',
-        'secondaryHosts',
-        'sync',
-        'updateGravity',
-      ]
-    },
+      required: ['primaryHost', 'secondaryHosts', 'sync', 'updateGravity']
+    }
   },
-  required: [
-    'version',
-    'verbose',
-    'runOnce',
-    'intervalMinutes',
-    'notify',
-    'sync',
-  ],
+  required: ['version', 'verbose', 'runOnce', 'intervalMinutes', 'notify', 'sync']
 });
 
 export const Schemas: Record<Version, typeof SchemaV5 | typeof SchemaV5> = {
-  [Version.v5]: SchemaV5,
+  [Version.v5]: SchemaV5
 };
