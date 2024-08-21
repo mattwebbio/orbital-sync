@@ -1,4 +1,3 @@
-import { Host } from '../../../src/host';
 import { HostV5 } from '../../../src/host/v5';
 
 describe('Client', () => {
