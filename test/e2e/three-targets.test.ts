@@ -9,12 +9,13 @@ import sleep from 'sleep-promise';
 
 describe('Orbital', () => {
   describe('Alpine', () => {
-    it('should sync two targets and exit with "zero" exit code', async () => {
+    it('should sync three targets and exit with "zero" exit code', async () => {
       const network = await new Network().start();
-      const [pihole1, pihole2, pihole3, orbitalImage] = await Promise.all([
+      const [pihole1, pihole2, pihole3, pihole4, orbitalImage] = await Promise.all([
         createPiholeContainer({ password: 'primary' }).withNetwork(network).start(),
         createPiholeContainer({ password: 'secondary' }).withNetwork(network).start(),
         createPiholeContainer({ password: 'tertiary' }).withNetwork(network).start(),
+        createPiholeContainer({ password: 'quaternary' }).withNetwork(network).start(),
         createOrbitalSyncContainer(OrbitalBaseImage.Alpine)
       ]);
 
@@ -26,6 +27,8 @@ describe('Orbital', () => {
           SECONDARY_HOST_1_PASSWORD: 'secondary',
           SECONDARY_HOST_2_BASE_URL: `http://${pihole3.getIpAddress(network.getName())}`,
           SECONDARY_HOST_2_PASSWORD: 'tertiary',
+          SECONDARY_HOST_3_BASE_URL: `http://${pihole4.getIpAddress(network.getName())}`,
+          SECONDARY_HOST_3_BASE_PASSWORD: 'quaternary',
           RUN_ONCE: 'true',
           VERBOSE: 'true'
         })
@@ -46,12 +49,13 @@ describe('Orbital', () => {
   });
 
   describe('Distroless', () => {
-    it('should sync two targets and exit with "zero" exit code', async () => {
+    it('should sync three targets and exit with "zero" exit code', async () => {
       const network = await new Network().start();
-      const [pihole1, pihole2, pihole3, orbitalImage] = await Promise.all([
+      const [pihole1, pihole2, pihole3, pihole4, orbitalImage] = await Promise.all([
         createPiholeContainer({ password: 'primary' }).withNetwork(network).start(),
         createPiholeContainer({ password: 'secondary' }).withNetwork(network).start(),
         createPiholeContainer({ password: 'tertiary' }).withNetwork(network).start(),
+        createPiholeContainer({ password: 'quaternary' }).withNetwork(network).start(),
         createOrbitalSyncContainer(OrbitalBaseImage.Distroless)
       ]);
 
@@ -63,6 +67,8 @@ describe('Orbital', () => {
           SECONDARY_HOST_1_PASSWORD: 'secondary',
           SECONDARY_HOST_2_BASE_URL: `http://${pihole3.getIpAddress(network.getName())}`,
           SECONDARY_HOST_2_PASSWORD: 'tertiary',
+          SECONDARY_HOST_3_BASE_URL: `http://${pihole4.getIpAddress(network.getName())}`,
+          SECONDARY_HOST_3_PASSWORD: 'quaternary',
           RUN_ONCE: 'true',
           VERBOSE: 'true'
         })
