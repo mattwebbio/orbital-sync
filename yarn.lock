@@ -4637,12 +4637,12 @@ __metadata:
   linkType: hard
 
 "json-schema-to-ts@npm:^3.0.1":
-  version: 3.1.0
-  resolution: "json-schema-to-ts@npm:3.1.0"
+  version: 3.1.1
+  resolution: "json-schema-to-ts@npm:3.1.1"
   dependencies:
     "@babel/runtime": "npm:^7.18.3"
     ts-algebra: "npm:^2.0.0"
-  checksum: 10c0/568182afe880a60ea34075f1222fdb298cf6a9e6f2e154e56a01632f8e11e2b97da0ae2f2abce7673de077be69fe10f4838ba20815b18543597a0b2e46df3887
+  checksum: 10c0/609bae04aa5e860a11b6d30ccf41445fae1c7f66fb600c1d170257cf33aa468aa9d03aa046428c3688aff0ff450c2b0c76584b66fa4a5d0da8e33799e4c439a6
   languageName: node
   linkType: hard
 
