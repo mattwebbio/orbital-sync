@@ -1,6 +1,16 @@
 ### Changelog
 
 
+## [1.8.3](https://github.com/mattwebbio/orbital-sync/compare/v1.8.2...v1.8.3) (2024-10-07)
+
+
+### Bug Fixes
+
+* bump @honeybadger-io/js from 6.9.3 to 6.10.0 ([b3219b6](https://github.com/mattwebbio/orbital-sync/commit/b3219b66fce6af5df03ed929dd8008c9cdbb161d))
+* bump json-schema-to-ts from 3.1.0 to 3.1.1 ([454660c](https://github.com/mattwebbio/orbital-sync/commit/454660cbdbe681bb06a11b46a52773ed13f5e83e))
+* bump micromatch from 4.0.5 to 4.0.8 ([45dee5e](https://github.com/mattwebbio/orbital-sync/commit/45dee5ee690308c58d39a45f7aa682dba884e063))
+* bump nodemailer from 6.9.14 to 6.9.15 ([47c531a](https://github.com/mattwebbio/orbital-sync/commit/47c531afed9ab1781527402dee6ac63a636e48e2))
+
 ## [1.8.2](https://github.com/mattwebbio/orbital-sync/compare/v1.8.1...v1.8.2) (2024-08-05)
 
 
