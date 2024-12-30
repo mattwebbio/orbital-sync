@@ -848,15 +848,15 @@ __metadata:
   linkType: hard
 
 "@honeybadger-io/js@npm:^6.8.3":
-  version: 6.10.0
-  resolution: "@honeybadger-io/js@npm:6.10.0"
+  version: 6.10.1
+  resolution: "@honeybadger-io/js@npm:6.10.1"
   dependencies:
     "@honeybadger-io/core": "npm:^6.6.0"
     "@types/aws-lambda": "npm:^8.10.89"
     "@types/express": "npm:^4.17.13"
   bin:
     honeybadger-checkins-sync: scripts/check-ins-sync-bin.js
-  checksum: 10c0/d1dfe514b271ba22c081655aba561e6960b831188502c9c1d8dc4795b984d5071559de5ffa3a6897402486eb315f5629baf5bebdfb3b9af8a67d9c10dcd8fe01
+  checksum: 10c0/603955bd3925625e835bec8cde4a60be6e1b3ed72d73ac946183a41b88d8d3371d617d37e4ae30e1c20cd59b60de83c3426d3330788e7206fc1dd4d2b890346e
   languageName: node
   linkType: hard
 
