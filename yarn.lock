@@ -5267,13 +5267,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-html-parser@npm:^6.1.12":
-  version: 6.1.13
-  resolution: "node-html-parser@npm:6.1.13"
+"node-html-parser@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "node-html-parser@npm:7.0.1"
   dependencies:
     css-select: "npm:^5.1.0"
     he: "npm:1.2.0"
-  checksum: 10c0/ca36290507da8ec0fa131a0fd67ba62e300365c3950b5a6058b0e32b71b520ff43a5661b19e98a5c9797dbe3428b08db788b602f1f8aa62f2db5bb66e1d80782
+  checksum: 10c0/70a4d6db83340e1c93be3c9d28b924e8a2d8c53e085805d9a4916132c56e76e105fedc2201682ff20e0af0468893d0f77ecaa69865b78206b02982d0b4a649a4
   languageName: node
   linkType: hard
 
@@ -5393,7 +5393,7 @@ __metadata:
     mustache: "npm:^4.2.0"
     nock: "npm:^13.5.4"
     node-fetch: "npm:^3.3.2"
-    node-html-parser: "npm:^6.1.12"
+    node-html-parser: "npm:^7.0.1"
     nodemailer: "npm:^6.9.13"
     prettier: "npm:^3.2.5"
     sleep-promise: "npm:^9.1.0"
