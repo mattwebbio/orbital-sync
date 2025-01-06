@@ -6358,8 +6358,8 @@ __metadata:
   linkType: hard
 
 "testcontainers@npm:^10.7.2":
-  version: 10.13.2
-  resolution: "testcontainers@npm:10.13.2"
+  version: 10.16.0
+  resolution: "testcontainers@npm:10.16.0"
   dependencies:
     "@balena/dockerignore": "npm:^1.0.2"
     "@types/dockerode": "npm:^3.3.29"
@@ -6376,7 +6376,7 @@ __metadata:
     tar-fs: "npm:^3.0.6"
     tmp: "npm:^0.2.3"
     undici: "npm:^5.28.4"
-  checksum: 10c0/da08bb1e180871d5481751131d1802135fc3aaa6e492b4159475b4dc8c3ca49c0bf4cd9b51e56cc21d698089a6be14536d1ddc75a6ac13ab8bed8cce3129d623
+  checksum: 10c0/17f748927d484e63718e2a745c776d54a893eba08c4fa20b84e5056f2ef45f585e39c7a1ffebea37ec63ae96e71dd50de5a611d4d313f63380bacca52b12737a
   languageName: node
   linkType: hard
 
