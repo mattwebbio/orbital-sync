@@ -1,6 +1,15 @@
 ### Changelog
 
 
+## [1.8.4](https://github.com/mattwebbio/orbital-sync/compare/v1.8.3...v1.8.4) (2025-01-11)
+
+
+### Bug Fixes
+
+* bump @honeybadger-io/js from 6.10.0 to 6.10.1 ([5724009](https://github.com/mattwebbio/orbital-sync/commit/5724009853d88c7783eff9ab0d4f1197a994db78))
+* bump fetch-cookie from 3.0.1 to 3.1.0 ([5df230b](https://github.com/mattwebbio/orbital-sync/commit/5df230bebd268a755bc1c8e85b21244bf7cd6097))
+* bump node-html-parser from 6.1.13 to 7.0.1 ([4516607](https://github.com/mattwebbio/orbital-sync/commit/451660723238a132b44de259bf832ac263979f2c))
+
 ## [1.8.3](https://github.com/mattwebbio/orbital-sync/compare/v1.8.2...v1.8.3) (2024-12-26)
 
 
