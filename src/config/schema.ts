@@ -301,7 +301,7 @@ export const Schema = asConst({
       envVar: 'INTERVAL_MINUTES',
       example: 'Any non-zero positive integer, for example `5`, `30`, or `1440`',
       description:
-        'How long to wait between synchronizations. Defaults to five minutes. Remember that the DNS server on your secondary servers restarts every time a sync is performed.'
+        'How long to wait between synchronizations. Defaults to sixty minutes. Remember that the DNS server on your secondary servers restarts every time a sync is performed.'
     }
   },
   required: [
