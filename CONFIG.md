@@ -12,12 +12,12 @@ See [additional notes](#additional-notes) at the bottom for information such as 
 
 <!-- START CONFIG DOCS -->
 
-| Environment Variable | Required | Default | Example                                                         | Description                                                                                                                                                          |
-| -------------------- | -------- | ------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `UPDATE_GRAVITY`     | No       | `true`  | `true`/`false`                                                  | Triggers a gravity update after a backup has been uploaded to a secondary Pi-hole. This updates adlists and restarts gravity.                                        |
-| `VERBOSE`            | No       | `false` | `true`/`false`                                                  | Increases the verbosity of log output. Useful for debugging.                                                                                                         |
-| `RUN_ONCE`           | No       | `false` | `true`/`false`                                                  | By default, Orbital Sync runs indefinitely until stopped. Setting this to `true` forces it to exit immediately after the first sync.                                 |
-| `INTERVAL_MINUTES`   | No       | `60`    | Any non-zero positive integer, for example `5`, `30`, or `1440` | How long to wait between synchronizations. Defaults to five minutes. Remember that the DNS server on your secondary servers restarts every time a sync is performed. |
+| Environment Variable | Required | Default | Example                                                         | Description                                                                                                                                                           |
+| -------------------- | -------- | ------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `UPDATE_GRAVITY`     | No       | `true`  | `true`/`false`                                                  | Triggers a gravity update after a backup has been uploaded to a secondary Pi-hole. This updates adlists and restarts gravity.                                         |
+| `VERBOSE`            | No       | `false` | `true`/`false`                                                  | Increases the verbosity of log output. Useful for debugging.                                                                                                          |
+| `RUN_ONCE`           | No       | `false` | `true`/`false`                                                  | By default, Orbital Sync runs indefinitely until stopped. Setting this to `true` forces it to exit immediately after the first sync.                                  |
+| `INTERVAL_MINUTES`   | No       | `60`    | Any non-zero positive integer, for example `5`, `30`, or `1440` | How long to wait between synchronizations. Defaults to sixty minutes. Remember that the DNS server on your secondary servers restarts every time a sync is performed. |
 
 ## Primary Host
 
