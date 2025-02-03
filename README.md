@@ -58,6 +58,8 @@ services:
       SECONDARY_HOSTS_3_BASE_URL: 'http://server:8080'
       SECONDARY_HOSTS_3_PASSWORD: 'your_password4'
       SECONDARY_HOSTS_3_PATH: '/apps/pi-hole'
+      MQTT_BROKER_URL: 'mqtt://optional.url.for.mqtt'
+      MQTT_BROKER_TOPIC: 'orbitalsync/trigger'
       INTERVAL_MINUTES: 60
 ```
 
