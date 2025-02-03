@@ -1,6 +1,6 @@
 ### Changelog
 
-## [1.8.5]
+## [1.8.5] (2025-02-03)
 
 ## Features
 * This fork addes feature to listen for MQTT message to trigger a synchronization.  All other functionality remains in place.
