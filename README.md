@@ -1,6 +1,6 @@
 # Briefly
 
-Below is verbatim copy from Matt Webb's repo for this project.  The only addition I have done here is to have hacked in a subrouting that monitor for an MQTT message. 
+Below is verbatim copy of the README.md from Matt Webb's repo for this project.  The only addition I have done here is to have hacked in a subroutine that will monitor for an MQTT message. 
 My objective was to be able to force an "on demand" sync rather than having to wait for the refresh cycle.
 
 I have added two lines in the sample docker-compose for environment variables for MQTT_BROKER_URL and TOPIC.
