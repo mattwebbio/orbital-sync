@@ -1,5 +1,10 @@
 ### Changelog
 
+## [1.8.5] (2025-02-03)
+
+## Features
+* This fork addes feature to listen for MQTT message to trigger a synchronization.  All other functionality remains in place.
+
 
 ## [1.8.4](https://github.com/mattwebbio/orbital-sync/compare/v1.8.3...v1.8.4) (2025-01-11)
 

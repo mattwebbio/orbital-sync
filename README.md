@@ -1,3 +1,18 @@
+# Briefly
+
+Below is verbatim copy of the README.md from Matt Webb's repo for this project.  The only addition I have done here is to have hacked in a subroutine that will monitor for an MQTT message. 
+My objective was to be able to force an "on demand" sync rather than having to wait for the refresh cycle.
+
+I have added two lines in the sample docker-compose for environment variables for MQTT_BROKER_URL and TOPIC.
+
+My intention is put a button in my home assistant that sends an MQTT message to force a refresh - or perhaps put a button on a webpage.
+
+I'm sure I have made a mess of things - but I was able to get my docker container to spin up and have tested sending an MQTT message.
+
+
+
+---
+
 [![Website](https://img.shields.io/badge/-Website-lightblue.svg?longCache=true&style=for-the-badge&logo=data:image/svg%2bxml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MjAiCmhlaWdodD0iNDIwIiBzdHJva2U9IiMwMDAiIGZpbGw9Im5vbmUiPgo8cGF0aCBzdHJva2Utd2lkdGg9IjI2IgpkPSJNMjA5LDE1YTE5NSwxOTUgMCAxLDAgMiwweiIvPgo8cGF0aCBzdHJva2Utd2lkdGg9IjE4IgpkPSJtMjEwLDE1djM5MG0xOTUtMTk1SDE1TTU5LDkwYTI2MCwyNjAgMCAwLDAgMzAyLDAgbTAsMjQwIGEyNjAsMjYwIDAgMCwwLTMwMiwwTTE5NSwyMGEyNTAsMjUwIDAgMCwwIDAsMzgyIG0zMCwwIGEyNTAsMjUwIDAgMCwwIDAtMzgyIi8+Cjwvc3ZnPg==)](https://orbitalsync.com)
 [![GitHub](https://img.shields.io/badge/-GitHub-lightgrey.svg?longCache=true&style=for-the-badge&logo=github)](https://github.com/mattwebbio/orbital-sync)
 [![GitHub Stars](https://img.shields.io/github/stars/mattwebbio/orbital-sync?style=for-the-badge&logo=github&labelColor=lightgrey&color=lightgrey)](https://github.com/mattwebbio/orbital-sync)
@@ -58,6 +73,8 @@ services:
       SECONDARY_HOSTS_3_BASE_URL: 'http://server:8080'
       SECONDARY_HOSTS_3_PASSWORD: 'your_password4'
       SECONDARY_HOSTS_3_PATH: '/apps/pi-hole'
+      MQTT_BROKER_URL: 'mqtt://optional.url.for.mqtt'
+      MQTT_BROKER_TOPIC: 'orbitalsync/trigger'
       INTERVAL_MINUTES: 60
 ```
 
