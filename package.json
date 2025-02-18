@@ -60,6 +60,8 @@
     "node-fetch": "^3.3.2",
     "node-html-parser": "^7.0.1",
     "nodemailer": "^6.9.13",
-    "sleep-promise": "^9.1.0"
+    "sleep-promise": "^9.1.0",
+    "mqtt": "^4.3.7"
+
   }
 }
