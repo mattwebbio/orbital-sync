@@ -1,6 +1,6 @@
 import { Host } from './client/host.js';
-import { ClientV5 } from './client/v5/index.js';
-import { ConfigInterface } from './config/index.js';
+import { createClient } from './client/index.js';
+import { ConfigInterface, PiholeVersion } from './config/index.js';
 import { Log } from './log.js';
 import { Notify } from './notify.js';
 
@@ -13,9 +13,12 @@ export class Sync {
     const log = _log ?? new Log(config.verbose);
 
     try {
-      const primaryHost = await ClientV5.create({
+      const version = (config.sync.version || 'auto') as PiholeVersion;
+      const primaryHost = await createClient({
         host: new Host(config.primaryHost),
-        options: config.sync.v5,
+        version,
+        optionsV5: config.sync.v5,
+        optionsV6: config.sync.v6,
         log
       });
       const backup = await primaryHost.downloadBackup();
@@ -24,7 +27,13 @@ export class Sync {
       const successfulRestoreCount = (
         await Promise.all(
           config.secondaryHosts.map((host) =>
-            ClientV5.create({ host: new Host(host), options: config.sync.v5, log })
+            createClient({
+              host: new Host(host),
+              version,
+              optionsV5: config.sync.v5,
+              optionsV6: config.sync.v6,
+              log
+            })
               .then(async (client) => {
                 let success = await client.uploadBackup(backup);
 
@@ -33,7 +42,10 @@ export class Sync {
 
                 return success;
               })
-              .catch((error) => notify.ofThrow(error, true))
+              .catch((error) => {
+                notify.ofThrow(error, true);
+                return false; // Explicitly return false to indicate failure
+              })
           )
         )
       ).filter(Boolean).length;

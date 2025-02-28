@@ -45,24 +45,47 @@ Replace `(#)` with a number, starting at 1, to add multiple. Each must be sequen
 
 What data to copy from the primary Pi-hole to the secondary Pi-holes.
 
+| Environment Variable | Required | Default | Example               | Description                                                                  |
+| -------------------- | -------- | ------- | --------------------- | ---------------------------------------------------------------------------- |
+| `PIHOLE_VERSION`     | No       | `auto`  | `auto`, `v5`, or `v6` | The version of Pi-hole you are using. Set to "auto" to detect automatically. |
+
 ### V5
 
 Sync options for Pi-hole v5.x.
 
-| Environment Variable          | Required | Default | Example        | Description                                                 |
-| ----------------------------- | -------- | ------- | -------------- | ----------------------------------------------------------- |
-| `SYNC_V5_WHITELIST`           | No       | `true`  | `true`/`false` | Copies the whitelist                                        |
-| `SYNC_V5_REGEX_WHITELIST`     | No       | `true`  | `true`/`false` | Copies the regex whitelist                                  |
-| `SYNC_V5_BLACKLIST`           | No       | `true`  | `true`/`false` | Copies the blacklist                                        |
-| `SYNC_V5_REGEX_LIST`          | No       | `true`  | `true`/`false` | Copies the regex blacklist                                  |
-| `SYNC_V5_AD_LIST`             | No       | `true`  | `true`/`false` | Copies adlists                                              |
-| `SYNC_V5_CLIENT`              | No       | `true`  | `true`/`false` | Copies clients                                              |
-| `SYNC_V5_GROUP`               | No       | `true`  | `true`/`false` | Copies groups                                               |
-| `SYNC_V5_AUDIT_LOG`           | No       | `false` | `true`/`false` | Copies the audit log                                        |
-| `SYNC_V5_STATIC_DHCP_LEASES`  | No       | `false` | `true`/`false` | Copies static DHCP leases                                   |
-| `SYNC_V5_LOCAL_DNS_RECORDS`   | No       | `true`  | `true`/`false` | Copies local DNS records                                    |
-| `SYNC_V5_LOCAL_CNAME_RECORDS` | No       | `true`  | `true`/`false` | Copies local CNAME records                                  |
-| `SYNC_V5_FLUSH_TABLES`        | No       | `true`  | `true`/`false` | Clears existing data on the secondary (copy target) Pi-hole |
+| Environment Variable     | Required | Default | Example        | Description                                                 |
+| ------------------------ | -------- | ------- | -------------- | ----------------------------------------------------------- |
+| `SYNC_WHITELIST`         | No       | `true`  | `true`/`false` | Copies the whitelist                                        |
+| `SYNC_REGEX_WHITELIST`   | No       | `true`  | `true`/`false` | Copies the regex whitelist                                  |
+| `SYNC_BLACKLIST`         | No       | `true`  | `true`/`false` | Copies the blacklist                                        |
+| `SYNC_REGEXLIST`         | No       | `true`  | `true`/`false` | Copies the regex blacklist                                  |
+| `SYNC_ADLIST`            | No       | `true`  | `true`/`false` | Copies adlists                                              |
+| `SYNC_CLIENT`            | No       | `true`  | `true`/`false` | Copies clients                                              |
+| `SYNC_GROUP`             | No       | `true`  | `true`/`false` | Copies groups                                               |
+| `SYNC_AUDITLOG`          | No       | `false` | `true`/`false` | Copies the audit log                                        |
+| `SYNC_STATICDHCPLEASES`  | No       | `false` | `true`/`false` | Copies static DHCP leases                                   |
+| `SYNC_LOCALDNSRECORDS`   | No       | `true`  | `true`/`false` | Copies local DNS records                                    |
+| `SYNC_LOCALCNAMERECORDS` | No       | `true`  | `true`/`false` | Copies local CNAME records                                  |
+| `SYNC_FLUSHTABLES`       | No       | `true`  | `true`/`false` | Clears existing data on the secondary (copy target) Pi-hole |
+
+### V6
+
+Sync options for Pi-hole v6.x. These settings are only used when `PIHOLE_VERSION` is set to `v6` or when auto-detection determines the Pi-hole is v6.
+
+| Environment Variable     | Required | Default | Example        | Description                                                 |
+| ------------------------ | -------- | ------- | -------------- | ----------------------------------------------------------- |
+| `SYNC_WHITELIST`         | No       | `true`  | `true`/`false` | Copies the whitelist                                        |
+| `SYNC_REGEX_WHITELIST`   | No       | `true`  | `true`/`false` | Copies the regex whitelist                                  |
+| `SYNC_BLACKLIST`         | No       | `true`  | `true`/`false` | Copies the blacklist                                        |
+| `SYNC_REGEXLIST`         | No       | `true`  | `true`/`false` | Copies the regex blacklist                                  |
+| `SYNC_ADLIST`            | No       | `true`  | `true`/`false` | Copies adlists                                              |
+| `SYNC_CLIENT`            | No       | `true`  | `true`/`false` | Copies clients                                              |
+| `SYNC_GROUP`             | No       | `true`  | `true`/`false` | Copies groups                                               |
+| `SYNC_AUDITLOG`          | No       | `false` | `true`/`false` | Copies the audit log                                        |
+| `SYNC_STATICDHCPLEASES`  | No       | `false` | `true`/`false` | Copies static DHCP leases                                   |
+| `SYNC_LOCALDNSRECORDS`   | No       | `true`  | `true`/`false` | Copies local DNS records                                    |
+| `SYNC_LOCALCNAMERECORDS` | No       | `true`  | `true`/`false` | Copies local CNAME records                                  |
+| `SYNC_FLUSHTABLES`       | No       | `true`  | `true`/`false` | Clears existing data on the secondary (copy target) Pi-hole |
 
 ## Notify
 

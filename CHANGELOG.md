@@ -1,6 +1,17 @@
 ### Changelog
 
 
+## [1.9.0](https://github.com/mattwebbio/orbital-sync/compare/v1.8.4...v1.9.0) (2025-02-28)
+
+
+### Features
+
+* add support for Pi-hole v6 API ([#530](https://github.com/mattwebbio/orbital-sync/pull/530))
+* implement auto-detection of Pi-hole versions
+* add configuration option to specify Pi-hole version
+* update documentation for v6 compatibility
+
+
 ## [1.8.4](https://github.com/mattwebbio/orbital-sync/compare/v1.8.3...v1.8.4) (2025-01-11)
 
 
