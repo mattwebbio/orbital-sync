@@ -6,7 +6,7 @@
 
 ### Features
 
-* add support for Pi-hole v6 API ([#530](https://github.com/mattwebbio/orbital-sync/pull/530))
+* add support for Pi-hole v6 API
 * implement auto-detection of Pi-hole versions
 * add configuration option to specify Pi-hole version
 * update documentation for v6 compatibility
