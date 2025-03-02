@@ -39,12 +39,12 @@ export async function createClient({
 
   try {
     // Try to access v6 API endpoint to detect version
-    const response = await nodeFetch(`${host.fullUrl}/api/v1/status`, {
+    const response = await nodeFetch(`${host.fullUrl}/api/auth`, {
       method: 'GET'
     });
 
     // If we get a 200 or 401 response, it's v6
-    if (response.status === 200 || response.status === 401) {
+    if (response.status === 400) {
       log.info(chalk.green(`✅ Detected Pi-hole v6 for ${host.fullUrl}`));
       return ClientV6.create({ host, options: optionsV6, log });
     }
