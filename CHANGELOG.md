@@ -1,6 +1,19 @@
 ### Changelog
 
 
+## [1.9.0](https://github.com/mattwebbio/orbital-sync/compare/v1.8.4...v1.9.0) (2025-03-04)
+
+
+### Features
+
+* add support for PiHole v6 ([f07c3c4](https://github.com/mattwebbio/orbital-sync/commit/f07c3c411b7a0d5132198c7b4d1a131ffa1fa005))
+
+
+### Bug Fixes
+
+* bump nodemailer and @types/nodemailer ([095ed38](https://github.com/mattwebbio/orbital-sync/commit/095ed38b33762bc8091db9cb7dca8477c11879a5))
+* bump undici from 5.28.4 to 5.28.5 ([90d3c1b](https://github.com/mattwebbio/orbital-sync/commit/90d3c1bdce9d05b23478bc547da205527789b5d4))
+
 ## [1.8.4](https://github.com/mattwebbio/orbital-sync/compare/v1.8.3...v1.8.4) (2025-01-11)
 
 
