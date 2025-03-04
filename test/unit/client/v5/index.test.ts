@@ -11,7 +11,7 @@ describe('Client', () => {
     const host = new Host({
       baseUrl: 'http://10.0.0.2',
       password: 'mypassword',
-      path: '/admin'
+      path: ''
     });
     const config = Config({
       primaryHost: { baseUrl: host.baseUrl, password: host.password },
@@ -20,9 +20,9 @@ describe('Client', () => {
     const log = new Log(false);
 
     const createClient = async () => {
-      nock(host.fullUrl).get('/index.php?login').reply(200);
+      nock(host.fullUrl).get('/admin/index.php?login').reply(200);
       nock(host.fullUrl)
-        .post('/index.php?login')
+        .post('/admin/index.php?login')
         .reply(
           200,
           '<html><body><div id="token">abcdefgijklmnopqrstuvwxyzabcdefgijklmnopqrst</div></body></html>'
@@ -39,9 +39,45 @@ describe('Client', () => {
     });
 
     describe('create', () => {
+      test('should strip /admin from the end', async () => {
+        const host = new Host({
+          baseUrl: 'http://10.0.0.2',
+          password: 'mypassword',
+          path: '/admin'
+        });
+
+        expect(host.fullUrl).toBe('http://10.0.0.2');
+
+        const host1 = new Host({
+          baseUrl: 'http://10.0.0.2',
+          password: 'mypassword',
+          path: '/'
+        });
+
+        expect(host1.fullUrl).toBe('http://10.0.0.2');
+
+        const host2 = new Host({
+          baseUrl: 'http://10.0.0.2/admin/',
+          password: 'mypassword',
+          path: ''
+        });
+
+        expect(host2.fullUrl).toBe('http://10.0.0.2');
+
+        const host3 = new Host({
+          baseUrl: 'http://10.0.0.2/',
+          password: 'mypassword',
+          path: '/'
+        });
+
+        expect(host3.fullUrl).toBe('http://10.0.0.2');
+      });
+
       test('should throw error if status code is not ok', async () => {
-        const initialRequest = nock(host.fullUrl).get('/index.php?login').reply(200);
-        const loginRequest = nock(host.fullUrl).post('/index.php?login').reply(500);
+        const initialRequest = nock(host.fullUrl)
+          .get('/admin/index.php?login')
+          .reply(200);
+        const loginRequest = nock(host.fullUrl).post('/admin/index.php?login').reply(500);
 
         const expectError = expect(
           ClientV5.create({ host, log, options: config.sync.v5 })
@@ -50,10 +86,10 @@ describe('Client', () => {
         await expectError.toBeInstanceOf(ErrorNotification);
         await expectError.toMatchObject({
           message:
-            'There was an error logging in to "http://10.0.0.2/admin" - are you able to log in with the configured password?',
+            'There was an error logging in to "http://10.0.0.2" - are you able to log in with the configured password?',
           verbose: {
             host: 'http://10.0.0.2',
-            path: '/admin',
+            path: '',
             status: 500,
             responseBody: ''
           }
@@ -63,8 +99,10 @@ describe('Client', () => {
       });
 
       test('should throw error if no token is present', async () => {
-        const initialRequest = nock(host.fullUrl).get('/index.php?login').reply(200);
-        const loginRequest = nock(host.fullUrl).post('/index.php?login').reply(200);
+        const initialRequest = nock(host.fullUrl)
+          .get('/admin/index.php?login')
+          .reply(200);
+        const loginRequest = nock(host.fullUrl).post('/admin/index.php?login').reply(200);
 
         const expectError = expect(
           ClientV5.create({ host, log, options: config.sync.v5 })
@@ -73,10 +111,10 @@ describe('Client', () => {
         await expectError.toBeInstanceOf(ErrorNotification);
         await expectError.toMatchObject({
           message:
-            'No token could be found while logging in to "http://10.0.0.2/admin" - are you able to log in with the configured password?',
+            'No token could be found while logging in to "http://10.0.0.2" - are you able to log in with the configured password?',
           verbose: {
             host: 'http://10.0.0.2',
-            path: '/admin',
+            path: '',
             innerHtml: ''
           }
         });
@@ -85,9 +123,11 @@ describe('Client', () => {
       });
 
       test('should throw error if token is in incorrect format', async () => {
-        const initialRequest = nock(host.fullUrl).get('/index.php?login').reply(200);
+        const initialRequest = nock(host.fullUrl)
+          .get('/admin/index.php?login')
+          .reply(200);
         const loginRequest = nock(host.fullUrl)
-          .post('/index.php?login')
+          .post('/admin/index.php?login')
           .reply(200, '<html><body><div id="token">abcdef</div></body></html>');
 
         const expectError = expect(
@@ -97,10 +137,10 @@ describe('Client', () => {
         await expectError.toBeInstanceOf(ErrorNotification);
         await expectError.toMatchObject({
           message:
-            'A token was found but could not be validated while logging in to "http://10.0.0.2/admin" - are you able to log in with the configured password?',
+            'A token was found but could not be validated while logging in to "http://10.0.0.2" - are you able to log in with the configured password?',
           verbose: {
             host: 'http://10.0.0.2',
-            path: '/admin',
+            path: '',
             token: 'abcdef'
           }
         });
@@ -109,9 +149,11 @@ describe('Client', () => {
       });
 
       test('should return client', async () => {
-        const initialRequest = nock(host.fullUrl).get('/index.php?login').reply(200);
+        const initialRequest = nock(host.fullUrl)
+          .get('/admin/index.php?login')
+          .reply(200);
         const loginRequest = nock(host.fullUrl)
-          .post('/index.php?login')
+          .post('/admin/index.php?login')
           .reply(
             200,
             '<html><body><div id="token">abcdefgijklmnopqrstuvwxyzabcdefgijklmnopqrst</div></body></html>'
@@ -139,16 +181,16 @@ describe('Client', () => {
       });
 
       test('should throw error if response is non-200', async () => {
-        teleporter.post('/scripts/pi-hole/php/teleporter.php').reply(500);
+        teleporter.post('/admin/scripts/pi-hole/php/teleporter.php').reply(500);
 
         const expectError = expect(client.downloadBackup()).rejects;
 
         await expectError.toBeInstanceOf(ErrorNotification);
         await expectError.toMatchObject({
-          message: 'Failed to download backup from "http://10.0.0.2/admin".',
+          message: 'Failed to download backup from "http://10.0.0.2".',
           verbose: {
             host: 'http://10.0.0.2',
-            path: '/admin',
+            path: '',
             status: 500,
             responseBody: ''
           }
@@ -157,17 +199,17 @@ describe('Client', () => {
 
       test('should throw error if content type is not gzip', async () => {
         teleporter
-          .post('/scripts/pi-hole/php/teleporter.php')
+          .post('/admin/scripts/pi-hole/php/teleporter.php')
           .reply(200, undefined, { 'content-type': 'text/html' });
 
         const expectError = expect(client.downloadBackup()).rejects;
 
         await expectError.toBeInstanceOf(ErrorNotification);
         await expectError.toMatchObject({
-          message: 'Failed to download backup from "http://10.0.0.2/admin".',
+          message: 'Failed to download backup from "http://10.0.0.2".',
           verbose: {
             host: 'http://10.0.0.2',
-            path: '/admin',
+            path: '',
             status: 200,
             responseBody: ''
           }
@@ -177,7 +219,10 @@ describe('Client', () => {
       test('should return response data', async () => {
         let requestBody = '';
         teleporter
-          .post('/scripts/pi-hole/php/teleporter.php', (body) => (requestBody = body))
+          .post(
+            '/admin/scripts/pi-hole/php/teleporter.php',
+            (body) => (requestBody = body)
+          )
           .reply(200, undefined, { 'content-type': 'application/gzip' });
 
         const backup = await client.downloadBackup();
@@ -219,17 +264,30 @@ describe('Client', () => {
         teleporter.done();
       });
 
+      test('should return success if response is 200', async () => {
+        teleporter
+          .post('/admin/scripts/pi-hole/php/teleporter.php')
+          .reply(
+            200,
+            '\ndata: \n\ndata:      [✓] TCP (IPv6)\ndata: \ndata: \n\ndata: OK'
+          );
+
+        const response = expect(client.uploadBackup(backup)).resolves;
+
+        await response.toEqual(true);
+      });
+
       test('should throw error if response is non-200', async () => {
-        teleporter.post('/scripts/pi-hole/php/teleporter.php').reply(500);
+        teleporter.post('/admin/scripts/pi-hole/php/teleporter.php').reply(500);
 
         const expectError = expect(client.uploadBackup(backup)).rejects;
 
         await expectError.toBeInstanceOf(ErrorNotification);
         await expectError.toMatchObject({
-          message: 'Failed to upload backup to "http://10.0.0.2/admin".',
+          message: 'Failed to upload backup to "http://10.0.0.2".',
           verbose: {
             host: 'http://10.0.0.2',
-            path: '/admin',
+            path: '',
             status: 500,
             responseBody: ''
           }
@@ -237,16 +295,16 @@ describe('Client', () => {
       });
 
       test('should throw error if response does not end with "OK" or "Done importing"', async () => {
-        teleporter.post('/scripts/pi-hole/php/teleporter.php').reply(200);
+        teleporter.post('/admin/scripts/pi-hole/php/teleporter.php').reply(200);
 
         const expectError = expect(client.uploadBackup(backup)).rejects;
 
         await expectError.toBeInstanceOf(ErrorNotification);
         await expectError.toMatchObject({
-          message: 'Failed to upload backup to "http://10.0.0.2/admin".',
+          message: 'Failed to upload backup to "http://10.0.0.2".',
           verbose: {
             host: 'http://10.0.0.2',
-            path: '/admin',
+            path: '',
             status: 200,
             responseBody: ''
           }
@@ -268,7 +326,7 @@ describe('Client', () => {
 
       test('should upload backup and update gravity successfully', async () => {
         teleporter
-          .get('/scripts/pi-hole/php/gravity.sh.php', undefined)
+          .get('/admin/scripts/pi-hole/php/gravity.sh.php', undefined)
           .reply(
             200,
             '\ndata: \n\ndata:      [✓] TCP (IPv6)\ndata: \ndata: \n\ndata:   [✓] Pi-hole blocking is enabled\ndata: \n\ndata:'
@@ -281,17 +339,17 @@ describe('Client', () => {
 
       test('should throw error if gravity update fails', async () => {
         teleporter
-          .get('/scripts/pi-hole/php/gravity.sh.php', undefined)
+          .get('/admin/scripts/pi-hole/php/gravity.sh.php', undefined)
           .reply(200, '\ndata: \n\ndata:      [✓] TCP (IPv6)\ndata: \ndata: \n\ndata:');
 
         const expectError = expect(client.updateGravity()).rejects;
 
         await expectError.toBeInstanceOf(ErrorNotification);
         await expectError.toMatchObject({
-          message: 'Failed updating gravity on "http://10.0.0.2/admin".',
+          message: 'Failed updating gravity on "http://10.0.0.2".',
           verbose: {
             host: 'http://10.0.0.2',
-            path: '/admin',
+            path: '',
             status: 200,
             eventStream: '[✓] TCP (IPv6)'
           }

@@ -19,7 +19,8 @@ export class ClientV5 {
     private host: Host,
     private token: string,
     private options: SyncOptionsV5,
-    private log: Log
+    private log: Log,
+    private version: '5'
   ) {}
 
   public static async create({
@@ -34,8 +35,8 @@ export class ClientV5 {
     log.info(chalk.yellow(`➡️ Signing in to ${host.fullUrl}...`));
     const fetch = fetchCookie(nodeFetch);
 
-    await fetch(`${host.fullUrl}/index.php?login`, { method: 'GET' });
-    const response = await fetch(`${host.fullUrl}/index.php?login`, {
+    await fetch(`${host.fullUrl}/admin/index.php?login`, { method: 'GET' });
+    const response = await fetch(`${host.fullUrl}/admin/index.php?login`, {
       headers: {
         'content-type': 'application/x-www-form-urlencoded'
       },
@@ -56,7 +57,7 @@ export class ClientV5 {
     const token = this.parseResponseForToken(host, await response.text());
 
     log.info(chalk.green(`✔️ Successfully signed in to ${host.fullUrl}!`));
-    return new this(fetch, host, token, options, log);
+    return new this(fetch, host, token, options, log, '5');
   }
 
   private static parseResponseForToken(host: Host, responseBody: string): string {
@@ -91,7 +92,7 @@ export class ClientV5 {
     const form = this.generateForm();
 
     const response = await this.fetch(
-      `${this.host.fullUrl}/scripts/pi-hole/php/teleporter.php`,
+      `${this.host.fullUrl}/admin/scripts/pi-hole/php/teleporter.php`,
       {
         body: form,
         method: 'POST'
@@ -125,7 +126,7 @@ export class ClientV5 {
     form.append('zip_file', backup, 'backup.tar.gz');
 
     const uploadResponse = await this.fetch(
-      `${this.host.fullUrl}/scripts/pi-hole/php/teleporter.php`,
+      `${this.host.fullUrl}/admin/scripts/pi-hole/php/teleporter.php`,
       {
         body: form,
         method: 'POST'
@@ -155,7 +156,7 @@ export class ClientV5 {
   public async updateGravity(): Promise<true | never> {
     this.log.info(chalk.yellow(`➡️ Updating gravity on ${this.host.fullUrl}...`));
     const gravityUpdateResponse = await this.fetch(
-      `${this.host.fullUrl}/scripts/pi-hole/php/gravity.sh.php`,
+      `${this.host.fullUrl}/admin/scripts/pi-hole/php/gravity.sh.php`,
       { method: 'GET' }
     );
 

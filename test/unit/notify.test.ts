@@ -271,7 +271,7 @@ describe('Notify', () => {
       expect(notifyOfFailure).toHaveBeenCalledTimes(1);
       expect(notifyOfFailure).toHaveBeenCalledWith(
         expect.objectContaining({
-          message: 'The host "http://10.0.0.3/admin" refused to connect. Is it down?',
+          message: 'The host "http://10.0.0.3" refused to connect. Is it down?',
           verbose:
             'request to http://10.0.0.3/admin/index.php?login failed, reason: connect ECONNREFUSED 10.0.0.2:443'
         })

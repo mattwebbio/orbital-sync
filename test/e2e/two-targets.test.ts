@@ -12,9 +12,15 @@ describe('Orbital', () => {
     it('should sync two targets and exit with "zero" exit code', async () => {
       const network = await new Network().start();
       const [pihole1, pihole2, pihole3, orbitalImage] = await Promise.all([
-        createPiholeContainer({ password: 'primary' }).withNetwork(network).start(),
-        createPiholeContainer({ password: 'secondary' }).withNetwork(network).start(),
-        createPiholeContainer({ password: 'tertiary' }).withNetwork(network).start(),
+        createPiholeContainer({ password: 'primary', tag: 'latest' })
+          .withNetwork(network)
+          .start(),
+        createPiholeContainer({ password: 'secondary', tag: 'latest' })
+          .withNetwork(network)
+          .start(),
+        createPiholeContainer({ password: 'tertiary', tag: 'latest' })
+          .withNetwork(network)
+          .start(),
         createOrbitalSyncContainer(OrbitalBaseImage.Alpine)
       ]);
 
@@ -49,9 +55,15 @@ describe('Orbital', () => {
     it('should sync two targets and exit with "zero" exit code', async () => {
       const network = await new Network().start();
       const [pihole1, pihole2, pihole3, orbitalImage] = await Promise.all([
-        createPiholeContainer({ password: 'primary' }).withNetwork(network).start(),
-        createPiholeContainer({ password: 'secondary' }).withNetwork(network).start(),
-        createPiholeContainer({ password: 'tertiary' }).withNetwork(network).start(),
+        createPiholeContainer({ password: 'primary', tag: 'latest' })
+          .withNetwork(network)
+          .start(),
+        createPiholeContainer({ password: 'secondary', tag: 'latest' })
+          .withNetwork(network)
+          .start(),
+        createPiholeContainer({ password: 'tertiary', tag: 'latest' })
+          .withNetwork(network)
+          .start(),
         createOrbitalSyncContainer(OrbitalBaseImage.Distroless)
       ]);
 

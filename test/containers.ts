@@ -1,14 +1,23 @@
 import { GenericContainer, Wait } from 'testcontainers';
 
 export function createPiholeContainer({
-  password
+  password,
+  tag
 }: {
   password: string;
+  tag: string;
 }): GenericContainer {
-  return new GenericContainer('pihole/pihole:latest')
-    .withEnvironment({
-      WEBPASSWORD: password
-    })
+  return new GenericContainer(`pihole/pihole:${tag}`)
+    .withEnvironment(
+      tag == 'latest'
+        ? {
+            FTLCONF_webserver_api_password: password,
+            FTLCONF_debug_api: 'true'
+          }
+        : {
+            WEBPASSWORD: password
+          }
+    )
     .withExposedPorts(80)
     .withHealthCheck({
       test: ['CMD', 'curl', '-f', 'http://localhost/admin/'],

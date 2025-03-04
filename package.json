@@ -1,7 +1,7 @@
 {
   "name": "orbital-sync",
   "description": "Synchronize multiple Pi-hole instances",
-  "version": "1.8.4",
+  "version": "1.9.0",
   "type": "module",
   "main": "dist/index.js",
   "license": "MIT",
