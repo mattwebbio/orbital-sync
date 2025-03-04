@@ -3,6 +3,15 @@ import { asConst } from 'json-schema-to-ts';
 export const Schema = asConst({
   type: 'object',
   properties: {
+    piHoleVersion: {
+      $id: '/schemas/piHoleVersion',
+      type: 'string',
+      default: 'auto',
+      enum: ['auto', '6', '5'],
+      envVar: 'PIHOLE_VERSION',
+      example: '`auto`, `6`, or `5`',
+      description: 'The version of PiHole you are using'
+    },
     primaryHost: {
       type: 'object',
       description: 'The primary Pi-hole that data will be copied from.',
@@ -18,14 +27,14 @@ export const Schema = asConst({
           type: 'string',
           envVar: 'PRIMARY_HOST_PASSWORD',
           example: '`mypassword`',
-          description: 'The password used to log in to the admin interface.'
+          description: 'The password (v5) or app password (v6) used to login to PiHole.'
         },
         path: {
           type: 'string',
           envVar: 'PRIMARY_HOST_PATH',
           example: '`/` or `/apps/pi-hole`',
           description:
-            'The path to be appended to your base URL. The default Pi-hole path is `/admin`, which is added automatically.'
+            'The path to be appended to your base URL. The default Pi-hole path is `/admin` (v5) or `/api` (v6), which is added automatically.'
         }
       },
       required: ['baseUrl', 'password']
@@ -169,9 +178,81 @@ export const Schema = asConst({
             'localCnameRecords',
             'flushTables'
           ]
+        },
+        v6: {
+          type: 'object',
+          description: 'Sync options for Pi-hole v6.x.',
+          properties: {
+            dhcp_leases: {
+              type: 'boolean',
+              default: true,
+              envVar: 'DHCP_LEASES',
+              example: '`true`/`false`',
+              description: 'Copies the DHCP leases'
+            },
+            group: {
+              type: 'boolean',
+              default: true,
+              envVar: 'SYNC_GROUP',
+              example: '`true`/`false`',
+              description: 'Copies groups'
+            },
+            adlist: {
+              type: 'boolean',
+              default: true,
+              envVar: 'SYNC_ADLIST',
+              example: '`true`/`false`',
+              description: 'Copies adlists'
+            },
+            adlist_by_group: {
+              type: 'boolean',
+              default: true,
+              envVar: 'SYNC_ADLIST_BY_GROUP',
+              example: '`true`/`false`',
+              description: 'Copies adlists by group'
+            },
+            domainlist: {
+              type: 'boolean',
+              default: true,
+              envVar: 'SYNC_DOMAINLIST',
+              example: '`true`/`false`',
+              description: 'Copies domain list'
+            },
+            domainlist_by_group: {
+              type: 'boolean',
+              default: true,
+              envVar: 'SYNC_DOMAINLIST_BY_GROUP',
+              example: '`true`/`false`',
+              description: 'Copies domain list by group'
+            },
+            client: {
+              type: 'boolean',
+              default: true,
+              envVar: 'SYNC_CLIENT',
+              example: '`true`/`false`',
+              description: 'Copies clients'
+            },
+            client_by_group: {
+              type: 'boolean',
+              default: true,
+              envVar: 'SYNC_CLIENT_BY_GROUP',
+              example: '`true`/`false`',
+              description: 'Copies clients by group'
+            }
+          },
+          required: [
+            'dhcp_leases',
+            'group',
+            'adlist',
+            'adlist_by_group',
+            'domainlist',
+            'domainlist_by_group',
+            'client',
+            'client_by_group'
+          ]
         }
       },
-      required: ['v5']
+      required: ['v5', 'v6']
     },
     notify: {
       type: 'object',

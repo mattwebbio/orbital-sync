@@ -17,6 +17,8 @@ describe('entrypoint', () => {
   afterEach(() => {
     jest.resetModules();
     process.env = Object.assign({}, initialEnv);
+    nock.cleanAll();
+    nock.enableNetConnect();
   });
 
   test('should perform sync', async () => {

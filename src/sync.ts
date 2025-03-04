@@ -1,5 +1,6 @@
+import sleep from 'sleep-promise';
 import { Host } from './client/host.js';
-import { ClientV5 } from './client/v5/index.js';
+import { ClientFactory } from './client/index.js';
 import { ConfigInterface } from './config/index.js';
 import { Log } from './log.js';
 import { Notify } from './notify.js';
@@ -13,9 +14,10 @@ export class Sync {
     const log = _log ?? new Log(config.verbose);
 
     try {
-      const primaryHost = await ClientV5.create({
+      const primaryHost = await ClientFactory.createClient({
         host: new Host(config.primaryHost),
-        options: config.sync.v5,
+        version: config.piHoleVersion || 'auto',
+        options: config.sync.v6 || config.sync.v5,
         log
       });
       const backup = await primaryHost.downloadBackup();
@@ -24,13 +26,20 @@ export class Sync {
       const successfulRestoreCount = (
         await Promise.all(
           config.secondaryHosts.map((host) =>
-            ClientV5.create({ host: new Host(host), options: config.sync.v5, log })
+            ClientFactory.createClient({
+              host: new Host(host),
+              version: config.piHoleVersion || 'auto',
+              options: config.sync.v6 || config.sync.v5,
+              log
+            })
               .then(async (client) => {
                 let success = await client.uploadBackup(backup);
 
-                if (success && config.updateGravity)
+                if (success && config.updateGravity) {
+                  // Cannot update gravity right away, so sleep for 2 seconds
+                  await sleep(2000);
                   success = await client.updateGravity();
-
+                }
                 return success;
               })
               .catch((error) => notify.ofThrow(error, true))
