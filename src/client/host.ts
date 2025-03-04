@@ -15,7 +15,7 @@ export class Host {
     password: string;
     path?: string;
   }) {
-    path ??= '/admin';
+    path ??= ''; // admin should get added in v5 client
     if (path && !path.startsWith('/')) {
       path = '/' + path;
     }
@@ -26,6 +26,9 @@ export class Host {
       baseUrl = includedPath[1];
       path = (this.trimTrailingSlash(includedPath[2]) ?? '') + path;
     }
+
+    // Make sure to remove /admin or /api or / from the end
+    path = path.replace(/(\/admin|\/api|\/)\/?$/, '');
 
     this.baseUrl = baseUrl;
     this.password = password;

@@ -18,6 +18,7 @@ describe('Config', () => {
 
     const config = Config();
     expect(config).toEqual({
+      piHoleVersion: 'auto',
       primaryHost: {
         baseUrl: 'http://localhost:3000',
         password: 'password'
@@ -42,6 +43,16 @@ describe('Config', () => {
           regexWhitelist: true,
           staticDhcpLeases: false,
           whitelist: true
+        },
+        v6: {
+          adlist: true,
+          adlist_by_group: true,
+          client: true,
+          client_by_group: true,
+          dhcp_leases: true,
+          domainlist: true,
+          domainlist_by_group: true,
+          group: true
         }
       },
       notify: {
@@ -83,6 +94,7 @@ describe('Config', () => {
 
     const config = Config();
     expect(config).toEqual({
+      piHoleVersion: 'auto',
       primaryHost: {
         baseUrl: 'http://localhost:3000',
         password: 'password_from_file_1'
@@ -107,6 +119,16 @@ describe('Config', () => {
           regexWhitelist: true,
           staticDhcpLeases: false,
           whitelist: true
+        },
+        v6: {
+          adlist: true,
+          adlist_by_group: true,
+          client: true,
+          client_by_group: true,
+          dhcp_leases: true,
+          domainlist: true,
+          domainlist_by_group: true,
+          group: true
         }
       },
       notify: {

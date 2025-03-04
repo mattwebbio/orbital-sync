@@ -15,6 +15,7 @@
     "prettier:fix": "prettier --ignore-unknown --write .",
     "test": "npm run test:unit && npm run test:integration && npm run test:e2e",
     "test:unit": "NODE_OPTIONS=--experimental-vm-modules yarn jest --silent test/unit/",
+    "test:unit:linux": "docker run -it -e NODE_OPTIONS=--experimental-vm-modules -v '.:/home/code' -w /home/code --rm node:18-bullseye bash -c 'yarn install && yarn test:unit'",
     "test:e2e": "yarn build && test/e2e.sh",
     "test:integration": "test/integration.sh"
   },

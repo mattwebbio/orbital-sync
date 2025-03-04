@@ -2,13 +2,13 @@ import { describe, expect } from '@jest/globals';
 import { StartedTestContainer } from 'testcontainers';
 import { Blob } from 'node-fetch';
 import { createPiholeContainer } from '../../../containers';
-import { ClientV5 } from '../../../../src/client/v5';
+import { ClientV6 } from '../../../../src/client/v6';
 import { Host } from '../../../../src/client/host';
 import { Config, ConfigInterface } from '../../../../src/config/index';
 import { Log } from '../../../../src/log';
 
 describe('Client', () => {
-  describe('V5', () => {
+  describe('V6', () => {
     let piholeContainer: StartedTestContainer;
     let pihole: Host;
     let config: ConfigInterface;
@@ -16,7 +16,7 @@ describe('Client', () => {
     beforeAll(async () => {
       piholeContainer = await createPiholeContainer({
         password: 'mock_password',
-        tag: '2024.07.0'
+        tag: 'latest'
       }).start();
       pihole = new Host({
         baseUrl: `http://${piholeContainer.getHost()}:${piholeContainer.getMappedPort(80)}`,
@@ -41,9 +41,9 @@ describe('Client', () => {
     });
 
     it('should connect, backup, and upload', async () => {
-      const client = await ClientV5.create({
+      const client = await ClientV6.create({
         host: pihole,
-        options: config.sync.v5,
+        options: config.sync.v6,
         log: new Log(true)
       });
 
