@@ -34,7 +34,7 @@ export class ClientFactory {
 
       try {
         // Get the documentation URl since that does not require a password.
-        const response = await nodeFetch(`${host.baseUrl}/api/docs`, {
+        const response = await nodeFetch(`${host.fullUrl}/api/docs`, {
           method: 'GET'
         });
 

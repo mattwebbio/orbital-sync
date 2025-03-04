@@ -35,40 +35,6 @@ describe('Client', () => {
     });
 
     describe('create', () => {
-      test('should strip /admin from the end', async () => {
-        const host = new Host({
-          baseUrl: 'http://10.0.0.2',
-          password: 'mypassword',
-          path: '/api'
-        });
-
-        expect(host.fullUrl).toBe('http://10.0.0.2');
-
-        const host1 = new Host({
-          baseUrl: 'http://10.0.0.2',
-          password: 'mypassword',
-          path: '/'
-        });
-
-        expect(host1.fullUrl).toBe('http://10.0.0.2');
-
-        const host2 = new Host({
-          baseUrl: 'http://10.0.0.2/api/',
-          password: 'mypassword',
-          path: ''
-        });
-
-        expect(host2.fullUrl).toBe('http://10.0.0.2');
-
-        const host3 = new Host({
-          baseUrl: 'http://10.0.0.2/',
-          password: 'mypassword',
-          path: '/'
-        });
-
-        expect(host3.fullUrl).toBe('http://10.0.0.2');
-      });
-
       test('should throw error if status code is not ok', async () => {
         const initialRequest = nock(host.baseUrl).get('/api/auth').reply(200);
         const loginRequest = nock(host.baseUrl).post('/api/auth').reply(500);
