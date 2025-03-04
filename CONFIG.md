@@ -14,6 +14,7 @@ See [additional notes](#additional-notes) at the bottom for information such as 
 
 | Environment Variable | Required | Default | Example                                                         | Description                                                                                                                                                           |
 | -------------------- | -------- | ------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PI_HOLE_VERSION`    | No       | `auto`  | `auto`, `6`, or `5`                                             | The version of PiHole you are using                                                                                                                                   |
 | `UPDATE_GRAVITY`     | No       | `true`  | `true`/`false`                                                  | Triggers a gravity update after a backup has been uploaded to a secondary Pi-hole. This updates adlists and restarts gravity.                                         |
 | `VERBOSE`            | No       | `false` | `true`/`false`                                                  | Increases the verbosity of log output. Useful for debugging.                                                                                                          |
 | `RUN_ONCE`           | No       | `false` | `true`/`false`                                                  | By default, Orbital Sync runs indefinitely until stopped. Setting this to `true` forces it to exit immediately after the first sync.                                  |
@@ -23,11 +24,11 @@ See [additional notes](#additional-notes) at the bottom for information such as 
 
 The primary Pi-hole that data will be copied from.
 
-| Environment Variable    | Required | Default | Example                                              | Description                                                                                                      |
-| ----------------------- | -------- | ------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `PRIMARY_HOST_BASE_URL` | Yes      | N/A     | `http://192.168.1.2` or `https://pihole.example.com` | The base URL of your Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash. |
-| `PRIMARY_HOST_PASSWORD` | Yes      | N/A     | `mypassword`                                         | The password used to log in to the admin interface.                                                              |
-| `PRIMARY_HOST_PATH`     | No       | N/A     | `/` or `/apps/pi-hole`                               | The path to be appended to your base URL. The default Pi-hole path is `/admin`, which is added automatically.    |
+| Environment Variable    | Required | Default | Example                                              | Description                                                                                                                       |
+| ----------------------- | -------- | ------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `PRIMARY_HOST_BASE_URL` | Yes      | N/A     | `http://192.168.1.2` or `https://pihole.example.com` | The base URL of your Pi-hole, including the scheme (HTTP or HTTPS) and port but not including a following slash.                  |
+| `PRIMARY_HOST_PASSWORD` | Yes      | N/A     | `mypassword`                                         | The password (v5) or app password (v6) used to login to PiHole.                                                                   |
+| `PRIMARY_HOST_PATH`     | No       | N/A     | `/` or `/apps/pi-hole`                               | The path to be appended to your base URL. The default Pi-hole path is `/admin` (v5) or `/api` (v6), which is added automatically. |
 
 ## Secondary Hosts
 
@@ -63,6 +64,21 @@ Sync options for Pi-hole v5.x.
 | `SYNC_V5_LOCAL_DNS_RECORDS`   | No       | `true`  | `true`/`false` | Copies local DNS records                                    |
 | `SYNC_V5_LOCAL_CNAME_RECORDS` | No       | `true`  | `true`/`false` | Copies local CNAME records                                  |
 | `SYNC_V5_FLUSH_TABLES`        | No       | `true`  | `true`/`false` | Clears existing data on the secondary (copy target) Pi-hole |
+
+### V6
+
+Sync options for Pi-hole v6.x.
+
+| Environment Variable          | Required | Default | Example        | Description                 |
+| ----------------------------- | -------- | ------- | -------------- | --------------------------- |
+| `SYNC_V6_DHCP_LEASES`         | No       | `true`  | `true`/`false` | Copies the DHCP leases      |
+| `SYNC_V6_GROUP`               | No       | `true`  | `true`/`false` | Copies groups               |
+| `SYNC_V6_ADLIST`              | No       | `true`  | `true`/`false` | Copies adlists              |
+| `SYNC_V6_ADLIST_BY_GROUP`     | No       | `true`  | `true`/`false` | Copies adlists by group     |
+| `SYNC_V6_DOMAINLIST`          | No       | `true`  | `true`/`false` | Copies domain list          |
+| `SYNC_V6_DOMAINLIST_BY_GROUP` | No       | `true`  | `true`/`false` | Copies domain list by group |
+| `SYNC_V6_CLIENT`              | No       | `true`  | `true`/`false` | Copies clients              |
+| `SYNC_V6_CLIENT_BY_GROUP`     | No       | `true`  | `true`/`false` | Copies clients by group     |
 
 ## Notify
 
