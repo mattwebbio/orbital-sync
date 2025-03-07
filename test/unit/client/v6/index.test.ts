@@ -76,6 +76,21 @@ describe('Client', () => {
         initialRequest.done();
         loginRequest.done();
       });
+
+      test('should return version 6 and Host info', async () => {
+        const initialRequest = nock(host.baseUrl).get('/api/auth').reply(200);
+        const loginRequest = nock(host.baseUrl)
+          .post('/api/auth')
+          .reply(200, goodResponse);
+
+        const v6Client = await ClientV6.create({ host, log, options: config.sync.v6 });
+
+        expect(v6Client.getVersion()).toEqual(6);
+        expect(v6Client.getHost()).toBe(host);
+
+        initialRequest.done();
+        loginRequest.done();
+      });
     });
 
     describe('downloadBackup', () => {

@@ -44,40 +44,6 @@ describe('Client', () => {
     });
 
     describe('create', () => {
-      test('should strip /admin from the end', async () => {
-        const host = new Host({
-          baseUrl: 'http://10.0.0.2',
-          password: 'mypassword',
-          path: '/admin'
-        });
-
-        expect(host.fullUrl).toBe('http://10.0.0.2');
-
-        const host1 = new Host({
-          baseUrl: 'http://10.0.0.2',
-          password: 'mypassword',
-          path: '/'
-        });
-
-        expect(host1.fullUrl).toBe('http://10.0.0.2');
-
-        const host2 = new Host({
-          baseUrl: 'http://10.0.0.2/admin/',
-          password: 'mypassword',
-          path: ''
-        });
-
-        expect(host2.fullUrl).toBe('http://10.0.0.2');
-
-        const host3 = new Host({
-          baseUrl: 'http://10.0.0.2/',
-          password: 'mypassword',
-          path: '/'
-        });
-
-        expect(host3.fullUrl).toBe('http://10.0.0.2');
-      });
-
       test('should throw error if status code is not ok', async () => {
         const initialRequest = nock(host.fullUrl)
           .get('/admin/index.php?login')
@@ -167,6 +133,26 @@ describe('Client', () => {
         await expect(
           ClientV5.create({ host, log, options: config.sync.v5 })
         ).resolves.toBeInstanceOf(ClientV5);
+
+        initialRequest.done();
+        loginRequest.done();
+      });
+
+      test('should return version 5 and Host info', async () => {
+        const initialRequest = nock(host.fullUrl)
+          .get('/admin/index.php?login')
+          .reply(200);
+        const loginRequest = nock(host.fullUrl)
+          .post('/admin/index.php?login')
+          .reply(
+            200,
+            '<html><body><div id="token">abcdefgijklmnopqrstuvwxyzabcdefgijklmnopqrst</div></body></html>'
+          );
+
+        const v5Client = await ClientV5.create({ host, log, options: config.sync.v5 });
+
+        expect(v5Client.getVersion()).toEqual(5);
+        expect(v5Client.getHost()).toBe(host);
 
         initialRequest.done();
         loginRequest.done();

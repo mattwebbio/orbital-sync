@@ -32,7 +32,7 @@ export class ClientV6 {
     private token: string,
     private options: SyncOptionsV6,
     private log: Log,
-    private version: '6'
+    private version: 6
   ) {}
 
   public static async create({
@@ -71,7 +71,15 @@ export class ClientV6 {
     const token = body.session.sid;
 
     log.info(chalk.green(`✔️ Successfully signed in to ${host.fullUrl}!`));
-    return new this(fetch, host, token, options, log, '6');
+    return new this(fetch, host, token, options, log, 6);
+  }
+
+  public getVersion(): number {
+    return this.version;
+  }
+
+  public getHost(): Host {
+    return this.host;
   }
 
   public async downloadBackup(): Promise<Blob> {
