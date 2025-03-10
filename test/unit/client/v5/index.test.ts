@@ -171,6 +171,26 @@ describe('Client', () => {
         initialRequest.done();
         loginRequest.done();
       });
+
+      test('should return version 5 and Host info', async () => {
+        const initialRequest = nock(host.fullUrl)
+          .get('/admin/index.php?login')
+          .reply(200);
+        const loginRequest = nock(host.fullUrl)
+          .post('/admin/index.php?login')
+          .reply(
+            200,
+            '<html><body><div id="token">abcdefgijklmnopqrstuvwxyzabcdefgijklmnopqrst</div></body></html>'
+          );
+
+        const v5Client = await ClientV5.create({ host, log, options: config.sync.v5 });
+
+        expect(v5Client.getVersion()).toEqual(5);
+        expect(v5Client.getHost()).toBe(host);
+
+        initialRequest.done();
+        loginRequest.done();
+      });
     });
 
     describe('downloadBackup', () => {

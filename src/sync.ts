@@ -1,4 +1,3 @@
-import sleep from 'sleep-promise';
 import { Host } from './client/host.js';
 import { ClientFactory } from './client/index.js';
 import { ConfigInterface } from './config/index.js';
@@ -35,11 +34,9 @@ export class Sync {
               .then(async (client) => {
                 let success = await client.uploadBackup(backup);
 
-                if (success && config.updateGravity) {
-                  // Cannot update gravity right away, so sleep for 2 seconds
-                  await sleep(2000);
+                if (success && config.updateGravity)
                   success = await client.updateGravity();
-                }
+
                 return success;
               })
               .catch((error) => notify.ofThrow(error, true))
