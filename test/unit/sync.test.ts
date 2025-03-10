@@ -49,11 +49,15 @@ describe('sync', () => {
   const prepare = ({
     primaryResult,
     secondaryOneResult,
-    secondaryTwoResult
+    secondaryTwoResult,
+    secondaryOneGravityResult,
+    secondaryTwoGravityResult
   }: {
     primaryResult?: Promise<Blob>;
     secondaryOneResult?: Promise<boolean | never>;
     secondaryTwoResult?: Promise<boolean | never>;
+    secondaryOneGravityResult?: Promise<boolean | never>;
+    secondaryTwoGravityResult?: Promise<boolean | never>;
   } = {}) => {
     const config = Config({
       piHoleVersion: '6',
@@ -70,11 +74,13 @@ describe('sync', () => {
     } as unknown as Client;
     secondaryHostClient1 = {
       uploadBackup: jest.fn(() => secondaryOneResult ?? Promise.resolve(true)),
-      updateGravity: jest.fn(() => Promise.resolve(true))
+      updateGravity: jest.fn(() => secondaryOneGravityResult ?? Promise.resolve(true)),
+      getVersion: jest.fn(() => 6)
     } as unknown as Client;
     secondaryHostClient2 = {
       uploadBackup: jest.fn(() => secondaryTwoResult ?? Promise.resolve(true)),
-      updateGravity: jest.fn(() => Promise.resolve(true))
+      updateGravity: jest.fn(() => secondaryTwoGravityResult ?? Promise.resolve(true)),
+      getVersion: jest.fn(() => 6)
     } as unknown as Client;
     clientCreate = jest
       .spyOn(ClientFactory, 'createClient')
@@ -212,4 +218,22 @@ describe('sync', () => {
     expect(secondaryHostClient2.uploadBackup).not.toHaveBeenCalled();
     expect(processExit).toHaveBeenCalledTimes(1);
   });
+
+  // test('should perform sync and succeed with delay', async () => {
+  //   // TODO: Need this gravity result to reject the first time and resolve on retry (sync.ts will perform the retries)
+  //   const { config, notify, log } = prepare({
+  //     secondaryTwoGravityResult: Promise.reject(new FetchError( 'foobar', 'fetchError' ))
+  //   });
+
+  //   await Sync.perform(config, { notify, log });
+
+  //     expectSyncToHaveBeenPerformed({ version: '6', options: config.sync.v6, log });
+  //     expect(notifyOfFailure).toHaveBeenCalledTimes(1);
+  //     expect(notifyQueueError).toHaveBeenCalledTimes(1);
+  //     expect(notifyOfSuccess).toHaveBeenCalledTimes(1);
+  //     expect(notifyOfSuccess).toHaveBeenCalledWith({
+  //       message: '2/2 hosts synced.'
+  //     });
+  //     expect(processExit).not.toHaveBeenCalled();
+  // });
 });

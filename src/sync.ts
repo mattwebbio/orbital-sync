@@ -1,9 +1,13 @@
+import chalk from 'chalk';
 import sleep from 'sleep-promise';
 import { Host } from './client/host.js';
 import { ClientFactory } from './client/index.js';
 import { ConfigInterface } from './config/index.js';
 import { Log } from './log.js';
 import { Notify } from './notify.js';
+import { FetchError } from 'node-fetch';
+
+const numRetries = 6;
 
 export class Sync {
   static async perform(
@@ -33,12 +37,41 @@ export class Sync {
               log
             })
               .then(async (client) => {
-                let success = await client.uploadBackup(backup);
+                let success: boolean = await client.uploadBackup(backup);
 
                 if (success && config.updateGravity) {
-                  // Cannot update gravity right away, so sleep for 2 seconds
-                  await sleep(2000);
-                  success = await client.updateGravity();
+                  // Cannot update gravity right away for v6, so try and loop while the target is able to process
+                  if (client.getVersion() === 6) {
+                    success = false;
+                    let retry = 0;
+                    // Retry up to 5 times with increasing wait times
+                    while (!success && retry <= numRetries) {
+                      try {
+                        success = await client.updateGravity();
+                      } catch (e) {
+                        // Only consider fetch errors, otherwise rethrow the exception
+                        if (e instanceof FetchError) {
+                          log.info(chalk.red(e));
+                          if (retry > numRetries) {
+                            log.info(
+                              chalk.red(
+                                `Exhausted retries waiting for ${client.getHost().fullUrl} to be up. Check the server!`
+                              )
+                            );
+                          } else {
+                            log.info(
+                              chalk.yellow(
+                                `Sleeping for ${++retry}s and waiting for ${client.getHost().fullUrl} to be up...`
+                              )
+                            );
+                            await sleep(1000 * retry);
+                          }
+                        } else {
+                          throw e;
+                        }
+                      }
+                    }
+                  }
                 }
                 return success;
               })
