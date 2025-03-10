@@ -52,7 +52,8 @@ describe('Config', () => {
           dhcp_leases: true,
           domainlist: true,
           domainlist_by_group: true,
-          group: true
+          group: true,
+          gravityUpdateRetryCount: 5
         }
       },
       notify: {
@@ -128,7 +129,8 @@ describe('Config', () => {
           dhcp_leases: true,
           domainlist: true,
           domainlist_by_group: true,
-          group: true
+          group: true,
+          gravityUpdateRetryCount: 5
         }
       },
       notify: {

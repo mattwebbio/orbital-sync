@@ -10,6 +10,8 @@ export interface Client {
   downloadBackup(): Promise<Blob>;
   uploadBackup(backup: Blob): Promise<true | never>;
   updateGravity(): Promise<true | never>;
+  getHost(): Host;
+  getVersion(): number;
 }
 
 export class ClientFactory {
