@@ -53,7 +53,7 @@
   },
   "dependencies": {
     "@honeybadger-io/js": "^6.8.3",
-    "@sentry/node": "^7.108.0",
+    "@sentry/node": "^9.5.0",
     "chalk": "^4.1.2",
     "fetch-cookie": "^3.0.1",
     "json-schema-to-ts": "^3.0.1",
