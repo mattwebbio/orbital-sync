@@ -211,7 +211,7 @@ export class ClientV6 {
     form.append(
       'import',
       JSON.stringify({
-        config: true,
+        config: this.options.config,
         dhcp_leases: this.options.dhcp_leases,
         gravity: {
           group: this.options.group,

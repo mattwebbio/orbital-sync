@@ -183,6 +183,12 @@ export const Schema = asConst({
           type: 'object',
           description: 'Sync options for Pi-hole v6.x.',
           properties: {
+            config: {
+              type: 'boolean',
+              default: false,
+              example: '`true`/`false`',
+              description: 'Copies the TOML config file'
+            },
             dhcp_leases: {
               type: 'boolean',
               default: true,
