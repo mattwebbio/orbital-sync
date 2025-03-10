@@ -7,8 +7,6 @@ import { ClientV5 } from '../../../src/client/v5';
 import { ClientV6 } from '../../../src/client/v6';
 
 describe('Client', () => {
-  const goodResponse =
-    '{"session":{"valid":true,"totp":true,"sid":"IEFZjjlRXX0FMaemtB8opQ=","csrf":"+Y5Qx4Qxa5XXYSzz8Nu7gw=","validity":1800,"message":"app-password correct"},"took":0.074608087539672852}';
   const host = new Host({
     baseUrl: 'http://10.0.0.2',
     password: 'mypassword'
@@ -32,8 +30,13 @@ describe('Client', () => {
     log: Log;
   }) => {
     // V6 requests
-    nock(host.fullUrl).get('/api/auth').reply(200);
-    nock(host.fullUrl).post('/api/auth').reply(200, goodResponse);
+    nock(host.baseUrl).get('/api/auth').reply(200);
+    nock(host.baseUrl)
+      .post('/api/auth')
+      .reply(
+        200,
+        '{"session":{"valid":true,"totp":true,"sid":"IEFZjjlRXX0FMaemtB8opQ=","csrf":"+Y5Qx4Qxa5XXYSzz8Nu7gw=","validity":1800,"message":"app-password correct"},"took":0.074608087539672852}'
+      );
     // V5 requests
     nock(host.fullUrl).get('/admin/index.php?login').reply(200);
     nock(host.fullUrl)

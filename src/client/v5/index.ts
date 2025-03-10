@@ -20,7 +20,7 @@ export class ClientV5 {
     private token: string,
     private options: SyncOptionsV5,
     private log: Log,
-    private version: '5'
+    private version: 5
   ) {}
 
   public static async create({
@@ -57,7 +57,7 @@ export class ClientV5 {
     const token = this.parseResponseForToken(host, await response.text());
 
     log.info(chalk.green(`✔️ Successfully signed in to ${host.fullUrl}!`));
-    return new this(fetch, host, token, options, log, '5');
+    return new this(fetch, host, token, options, log, 5);
   }
 
   private static parseResponseForToken(host: Host, responseBody: string): string {
@@ -85,6 +85,14 @@ export class ClientV5 {
       });
 
     return token;
+  }
+
+  public getVersion(): number {
+    return this.version;
+  }
+
+  public getHost(): Host {
+    return this.host;
   }
 
   public async downloadBackup(): Promise<Blob> {

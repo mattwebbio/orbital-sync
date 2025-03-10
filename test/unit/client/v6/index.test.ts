@@ -1,8 +1,9 @@
+import { jest } from '@jest/globals';
 import nock from 'nock';
 import { Blob } from 'node-fetch';
 import { ClientV6 } from '../../../../src/client/v6';
 import { Host } from '../../../../src/client/host';
-import { Config } from '../../../../src/config/index';
+import { Config, ConfigInterface } from '../../../../src/config/index';
 import { ErrorNotification } from '../../../../src/notify';
 import { Log } from '../../../../src/log';
 
@@ -14,10 +15,7 @@ describe('Client', () => {
       baseUrl: 'http://10.0.0.2',
       password: 'mypassword'
     });
-    const config = Config({
-      primaryHost: { baseUrl: host.baseUrl, password: host.password },
-      secondaryHosts: [{ baseUrl: host.baseUrl, password: host.password }]
-    });
+    let config: ConfigInterface;
     const log = new Log(false);
 
     const createClient = async () => {
@@ -32,6 +30,11 @@ describe('Client', () => {
 
     beforeEach(() => {
       nock.disableNetConnect();
+
+      config = Config({
+        primaryHost: { baseUrl: host.baseUrl, password: host.password },
+        secondaryHosts: [{ baseUrl: host.baseUrl, password: host.password }]
+      });
     });
 
     afterEach(() => {
@@ -72,6 +75,21 @@ describe('Client', () => {
         await expect(
           ClientV6.create({ host, log, options: config.sync.v6 })
         ).resolves.toBeInstanceOf(ClientV6);
+
+        initialRequest.done();
+        loginRequest.done();
+      });
+
+      test('should return version 6 and Host info', async () => {
+        const initialRequest = nock(host.baseUrl).get('/api/auth').reply(200);
+        const loginRequest = nock(host.baseUrl)
+          .post('/api/auth')
+          .reply(200, goodResponse);
+
+        const v6Client = await ClientV6.create({ host, log, options: config.sync.v6 });
+
+        expect(v6Client.getVersion()).toEqual(6);
+        expect(v6Client.getHost()).toBe(host);
 
         initialRequest.done();
         loginRequest.done();
@@ -193,6 +211,40 @@ describe('Client', () => {
             path: '/api/action/gravity',
             status: 401,
             eventStream: ''
+          }
+        });
+      });
+
+      test('should retry if fetch error is thrown', async () => {
+        jest.useFakeTimers({ advanceTimers: true });
+        teleporter
+          .post('/api/action/gravity', undefined)
+          .replyWithError({ code: 'ETIMEDOUT' })
+          .post('/api/action/gravity', undefined)
+          .reply(200, '[✓] TCP (IPv6)\n[✓] Pi-hole blocking is enabled\n[✓] Done');
+
+        const result = client.updateGravity();
+
+        expect(await result).toStrictEqual(true);
+      });
+
+      test('should throw if all retries fail', async () => {
+        jest.useFakeTimers({ advanceTimers: true });
+        config.sync.v6.gravityUpdateRetryCount = 2;
+        teleporter
+          .post('/api/action/gravity', undefined)
+          .replyWithError({ code: 'ETIMEDOUT' })
+          .post('/api/action/gravity', undefined)
+          .replyWithError({ code: 'ETIMEDOUT' });
+
+        const expectError = expect(client.updateGravity()).rejects;
+
+        await expectError.toBeInstanceOf(ErrorNotification);
+        await expectError.toMatchObject({
+          message: 'Exhausted 3 retries updating gravity on http://10.0.0.2.',
+          verbose: {
+            host: 'http://10.0.0.2',
+            path: '/api/action/gravity'
           }
         });
       });
