@@ -43,7 +43,7 @@
     "jest": "^29.7.0",
     "lefthook": "^1.6.7",
     "markdown-table": "3",
-    "nock": "^14.0.0",
+    "nock": "^13.0.0",
     "prettier": "^3.2.5",
     "tempy": "^3.1.0",
     "testcontainers": "^10.7.2",

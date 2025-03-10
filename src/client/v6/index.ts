@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import fetchCookie from 'fetch-cookie';
 import nodeFetch, {
   Blob,
+  FetchError,
   FormData,
   RequestInfo,
   RequestInit,
@@ -11,6 +12,7 @@ import type { Host } from '../host.js';
 import { Log } from '../../log.js';
 import { ErrorNotification } from '../../notify.js';
 import type { SyncOptionsV6 } from '../../config/index.js';
+import sleep from 'sleep-promise';
 
 export type PiHoleSession = {
   valid: boolean;
@@ -32,7 +34,7 @@ export class ClientV6 {
     private token: string,
     private options: SyncOptionsV6,
     private log: Log,
-    private version: '6'
+    private version: 6
   ) {}
 
   public static async create({
@@ -71,7 +73,15 @@ export class ClientV6 {
     const token = body.session.sid;
 
     log.info(chalk.green(`✔️ Successfully signed in to ${host.fullUrl}!`));
-    return new this(fetch, host, token, options, log, '6');
+    return new this(fetch, host, token, options, log, 6);
+  }
+
+  public getVersion(): number {
+    return this.version;
+  }
+
+  public getHost(): Host {
+    return this.host;
   }
 
   public async downloadBackup(): Promise<Blob> {
@@ -137,34 +147,60 @@ export class ClientV6 {
     return true;
   }
 
-  public async updateGravity(): Promise<true | never> {
-    this.log.info(chalk.yellow(`➡️ Updating gravity on ${this.host.fullUrl}...`));
+  public async updateGravity(attempt = 1): Promise<true | never> {
     const path = '/api/action/gravity';
 
-    const gravityUpdateResponse = await this.fetch(`${this.host.fullUrl}${path}`, {
-      headers: {
-        accept: 'text/plain',
-        sid: this.token
-      },
-      method: 'POST',
-      body: null
-    });
-
-    const updateText = (await gravityUpdateResponse.text()).trim();
-    if (gravityUpdateResponse.status !== 200) {
+    if (attempt > this.options.gravityUpdateRetryCount) {
       throw new ErrorNotification({
-        message: `Failed updating gravity on "${this.host.fullUrl}".`,
+        message: `Exhausted ${attempt} retries updating gravity on ${this.host.fullUrl}.`,
         verbose: {
           host: this.host.fullUrl,
-          path,
-          status: gravityUpdateResponse.status,
-          eventStream: updateText
+          path
         }
       });
     }
 
-    this.log.info(chalk.green(`✔️ Gravity updated on ${this.host.fullUrl}!`));
-    this.log.verbose(`Result:\n${chalk.blue(updateText)}`);
+    try {
+      this.log.info(
+        chalk.yellow(`➡️ Attempting to update gravity on ${this.host.fullUrl}...`)
+      );
+      const gravityUpdateResponse = await this.fetch(`${this.host.fullUrl}${path}`, {
+        headers: {
+          accept: 'text/plain',
+          sid: this.token
+        },
+        method: 'POST',
+        body: null
+      });
+
+      const updateText = (await gravityUpdateResponse.text()).trim();
+      if (gravityUpdateResponse.status !== 200) {
+        throw new ErrorNotification({
+          message: `Failed updating gravity on "${this.host.fullUrl}".`,
+          verbose: {
+            host: this.host.fullUrl,
+            path,
+            status: gravityUpdateResponse.status,
+            eventStream: updateText
+          }
+        });
+      }
+
+      this.log.info(chalk.green(`✔️ Gravity updated on ${this.host.fullUrl}!`));
+      this.log.verbose(`Result:\n${chalk.blue(updateText)}`);
+    } catch (error) {
+      if (!(error instanceof FetchError)) throw error;
+
+      const backoffMs = Math.min(1000 * Math.pow(2, attempt - 1), 60000);
+      this.log.verbose(chalk.red(error));
+      this.log.info(
+        chalk.yellow(
+          `Sleeping for ${backoffMs / 1000}s and waiting for ${this.host.fullUrl} to be up...`
+        )
+      );
+      await sleep(backoffMs);
+      return this.updateGravity(attempt + 1);
+    }
 
     return true;
   }
