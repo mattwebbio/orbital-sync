@@ -228,6 +228,21 @@ describe('Client', () => {
         expect(await result).toStrictEqual(true);
       });
 
+      test('should retry if 502-504 us returned', async () => {
+        for (const status of [502, 503, 504]) {
+          jest.useFakeTimers({ advanceTimers: true });
+          teleporter
+            .post('/api/action/gravity', undefined)
+            .reply(status, 'Bad Gateway')
+            .post('/api/action/gravity', undefined)
+            .reply(200, '[✓] TCP (IPv6)\n[✓] Pi-hole blocking is enabled\n[✓] Done');
+
+          const result = client.updateGravity();
+
+          expect(await result).toStrictEqual(true);
+        }
+      });
+
       test('should throw if all retries fail', async () => {
         jest.useFakeTimers({ advanceTimers: true });
         config.sync.v6.gravityUpdateRetryCount = 2;

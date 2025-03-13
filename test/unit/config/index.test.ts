@@ -128,6 +128,7 @@ describe('Config', () => {
           adlist: true,
           adlist_by_group: true,
           client: true,
+          config: false,
           client_by_group: true,
           config: false,
           dhcp_leases: true,

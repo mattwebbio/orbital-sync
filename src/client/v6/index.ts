@@ -174,6 +174,12 @@ export class ClientV6 {
       });
 
       const updateText = (await gravityUpdateResponse.text()).trim();
+      if (gravityUpdateResponse.status >= 502 && gravityUpdateResponse.status <= 504) {
+        this.log.verbose(chalk.red(`⚠️ ${gravityUpdateResponse.status} - ${updateText}`));
+        await this.exponentialSleep(attempt);
+        return this.updateGravity(attempt + 1);
+      }
+
       if (gravityUpdateResponse.status !== 200) {
         throw new ErrorNotification({
           message: `Failed updating gravity on "${this.host.fullUrl}".`,
@@ -191,18 +197,22 @@ export class ClientV6 {
     } catch (error) {
       if (!(error instanceof FetchError)) throw error;
 
-      const backoffMs = Math.min(1000 * Math.pow(2, attempt - 1), 60000);
       this.log.verbose(chalk.red(error));
-      this.log.info(
-        chalk.yellow(
-          `Sleeping for ${backoffMs / 1000}s and waiting for ${this.host.fullUrl} to be up...`
-        )
-      );
-      await sleep(backoffMs);
+      await this.exponentialSleep(attempt);
       return this.updateGravity(attempt + 1);
     }
 
     return true;
+  }
+
+  private exponentialSleep(attempt: number): Promise<void> {
+    const backoffMs = Math.min(1000 * Math.pow(2, attempt - 1), 60000);
+    this.log.info(
+      chalk.yellow(
+        `Sleeping for ${backoffMs / 1000}s and waiting for ${this.host.fullUrl} to be up...`
+      )
+    );
+    return sleep(backoffMs);
   }
 
   private generateForm(): typeof FormData.prototype {
