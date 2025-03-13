@@ -251,6 +251,13 @@ export const Schema = asConst({
               example: '`3`',
               description:
                 'The number of times to retry updating gravity if it fails. Only used if `UPDATE_GRAVITY` is not set to `false`. Defaults to 5. Uses an exponential backoff; the second attempt will wait a second, the third attempt 2, the fourth attempt 4, the fifth attempt 8, and so on - up to a maximum of 60 seconds.'
+            },
+            logoutRetryCount: {
+              type: 'number',
+              default: 5,
+              example: '`3`',
+              description:
+                'The number of times to retry logging out after a sync if it fails. Defaults to 5. Uses an exponential backoff; the second attempt will wait a second, the third attempt 2, the fourth attempt 4, the fifth attempt 8, and so on - up to a maximum of 60 seconds.'
             }
           },
           required: [

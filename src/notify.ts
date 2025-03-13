@@ -203,6 +203,7 @@ export class ErrorNotification extends Error implements NotificationInterface {
 export interface NotificationInterface {
   message: string;
   verbose?: string | Record<string, unknown>;
+  retries?: number;
   sendNotification?: boolean;
   exit?: boolean;
 }
