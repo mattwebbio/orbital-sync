@@ -48,12 +48,15 @@ describe('Config', () => {
           adlist: true,
           adlist_by_group: true,
           client: true,
+          config: false,
           client_by_group: true,
           dhcp_leases: true,
           domainlist: true,
           domainlist_by_group: true,
           group: true,
-          gravityUpdateRetryCount: 5
+          gravityUpdateRetryCount: 5,
+          selective_LocalDnsRecords: true,
+          selective_LocalCnameRecords: true
         }
       },
       notify: {
@@ -126,11 +129,14 @@ describe('Config', () => {
           adlist_by_group: true,
           client: true,
           client_by_group: true,
+          config: false,
           dhcp_leases: true,
           domainlist: true,
           domainlist_by_group: true,
           group: true,
-          gravityUpdateRetryCount: 5
+          gravityUpdateRetryCount: 5,
+          selective_LocalDnsRecords: true,
+          selective_LocalCnameRecords: true
         }
       },
       notify: {

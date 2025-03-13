@@ -211,7 +211,7 @@ export class ClientV6 {
     form.append(
       'import',
       JSON.stringify({
-        config: true,
+        config: this.options.config,
         dhcp_leases: this.options.dhcp_leases,
         gravity: {
           group: this.options.group,
@@ -226,6 +226,82 @@ export class ClientV6 {
     );
 
     return form;
+  }
+
+  public async getExistingConfig(): Promise<string> {
+    this.log.info(chalk.yellow(`➡️ Downloading config from ${this.host.fullUrl}...`));
+
+    const path = '/api/config';
+    const response = await this.fetch(`${this.host.fullUrl}${path}`, {
+      headers: {
+        accept: 'application/json',
+        sid: this.token
+      },
+      method: 'GET'
+    });
+
+    const responseText: string = (await response.text()).trim();
+
+    if (response.status !== 200) {
+      throw new ErrorNotification({
+        message: `Failed to download config from "${this.host.fullUrl}".`,
+        verbose: {
+          host: this.host.fullUrl,
+          path,
+          status: response.status,
+          responseBody: responseText
+        }
+      });
+    }
+
+    this.log.info(chalk.green(`✔️ Config download from ${this.host.fullUrl} completed!`));
+    return responseText;
+  }
+
+  public async uploadPatchedConfig(patchedConfig: object): Promise<true | never> {
+    const path = '/api/config';
+    const patchedConfigString = JSON.stringify(patchedConfig);
+
+    try {
+      this.log.info(
+        chalk.yellow(
+          `➡️ Attempting to upload selective config backup on ${this.host.fullUrl}...`
+        )
+      );
+      this.log.verbose(`Request:\n${chalk.blue(patchedConfigString)}`);
+
+      const configUpdateResponse = await this.fetch(`${this.host.fullUrl}${path}`, {
+        headers: {
+          accept: 'application/json',
+          sid: this.token
+        },
+        method: 'PATCH',
+        body: patchedConfigString
+      });
+
+      const configUpdateResponseText = (await configUpdateResponse.text()).trim();
+
+      if (configUpdateResponse.status !== 200) {
+        throw new ErrorNotification({
+          message: `Failed to upload selective config backup to "${this.host.fullUrl}".`,
+          verbose: {
+            host: this.host.fullUrl,
+            path,
+            status: configUpdateResponse.status,
+            responseBody: configUpdateResponseText
+          }
+        });
+      }
+
+      this.log.info(
+        chalk.green(`✔️ Selective config backup updated on ${this.host.fullUrl}!`)
+      );
+      this.log.verbose(`Result:\n${chalk.blue(configUpdateResponseText)}`);
+    } catch (error) {
+      if (!(error instanceof FetchError)) throw error;
+    }
+
+    return true;
   }
 }
 

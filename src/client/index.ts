@@ -12,6 +12,8 @@ export interface Client {
   updateGravity(): Promise<true | never>;
   getHost(): Host;
   getVersion(): number;
+  getExistingConfig(): Promise<string>;
+  uploadPatchedConfig(patchedConfig: object): Promise<true | never>;
 }
 
 export class ClientFactory {

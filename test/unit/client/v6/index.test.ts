@@ -249,5 +249,84 @@ describe('Client', () => {
         });
       });
     });
+
+    describe('getExistingConfig', () => {
+      let client: ClientV6;
+      let teleporter: nock.Scope;
+
+      beforeEach(async () => {
+        ({ client, teleporter } = await createClient());
+      });
+
+      afterEach(() => {
+        teleporter.done();
+      });
+
+      test('should throw error if response is non-200', async () => {
+        teleporter.get('/api/config').reply(500);
+
+        const expectError = expect(client.getExistingConfig()).rejects;
+
+        await expectError.toBeInstanceOf(ErrorNotification);
+        await expectError.toMatchObject({
+          message: 'Failed to download config from "http://10.0.0.2".',
+          verbose: {
+            host: 'http://10.0.0.2',
+            path: '/api/config',
+            status: 500,
+            responseBody: ''
+          }
+        });
+      });
+
+      test('should return response data', async () => {
+        teleporter.get('/api/config').reply(200, '{config:{}}', {
+          'content-type': 'application/json'
+        });
+
+        const existingConfig = await client.getExistingConfig();
+
+        expect(existingConfig).toBe('{config:{}}');
+      });
+    });
+
+    describe('uploadPatchedConfig', () => {
+      const patchedConfig = { config: { dns: { hosts: ['abc123', 'def456'] } } };
+      let client: ClientV6;
+      let teleporter: nock.Scope;
+
+      beforeEach(async () => {
+        ({ client, teleporter } = await createClient());
+      });
+
+      afterEach(() => {
+        teleporter.done();
+      });
+
+      test('should return success if response is 200', async () => {
+        teleporter.patch('/api/config').reply(200);
+
+        const response = expect(client.uploadPatchedConfig(patchedConfig)).resolves;
+
+        await response.toEqual(true);
+      });
+
+      test('should throw error if response is non-200', async () => {
+        teleporter.patch('/api/config').reply(500);
+
+        const expectError = expect(client.uploadPatchedConfig(patchedConfig)).rejects;
+
+        await expectError.toBeInstanceOf(ErrorNotification);
+        await expectError.toMatchObject({
+          message: 'Failed to upload selective config backup to "http://10.0.0.2".',
+          verbose: {
+            host: 'http://10.0.0.2',
+            path: '/api/config',
+            status: 500,
+            responseBody: ''
+          }
+        });
+      });
+    });
   });
 });
