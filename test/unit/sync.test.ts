@@ -28,7 +28,7 @@ describe('sync', () => {
     { baseUrl: 'http://10.0.0.4', password: 'password3', path: '' }
   ];
   const backupData = new Blob([]);
-  const existingConfig = {
+  const existingConfigAppPwAndSudo = {
     config: {
       dns: {
         cnameRecords: ['thinga,thingc', 'thingb,thingd'],
@@ -36,12 +36,31 @@ describe('sync', () => {
       },
       webserver: {
         api: {
+          app_pwhash: 'abcdefghijklmnopqrstuvwxyz',
           app_sudo: true
         }
       }
     }
   };
-  const existingConfigStr = JSON.stringify(existingConfig);
+  const existingConfigAppPwAndSudoStr = JSON.stringify(existingConfigAppPwAndSudo);
+
+  const existingConfigNoAppPwAndSudoFalse = {
+    config: {
+      dns: {
+        cnameRecords: ['thinga,thingc', 'thingb,thingd'],
+        hosts: ['0.0.0.0 thinga', '0.0.0.0 thingb']
+      },
+      webserver: {
+        api: {
+          app_pwhash: '',
+          app_sudo: false
+        }
+      }
+    }
+  };
+  const existingConfigNoAppPwAndSudoFalseStr = JSON.stringify(
+    existingConfigNoAppPwAndSudoFalse
+  );
 
   beforeEach(() => {
     nock.disableNetConnect();
@@ -82,20 +101,22 @@ describe('sync', () => {
 
     primaryHostClient = {
       downloadBackup: jest.fn(() => primaryResult ?? Promise.resolve(backupData)),
-      getExistingConfig: jest.fn(() => Promise.resolve(existingConfigStr)),
+      getExistingConfig: jest.fn(() => Promise.resolve(existingConfigAppPwAndSudoStr)),
       getVersion: jest.fn(() => 6)
     } as unknown as Client;
     secondaryHostClient1 = {
       uploadBackup: jest.fn(() => secondaryOneResult ?? Promise.resolve(true)),
       getVersion: jest.fn(() => 6),
-      getExistingConfig: jest.fn(() => Promise.resolve(existingConfigStr)),
+      getExistingConfig: jest.fn(() => Promise.resolve(existingConfigAppPwAndSudoStr)),
       uploadPatchedConfig: jest.fn(() => Promise.resolve(true)),
       updateGravity: jest.fn(() => Promise.resolve(true))
     } as unknown as Client;
     secondaryHostClient2 = {
       uploadBackup: jest.fn(() => secondaryTwoResult ?? Promise.resolve(true)),
       getVersion: jest.fn(() => 6),
-      getExistingConfig: jest.fn(() => Promise.resolve(existingConfigStr)),
+      getExistingConfig: jest.fn(() =>
+        Promise.resolve(existingConfigNoAppPwAndSudoFalseStr)
+      ),
       uploadPatchedConfig: jest.fn(() => Promise.resolve(true)),
       updateGravity: jest.fn(() => Promise.resolve(true))
     } as unknown as Client;
