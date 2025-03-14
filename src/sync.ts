@@ -58,7 +58,12 @@ export class Sync {
                   const clientExistingConfig = JSON.parse(
                     await client.getExistingConfig()
                   );
-                  if (clientExistingConfig.config.webserver.api.app_sudo) {
+
+                  if (
+                    clientExistingConfig.config.webserver.api.app_pwhash === '' ||
+                    (clientExistingConfig.config.webserver.api.app_pwhash !== '' &&
+                      clientExistingConfig.config.webserver.api.app_sudo)
+                  ) {
                     let patchedConfigDNSRecords = {};
                     let patchedConfigCNAMERecords = {};
 
@@ -92,7 +97,7 @@ export class Sync {
                   } else {
                     log.info(
                       chalk.red(
-                        `⚠ Error: Secondary host ${host.baseUrl} has webserver.api.app_sudo set to false in pihole.toml. Skipping selective config sync for this host.`
+                        `⚠ Error: Secondary host ${host.baseUrl} has an app password configured but webserver.api.app_sudo is set to false in pihole.toml. Skipping selective config sync for this host. Set webserver.api.app_sudo to true to resolve, in either the pihole.toml file or from the pihole web interface by going to Settings -> All settings -> Webserver and API. You may need to click the Blue "Modified settings" slider if you do not see webserver.api.app_sudo in the UI.`
                       )
                     );
                   }
