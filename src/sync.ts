@@ -12,6 +12,7 @@ export class Sync {
     const notify = _notify ?? new Notify(config);
     const log = _log ?? new Log(config.verbose);
 
+    let primaryHost;
     try {
       const primaryHost = await ClientFactory.createClient({
         host: new Host(config.primaryHost),
@@ -20,6 +21,7 @@ export class Sync {
         log
       });
       const backup = await primaryHost.downloadBackup();
+      primaryHost.cleanup().catch((error) => notify.ofThrow(error, true));
 
       const secondaryHostCount = config.secondaryHosts?.length ?? 0;
       const successfulRestoreCount = (
@@ -36,6 +38,8 @@ export class Sync {
 
                 if (success && config.updateGravity)
                   success = await client.updateGravity();
+
+                client.cleanup().catch((error) => notify.ofThrow(error, true));
 
                 return success;
               })

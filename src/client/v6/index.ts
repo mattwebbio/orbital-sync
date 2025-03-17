@@ -28,6 +28,8 @@ export type PiHoleAuthResponse = {
 };
 
 export class ClientV6 {
+  private sessionEnded = false;
+
   private constructor(
     private fetch: NodeFetchCookie,
     private host: Host,
@@ -155,6 +157,7 @@ export class ClientV6 {
         message: `Exhausted ${attempt} retries updating gravity on ${this.host.fullUrl}.`,
         verbose: {
           host: this.host.fullUrl,
+          retries: attempt,
           path
         }
       });
@@ -186,6 +189,7 @@ export class ClientV6 {
           verbose: {
             host: this.host.fullUrl,
             path,
+            retries: attempt,
             status: gravityUpdateResponse.status,
             eventStream: updateText
           }
@@ -203,6 +207,47 @@ export class ClientV6 {
     }
 
     return true;
+  }
+
+  public async cleanup(): Promise<void> {
+    await this.logout();
+  }
+
+  private async logout(attempt = 1): Promise<void> {
+    try {
+      const response = await this.fetch(`${this.host.fullUrl}/api/auth`, {
+        method: 'DELETE'
+      });
+
+      if (response.status !== 204) {
+        if (attempt > this.options.logoutRetryCount)
+          throw new ErrorNotification({
+            message: `Failed to sign out of "${this.host.fullUrl}". This may cause issues for future syncs.`,
+            verbose: {
+              host: this.host.fullUrl,
+              retries: attempt,
+              status: response.status,
+              responseBody: await response.text()
+            }
+          });
+
+        this.log.verbose(
+          chalk.red(
+            `⚠️ ${response.status} - Failed to sign out of ${this.host.fullUrl}. Retrying...`
+          )
+        );
+        await this.exponentialSleep(attempt);
+        return this.logout(attempt + 1);
+      } else {
+        this.log.info(chalk.green(`✔️ Successfully signed out of ${this.host.fullUrl}!`));
+      }
+    } catch (error) {
+      if (!(error instanceof FetchError)) throw error;
+
+      this.log.verbose(chalk.red(error));
+      await this.exponentialSleep(attempt);
+      return this.logout(attempt + 1);
+    }
   }
 
   private exponentialSleep(attempt: number): Promise<void> {

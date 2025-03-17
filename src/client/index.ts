@@ -12,6 +12,7 @@ export interface Client {
   updateGravity(): Promise<true | never>;
   getHost(): Host;
   getVersion(): number;
+  cleanup(): Promise<void>;
 }
 
 export class ClientFactory {
@@ -22,10 +23,12 @@ export class ClientFactory {
     log
   }: {
     host: Host;
-    version: Version;
+    version?: Version;
     options: SyncOptionsV6 | SyncOptionsV5;
     log: Log;
   }): Promise<Client> {
+    version ??= 'auto';
+
     if (version === '5') {
       return ClientV5.create({ host, options: options as SyncOptionsV5, log });
     } else if (version === '6') {
