@@ -30,7 +30,8 @@ export class Sync {
         primaryHostVersion === 6 &&
         !config.sync.v6.config &&
         (config.sync.v6.selective_LocalDnsRecords ||
-          config.sync.v6.selective_LocalCnameRecords)
+          config.sync.v6.selective_LocalCnameRecords ||
+          config.sync.v6.selective_upstreams)
       ) {
         try {
           configDataBackup = JSON.parse(await primaryHost.getExistingConfig());
@@ -66,6 +67,7 @@ export class Sync {
                   ) {
                     let patchedConfigDNSRecords = {};
                     let patchedConfigCNAMERecords = {};
+                    let patchedConfigUpstreams = {};
 
                     if (config.sync.v6.selective_LocalDnsRecords) {
                       patchedConfigDNSRecords = {
@@ -85,11 +87,21 @@ export class Sync {
                         }
                       };
                     }
+                    if (config.sync.v6.selective_upstreams) {
+                      patchedConfigUpstreams = {
+                        config: {
+                          dns: {
+                            upstreams: configDataBackup.config.dns.upstreams
+                          }
+                        }
+                      };
+                    }
 
                     const patchedConfig = deepMerge(
                       {},
                       patchedConfigDNSRecords,
-                      patchedConfigCNAMERecords
+                      patchedConfigCNAMERecords,
+                      patchedConfigUpstreams
                     );
                     if (patchedConfig) {
                       success = await client.uploadPatchedConfig(patchedConfig);

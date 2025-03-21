@@ -56,7 +56,8 @@ describe('Config', () => {
           group: true,
           gravityUpdateRetryCount: 5,
           selective_LocalDnsRecords: true,
-          selective_LocalCnameRecords: true
+          selective_LocalCnameRecords: true,
+          selective_upstreams: true
         }
       },
       notify: {
@@ -136,7 +137,8 @@ describe('Config', () => {
           group: true,
           gravityUpdateRetryCount: 5,
           selective_LocalDnsRecords: true,
-          selective_LocalCnameRecords: true
+          selective_LocalCnameRecords: true,
+          selective_upstreams: true
         }
       },
       notify: {

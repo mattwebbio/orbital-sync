@@ -265,6 +265,13 @@ export const Schema = asConst({
               envVar: 'SYNC_SELECTIVE_LOCALCNAMERECORDS',
               example: '`true`/`false`',
               description: 'Copies local CNAME records'
+            },
+            selective_upstreams: {
+              type: 'boolean',
+              default: true,
+              envVar: 'SYNC_SELECTIVE_UPSTREAMS',
+              example: '`true`/`false`',
+              description: 'Copies upstream DNS servers'
             }
           },
           required: [
@@ -277,7 +284,8 @@ export const Schema = asConst({
             'client',
             'client_by_group',
             'selective_LocalDnsRecords',
-            'selective_LocalCnameRecords'
+            'selective_LocalCnameRecords',
+            'selective_upstreams'
           ]
         }
       },
