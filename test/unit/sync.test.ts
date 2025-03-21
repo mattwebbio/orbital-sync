@@ -32,7 +32,8 @@ describe('sync', () => {
     config: {
       dns: {
         cnameRecords: ['thinga,thingc', 'thingb,thingd'],
-        hosts: ['0.0.0.0 thinga', '0.0.0.0 thingb']
+        hosts: ['0.0.0.0 thinga', '0.0.0.0 thingb'],
+        upstreams: ['8.8.8.8#53', '1.1.1.1#53']
       },
       webserver: {
         api: {
@@ -48,7 +49,8 @@ describe('sync', () => {
     config: {
       dns: {
         cnameRecords: ['thinga,thingc', 'thingb,thingd'],
-        hosts: ['0.0.0.0 thinga', '0.0.0.0 thingb']
+        hosts: ['0.0.0.0 thinga', '0.0.0.0 thingb'],
+        upstreams: ['8.8.8.8#53', '1.1.1.1#53']
       },
       webserver: {
         api: {
