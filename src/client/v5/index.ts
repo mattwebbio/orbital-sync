@@ -210,6 +210,14 @@ export class ClientV5 {
 
     return form;
   }
+
+  public async getExistingConfig(): Promise<string> {
+    return '';
+  }
+
+  public async uploadPatchedConfig(): Promise<true | never> {
+    return true;
+  }
 }
 
 type NodeFetchCookie = ReturnType<typeof fetchCookie<RequestInfo, RequestInit, Response>>;

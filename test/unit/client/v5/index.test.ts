@@ -381,5 +381,28 @@ describe('Client', () => {
         });
       });
     });
+
+    describe('placeholder functions for v6 selective sync', () => {
+      let client: ClientV5;
+      let teleporter: nock.Scope;
+
+      beforeEach(async () => {
+        ({ client, teleporter } = await createClient());
+      });
+
+      afterEach(() => {
+        teleporter.done();
+      });
+
+      test('getExistingConfig should return an empty string even though it does nothing', async () => {
+        const result = await client.getExistingConfig();
+        expect(result).toStrictEqual('');
+      });
+
+      test('uploadPatchedConfig should return true even though it does nothing', async () => {
+        const result = await client.uploadPatchedConfig();
+        expect(result).toStrictEqual(true);
+      });
+    });
   });
 });

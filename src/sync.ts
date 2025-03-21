@@ -3,6 +3,8 @@ import { ClientFactory } from './client/index.js';
 import { ConfigInterface } from './config/index.js';
 import { Log } from './log.js';
 import { Notify } from './notify.js';
+import chalk from 'chalk';
+import { deepMerge } from './util/deepmerge.js';
 
 export class Sync {
   static async perform(
@@ -21,6 +23,24 @@ export class Sync {
       });
       const backup = await primaryHost.downloadBackup();
 
+      let configDataBackup = null;
+      let enableSelectiveSync: boolean = false;
+      const primaryHostVersion = primaryHost.getVersion();
+      if (
+        primaryHostVersion === 6 &&
+        !config.sync.v6.config &&
+        (config.sync.v6.selective_LocalDnsRecords ||
+          config.sync.v6.selective_LocalCnameRecords ||
+          config.sync.v6.selective_upstreams)
+      ) {
+        try {
+          configDataBackup = JSON.parse(await primaryHost.getExistingConfig());
+          enableSelectiveSync = true;
+        } catch {
+          enableSelectiveSync = false;
+        }
+      }
+
       const secondaryHostCount = config.secondaryHosts?.length ?? 0;
       const successfulRestoreCount = (
         await Promise.all(
@@ -33,6 +53,67 @@ export class Sync {
             })
               .then(async (client) => {
                 let success = await client.uploadBackup(backup);
+
+                const clientVersion = client.getVersion();
+                if (clientVersion === 6 && success && enableSelectiveSync) {
+                  const clientExistingConfig = JSON.parse(
+                    await client.getExistingConfig()
+                  );
+
+                  if (
+                    clientExistingConfig.config.webserver.api.app_pwhash === '' ||
+                    (clientExistingConfig.config.webserver.api.app_pwhash !== '' &&
+                      clientExistingConfig.config.webserver.api.app_sudo)
+                  ) {
+                    let patchedConfigDNSRecords = {};
+                    let patchedConfigCNAMERecords = {};
+                    let patchedConfigUpstreams = {};
+
+                    if (config.sync.v6.selective_LocalDnsRecords) {
+                      patchedConfigDNSRecords = {
+                        config: {
+                          dns: {
+                            hosts: configDataBackup.config.dns.hosts
+                          }
+                        }
+                      };
+                    }
+                    if (config.sync.v6.selective_LocalCnameRecords) {
+                      patchedConfigCNAMERecords = {
+                        config: {
+                          dns: {
+                            cnameRecords: configDataBackup.config.dns.cnameRecords
+                          }
+                        }
+                      };
+                    }
+                    if (config.sync.v6.selective_upstreams) {
+                      patchedConfigUpstreams = {
+                        config: {
+                          dns: {
+                            upstreams: configDataBackup.config.dns.upstreams
+                          }
+                        }
+                      };
+                    }
+
+                    const patchedConfig = deepMerge(
+                      {},
+                      patchedConfigDNSRecords,
+                      patchedConfigCNAMERecords,
+                      patchedConfigUpstreams
+                    );
+                    if (patchedConfig) {
+                      success = await client.uploadPatchedConfig(patchedConfig);
+                    }
+                  } else {
+                    log.info(
+                      chalk.red(
+                        `⚠ Error: Secondary host ${host.baseUrl} has an app password configured but webserver.api.app_sudo is set to false in pihole.toml. Skipping selective config sync for this host. Set webserver.api.app_sudo to true to resolve, in either the pihole.toml file or from the pihole web interface by going to Settings -> All settings -> Webserver and API. You may need to click the Blue "Modified settings" slider if you do not see webserver.api.app_sudo in the UI.`
+                      )
+                    );
+                  }
+                }
 
                 if (success && config.updateGravity)
                   success = await client.updateGravity();
