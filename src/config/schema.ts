@@ -251,6 +251,27 @@ export const Schema = asConst({
               example: '`3`',
               description:
                 'The number of times to retry updating gravity if it fails. Only used if `UPDATE_GRAVITY` is not set to `false`. Defaults to 5. Uses an exponential backoff; the second attempt will wait a second, the third attempt 2, the fourth attempt 4, the fifth attempt 8, and so on - up to a maximum of 60 seconds.'
+            },
+            selective_LocalDnsRecords: {
+              type: 'boolean',
+              default: true,
+              envVar: 'SYNC_SELECTIVE_LOCALDNSRECORDS',
+              example: '`true`/`false`',
+              description: 'Copies local DNS records'
+            },
+            selective_LocalCnameRecords: {
+              type: 'boolean',
+              default: true,
+              envVar: 'SYNC_SELECTIVE_LOCALCNAMERECORDS',
+              example: '`true`/`false`',
+              description: 'Copies local CNAME records'
+            },
+            selective_upstreams: {
+              type: 'boolean',
+              default: true,
+              envVar: 'SYNC_SELECTIVE_UPSTREAMS',
+              example: '`true`/`false`',
+              description: 'Copies upstream DNS servers'
             }
           },
           required: [
@@ -261,7 +282,10 @@ export const Schema = asConst({
             'domainlist',
             'domainlist_by_group',
             'client',
-            'client_by_group'
+            'client_by_group',
+            'selective_LocalDnsRecords',
+            'selective_LocalCnameRecords',
+            'selective_upstreams'
           ]
         }
       },

@@ -28,6 +28,41 @@ describe('sync', () => {
     { baseUrl: 'http://10.0.0.4', password: 'password3', path: '' }
   ];
   const backupData = new Blob([]);
+  const existingConfigAppPwAndSudo = {
+    config: {
+      dns: {
+        cnameRecords: ['thinga,thingc', 'thingb,thingd'],
+        hosts: ['0.0.0.0 thinga', '0.0.0.0 thingb'],
+        upstreams: ['8.8.8.8#53', '1.1.1.1#53']
+      },
+      webserver: {
+        api: {
+          app_pwhash: 'abcdefghijklmnopqrstuvwxyz',
+          app_sudo: true
+        }
+      }
+    }
+  };
+  const existingConfigAppPwAndSudoStr = JSON.stringify(existingConfigAppPwAndSudo);
+
+  const existingConfigNoAppPwAndSudoFalse = {
+    config: {
+      dns: {
+        cnameRecords: ['thinga,thingc', 'thingb,thingd'],
+        hosts: ['0.0.0.0 thinga', '0.0.0.0 thingb'],
+        upstreams: ['8.8.8.8#53', '1.1.1.1#53']
+      },
+      webserver: {
+        api: {
+          app_pwhash: '',
+          app_sudo: false
+        }
+      }
+    }
+  };
+  const existingConfigNoAppPwAndSudoFalseStr = JSON.stringify(
+    existingConfigNoAppPwAndSudoFalse
+  );
 
   beforeEach(() => {
     nock.disableNetConnect();
@@ -65,15 +100,26 @@ describe('sync', () => {
     const log = new Log(config.verbose);
 
     processExit = jest.spyOn(process, 'exit').mockReturnValue(undefined as never);
+
     primaryHostClient = {
-      downloadBackup: jest.fn(() => primaryResult ?? Promise.resolve(backupData))
+      downloadBackup: jest.fn(() => primaryResult ?? Promise.resolve(backupData)),
+      getExistingConfig: jest.fn(() => Promise.resolve(existingConfigAppPwAndSudoStr)),
+      getVersion: jest.fn(() => 6)
     } as unknown as Client;
     secondaryHostClient1 = {
       uploadBackup: jest.fn(() => secondaryOneResult ?? Promise.resolve(true)),
+      getVersion: jest.fn(() => 6),
+      getExistingConfig: jest.fn(() => Promise.resolve(existingConfigAppPwAndSudoStr)),
+      uploadPatchedConfig: jest.fn(() => Promise.resolve(true)),
       updateGravity: jest.fn(() => Promise.resolve(true))
     } as unknown as Client;
     secondaryHostClient2 = {
       uploadBackup: jest.fn(() => secondaryTwoResult ?? Promise.resolve(true)),
+      getVersion: jest.fn(() => 6),
+      getExistingConfig: jest.fn(() =>
+        Promise.resolve(existingConfigNoAppPwAndSudoFalseStr)
+      ),
+      uploadPatchedConfig: jest.fn(() => Promise.resolve(true)),
       updateGravity: jest.fn(() => Promise.resolve(true))
     } as unknown as Client;
     clientCreate = jest
@@ -117,6 +163,8 @@ describe('sync', () => {
       log
     });
     expect(primaryHostClient.downloadBackup).toHaveBeenCalledTimes(1);
+    expect(primaryHostClient.getExistingConfig).toHaveBeenCalledTimes(1);
+    expect(primaryHostClient.getVersion).toHaveBeenCalledTimes(1);
     expect(secondaryHostClient1.uploadBackup).toHaveBeenCalledTimes(1);
     expect(secondaryHostClient1.uploadBackup).toHaveBeenCalledWith(backupData);
     expect(secondaryHostClient2.uploadBackup).toHaveBeenCalledTimes(1);
@@ -136,6 +184,13 @@ describe('sync', () => {
       message: '2/2 hosts synced.'
     });
     expect(processExit).not.toHaveBeenCalled();
+
+    expect(secondaryHostClient1.getVersion).toHaveBeenCalledTimes(1);
+    expect(secondaryHostClient1.getExistingConfig).toHaveBeenCalledTimes(1);
+    expect(secondaryHostClient1.uploadPatchedConfig).toHaveBeenCalledTimes(1);
+    expect(secondaryHostClient2.getVersion).toHaveBeenCalledTimes(1);
+    expect(secondaryHostClient2.getExistingConfig).toHaveBeenCalledTimes(1);
+    expect(secondaryHostClient2.uploadPatchedConfig).toHaveBeenCalledTimes(1);
   });
 
   test('should perform sync and partially succeed', async () => {
@@ -189,6 +244,13 @@ describe('sync', () => {
       message: '0/2 hosts synced.'
     });
     expect(processExit).toHaveBeenCalledTimes(1);
+
+    expect(secondaryHostClient1.getVersion).not.toHaveBeenCalled();
+    expect(secondaryHostClient1.getExistingConfig).not.toHaveBeenCalled();
+    expect(secondaryHostClient1.uploadPatchedConfig).not.toHaveBeenCalled();
+    expect(secondaryHostClient2.getVersion).not.toHaveBeenCalled();
+    expect(secondaryHostClient2.getExistingConfig).not.toHaveBeenCalled();
+    expect(secondaryHostClient2.uploadPatchedConfig).not.toHaveBeenCalled();
   });
 
   test('should perform sync and fail', async () => {
@@ -211,5 +273,12 @@ describe('sync', () => {
     expect(secondaryHostClient1.uploadBackup).not.toHaveBeenCalled();
     expect(secondaryHostClient2.uploadBackup).not.toHaveBeenCalled();
     expect(processExit).toHaveBeenCalledTimes(1);
+
+    expect(secondaryHostClient1.getVersion).not.toHaveBeenCalled();
+    expect(secondaryHostClient1.getExistingConfig).not.toHaveBeenCalled();
+    expect(secondaryHostClient1.uploadPatchedConfig).not.toHaveBeenCalled();
+    expect(secondaryHostClient2.getVersion).not.toHaveBeenCalled();
+    expect(secondaryHostClient2.getExistingConfig).not.toHaveBeenCalled();
+    expect(secondaryHostClient2.uploadPatchedConfig).not.toHaveBeenCalled();
   });
 });
