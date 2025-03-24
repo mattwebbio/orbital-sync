@@ -1,6 +1,23 @@
 ### Changelog
 
 
+## [1.9.0](https://github.com/mattwebbio/orbital-sync/compare/v1.8.4...v1.9.0) (2025-03-24)
+
+
+### Features
+
+* add support for PiHole v6 ([f07c3c4](https://github.com/mattwebbio/orbital-sync/commit/f07c3c411b7a0d5132198c7b4d1a131ffa1fa005))
+
+
+### Bug Fixes
+
+* add `SYNC_V6_CONFIG` option and default it to `false` ([b876256](https://github.com/mattwebbio/orbital-sync/commit/b8762561bb87950a6ccb358ce40acc07b54af4cd))
+* add retries and exponential backoff for v6 gravity update ([947feb2](https://github.com/mattwebbio/orbital-sync/commit/947feb2955178311e72667177ae5f967a07c8a27))
+* bump @babel/runtime from 7.23.9 to 7.26.10 ([f0327ab](https://github.com/mattwebbio/orbital-sync/commit/f0327ab831c7878d59208f3f0fae02deb1229357))
+* bump nodemailer and @types/nodemailer ([095ed38](https://github.com/mattwebbio/orbital-sync/commit/095ed38b33762bc8091db9cb7dca8477c11879a5))
+* bump undici from 5.28.4 to 5.28.5 ([90d3c1b](https://github.com/mattwebbio/orbital-sync/commit/90d3c1bdce9d05b23478bc547da205527789b5d4))
+* retry gravity update if 502, 503, or 504 status is returned ([b2fe070](https://github.com/mattwebbio/orbital-sync/commit/b2fe07074873437f143b8def9acc0c9d90f05040))
+
 ## [1.8.4](https://github.com/mattwebbio/orbital-sync/compare/v1.8.3...v1.8.4) (2025-01-11)
 
 
