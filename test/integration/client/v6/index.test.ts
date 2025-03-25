@@ -2,7 +2,7 @@ import { describe, expect } from '@jest/globals';
 import { StartedTestContainer } from 'testcontainers';
 import { Blob } from 'node-fetch';
 import { createPiholeContainer } from '../../../containers';
-import { ClientV6 } from '../../../../src/client/v6';
+import { ClientFactory } from '../../../../src/client';
 import { Host } from '../../../../src/client/host';
 import { Config, ConfigInterface } from '../../../../src/config/index';
 import { Log } from '../../../../src/log';
@@ -41,7 +41,7 @@ describe('Client', () => {
     });
 
     it('should connect, backup, and upload', async () => {
-      const client = await ClientV6.create({
+      const client = await ClientFactory.createClient({
         host: pihole,
         options: config.sync.v6,
         log: new Log(true)
@@ -52,6 +52,8 @@ describe('Client', () => {
 
       const upload = await client.uploadBackup(backup);
       expect(upload).toBe(true);
+
+      await client.cleanup();
     });
   });
 });
