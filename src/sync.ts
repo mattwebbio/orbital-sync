@@ -1,5 +1,5 @@
 import { Host } from './client/host.js';
-import { ClientFactory } from './client/index.js';
+import { Client, ClientFactory } from './client/index.js';
 import { ConfigInterface } from './config/index.js';
 import { Log } from './log.js';
 import { Notify } from './notify.js';
@@ -12,6 +12,7 @@ export class Sync {
     const notify = _notify ?? new Notify(config);
     const log = _log ?? new Log(config.verbose);
 
+    const clients: Client[] = []
     try {
       const primaryHost = await ClientFactory.createClient({
         host: new Host(config.primaryHost),
@@ -19,7 +20,9 @@ export class Sync {
         options: config.sync.v6 || config.sync.v5,
         log
       });
+      clients.push(primaryHost);
       const backup = await primaryHost.downloadBackup();
+      if (primaryHost.sessionEnded) primaryHost.cleanup()
 
       const secondaryHostCount = config.secondaryHosts?.length ?? 0;
       const successfulRestoreCount = (
@@ -32,10 +35,13 @@ export class Sync {
               log
             })
               .then(async (client) => {
+                clients.push(client);
                 let success = await client.uploadBackup(backup);
 
                 if (success && config.updateGravity)
                   success = await client.updateGravity();
+
+                client.cleanup().catch((error) => notify.ofThrow(error, true));
 
                 return success;
               })
