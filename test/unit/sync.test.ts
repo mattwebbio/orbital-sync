@@ -1,5 +1,5 @@
 import { describe, expect, jest, test } from '@jest/globals';
-import nock from 'nock';
+import nock, { cleanAll } from 'nock';
 import { Blob } from 'node-fetch';
 import { ClientFactory, Client } from '../../src/client';
 import { Config, Version } from '../../src/config/index';
@@ -66,15 +66,18 @@ describe('sync', () => {
 
     processExit = jest.spyOn(process, 'exit').mockReturnValue(undefined as never);
     primaryHostClient = {
-      downloadBackup: jest.fn(() => primaryResult ?? Promise.resolve(backupData))
+      downloadBackup: jest.fn(() => primaryResult ?? Promise.resolve(backupData)),
+      cleanup: jest.fn(() => Promise.resolve())
     } as unknown as Client;
     secondaryHostClient1 = {
       uploadBackup: jest.fn(() => secondaryOneResult ?? Promise.resolve(true)),
-      updateGravity: jest.fn(() => Promise.resolve(true))
+      updateGravity: jest.fn(() => Promise.resolve(true)),
+      cleanup: jest.fn(() => Promise.resolve())
     } as unknown as Client;
     secondaryHostClient2 = {
       uploadBackup: jest.fn(() => secondaryTwoResult ?? Promise.resolve(true)),
-      updateGravity: jest.fn(() => Promise.resolve(true))
+      updateGravity: jest.fn(() => Promise.resolve(true)),
+      cleanup: jest.fn(() => Promise.resolve())
     } as unknown as Client;
     clientCreate = jest
       .spyOn(ClientFactory, 'createClient')
@@ -136,6 +139,7 @@ describe('sync', () => {
       message: '2/2 hosts synced.'
     });
     expect(processExit).not.toHaveBeenCalled();
+    expect(primaryHostClient.cleanup).toHaveBeenCalledTimes(1);
   });
 
   test('should perform sync and partially succeed', async () => {

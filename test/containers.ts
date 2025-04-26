@@ -21,9 +21,9 @@ export function createPiholeContainer({
     .withExposedPorts(80)
     .withHealthCheck({
       test: ['CMD', 'curl', '-f', 'http://localhost/admin/'],
-      interval: 10000,
-      timeout: 10000,
-      retries: 5
+      interval: 1000,
+      timeout: 1000,
+      retries: 30
     })
     .withWaitStrategy(Wait.forHealthCheck());
 }

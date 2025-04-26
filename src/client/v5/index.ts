@@ -191,6 +191,8 @@ export class ClientV5 {
     return true;
   }
 
+  public async cleanup(): Promise<void> {}
+
   private generateForm(): typeof FormData.prototype {
     const form = new FormData();
     form.append('token', this.token);

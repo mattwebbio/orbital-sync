@@ -21,7 +21,7 @@ describe('Config', () => {
       piHoleVersion: 'auto',
       primaryHost: {
         baseUrl: 'http://localhost:3000',
-        password: 'password'
+        password: 'password',
       },
       secondaryHosts: [
         {
@@ -54,7 +54,8 @@ describe('Config', () => {
           domainlist: true,
           domainlist_by_group: true,
           group: true,
-          gravityUpdateRetryCount: 5
+          gravityUpdateRetryCount: 5,
+          logoutRetryCount: 5
         }
       },
       notify: {
@@ -132,7 +133,8 @@ describe('Config', () => {
           domainlist: true,
           domainlist_by_group: true,
           group: true,
-          gravityUpdateRetryCount: 5
+          gravityUpdateRetryCount: 5,
+          logoutRetryCount: 5
         }
       },
       notify: {
